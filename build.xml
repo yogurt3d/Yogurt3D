@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<project name="y3d" default="main" basedir=".">
+	
+
+	<property name="FLEX_HOME" value="C:\Program Files (x86)\Adobe\Adobe Flash Builder 4\sdks\4.5.1\" />
+	<property name="YOGURT3D_VERSION" value="v2.0_b_10400" />
+	
+	<echo message="SDK in ${FLEX_HOME}"/>
+	
+	<available property="flexTasksJar" value="${FLEX_HOME}/lib/flexTasks.jar" file="${FLEX_HOME}/lib/flexTasks.jar"/>
+	<available property="flexTasksJar" value="${FLEX_HOME}/ant/lib/flexTasks.jar" file="${FLEX_HOME}/ant/lib/flexTasks.jar"/>
+	
+	<taskdef resource="flexTasks.tasks" classpath="${flexTasksJar}"/>
+	
+	<target name="main" depends="clean, compile, doc, post-cleanup" description="Clean build of Yogurt3D.swc">
+	</target>
+
+	<target name="clean" depends="clean-temp-docs">
+		<echo message="Cleaning old swc files"/>
+		<delete failonerror="false">
+			<fileset dir="${basedir}/bin">
+				<include name="*.swc"/>
+			</fileset>
+		</delete>
+	</target>
+
+	<target name="compile" depends="" description="Compile SWC">
+		
+		<echo message="Compiling ${ant.project.name}_${YOGURT3D_VERSION}.swc"/>
+		
+		<compc fork="true" output="${basedir}/bin/${ant.project.name}_${YOGURT3D_VERSION}.swc">
+		    <source-path path-element="${basedir}/src"/>
+		    <include-sources dir="${basedir}/src" includes="**/*.as **/*.mxml"/>
+		</compc>
+		
+	</target>
+
+	<target name="doc" depends="clean-temp-docs, compile" description="Updates SWC with ASDoc XML">
+
+		<echo message="Compiling ASDoc for ${ant.project.name}_${YOGURT3D_VERSION}.swc"/>
+		
+		<asdoc output="${basedir}/asdoc-output" lenient="true" failonerror="true" keep-xml="true" skip-xsl="false" warnings="true" strict="false">
+		    <compiler.source-path path-element="${basedir}/src"/>
+			<doc-sources path-element="${basedir}/src"/>
+		</asdoc>
+		
+		<echo message="Expanding SWC file with ASDoc"/>
+		
+		<zip destfile="${basedir}/bin/${ant.project.name}_${YOGURT3D_VERSION}.swc" update="true">
+		    <zipfileset dir="${basedir}/asdoc-output/tempdita" prefix="docs">
+		    	<include name="*.xml"/>
+		    	<include name="*.dite"/>
+				<exclude name="ASDoc_Config.xml"/>
+				<exclude name="overviews.xml"/>
+		    </zipfileset>
+		</zip>
+		<echo message="Backing up SWC file into rar"/>
+		<zip destfile="${basedir}/bin/${ant.project.name}_${YOGURT3D_VERSION}_src.zip"  update="true">
+					<zipfileset dir="${basedir}/bin" prefix="bin">
+						<include name="*.swc"/>
+					</zipfileset>
+					<zipfileset dir="${basedir}/src" prefix="src">
+					</zipfileset>
+				</zip>
+		<zip destfile="${basedir}/bin/${ant.project.name}_${YOGURT3D_VERSION}_bin.zip"  update="true">
+					<zipfileset dir="${basedir}/bin">
+						<include name="*.swc"/>
+					</zipfileset>
+				</zip>
+		<copy file="${basedir}/bin/${ant.project.name}_${YOGURT3D_VERSION}.swc" tofile="${basedir}/bin/y3d_v2_molehill.swc"/>
+		
+	</target>
+
+	<target name="post-cleanup" depends="doc">
+		<delete failonerror="false">
+			<fileset dir="${basedir}/bin">
+				<include name="${ant.project.name}_${YOGURT3D_VERSION}.swc"/>
+			</fileset>
+		</delete>
+		<delete dir="${basedir}/asdoc-output/tempdita" failonerror="false" includeEmptyDirs="true"/>
+	</target>
+	<target name="clean-temp-docs">
+		<echo message="Cleaning ASDoc folder"/>
+		<delete dir="${basedir}/asdoc-output/" failonerror="false" includeEmptyDirs="true"/>
+	</target>
+
+</project>
+
+

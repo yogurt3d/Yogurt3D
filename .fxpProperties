@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<fxpProperties abbreviated="false" authoringTool="Flex Builder" parentProject="79018227-abe2-40be-bcc1-4e0cb943bf03" projectUUID="19889823-7945-4464-9035-1c38bc883c21" sdkVersion="4.1.0" uuid="a5697d06-d79e-46c6-ae40-f091bf9b6cc5" version="9">
+  <projects/>
+  <src/>
+  <swc>
+    <linked location="sdkPlaceHolder" path="sdkPlaceHolder" position="0" uuid="a5697d06-d79e-46c6-ae40-f091bf9b6cc5"/>
+    <linked location="D:/workspace_burrito/y3d_v2_molehill/clib/triangleprocessor_pick.swc" path="/clib/triangleprocessor_pick.swc" position="1" uuid="a5697d06-d79e-46c6-ae40-f091bf9b6cc5"/>
+  </swc>
+  <misc/>
+  <theme/>
+  <mxmlFormattingPrefs groupAttributesByState="true" maxLineWidth="100" mxmlAlignAttributes="true" mxmlAttributeOrder="id,userLabel,includeIn,excludeFrom,visible,x,y,z,left,right,top,bottom,width,height,minWidth,minHeight,maxWidth,maxHeight,label" mxmlKeepAttributeValuesOrganized="true"/>
+</fxpProperties>
