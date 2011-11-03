@@ -71,12 +71,8 @@ package com.yogurt3d.core.materials.shaders
 
 			attributes.push( EVertexAttribute.POSITION, EVertexAttribute.UV );
 		
-			var _vertexShaderConsts:ShaderConstants 	= new ShaderConstants();
-			_vertexShaderConsts.type 					= EShaderConstantsType.SPRITE_MATRIX;
-			_vertexShaderConsts.firstRegister 			= 0;// vc8
-			params.vertexShaderConstants.push(_vertexShaderConsts);
-			
-
+			params.vertexShaderConstants.push(new ShaderConstants(0, EShaderConstantsType.SPRITE_MATRIX));
+	
 			// fc0: color + alpha : 
 			_colorShaderConstants						= new ShaderConstants();
 			_colorShaderConstants.type 					= EShaderConstantsType.CUSTOM_VECTOR;

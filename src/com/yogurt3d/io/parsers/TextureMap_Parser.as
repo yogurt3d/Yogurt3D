@@ -36,7 +36,7 @@ package com.yogurt3d.io.parsers
 		{
 		}
 		
-		public function parse(_value:*, verbose:Boolean=false, split:Boolean=true):*
+		public function parse(_value:*, split:Boolean=true):*
 		{
 			var texture:TextureMap;
 			

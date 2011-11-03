@@ -26,6 +26,7 @@ package com.yogurt3d.core.materials.posteffects
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DProgramType;
 	import flash.geom.Matrix3D;
+	import flash.geom.Rectangle;
 	import flash.geom.Vector3D;
 	import flash.utils.ByteArray;
 	
@@ -157,7 +158,7 @@ package com.yogurt3d.core.materials.posteffects
 		}
 		
 		
-		public override function setShaderConstants(_context3D:Context3D, _viewport:Viewport):void{
+		public override function setShaderConstants(_context3D:Context3D, _viewport:Rectangle):void{
 			m_currentContext3D = _context3D;
 			_context3D.setProgramConstantsFromMatrix(Context3DProgramType.FRAGMENT, 0,  m_colorCube);
 		}

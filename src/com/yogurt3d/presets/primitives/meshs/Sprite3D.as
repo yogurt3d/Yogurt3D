@@ -24,8 +24,6 @@ package com.yogurt3d.presets.primitives.meshs
 	import com.yogurt3d.core.managers.idmanager.IDManager;
 	
 	import flash.display.*;
-	
-	import mx.rpc.events.HeaderEvent;
 	/**
 	 * 
 	 * 

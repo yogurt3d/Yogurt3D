@@ -119,7 +119,6 @@
     <classEntry path="com.yogurt3d.presets.primitives.sceneobjects.SphereSceneObject"/>
     <classEntry path="com.yogurt3d.presets.primitives.sceneobjects.TorusKnotSceneObject"/>
     <classEntry path="com.yogurt3d.presets.primitives.sceneobjects.TorusSceneObject"/>
-    <classEntry path="com.yogurt3d.presets.primitives.test.TestTriangleMesh"/>
     <classEntry path="com.yogurt3d.presets.primitives.test.TestTriangleObject"/>
     <classEntry path="com.yogurt3d.presets.renderers.helper.IRendererHelper"/>
     <classEntry path="com.yogurt3d.presets.renderers.helper.Yogurt3DRendererHelper"/>

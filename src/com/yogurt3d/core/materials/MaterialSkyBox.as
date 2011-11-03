@@ -95,7 +95,7 @@ internal class ShaderSkyBox extends Shader
 		requiresLight				= false;
 		requiresShadowCastingLight  = false;
 
-		attributes.push(EVertexAttribute.POSITION );
+		attributes.push( EVertexAttribute.POSITION );
 
 		var _vertexShaderConsts:ShaderConstants;
 		

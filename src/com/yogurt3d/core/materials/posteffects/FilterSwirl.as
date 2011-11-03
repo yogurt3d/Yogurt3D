@@ -8,6 +8,7 @@ package com.yogurt3d.core.materials.posteffects
 	
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DProgramType;
+	import flash.geom.Rectangle;
 	import flash.utils.ByteArray;
 	
 	public class FilterSwirl extends Filter
@@ -136,7 +137,7 @@ package com.yogurt3d.core.materials.posteffects
 			m_effect = _value;
 		}
 		
-		public override function setShaderConstants(_context3D:Context3D, view:Viewport):void{
+		public override function setShaderConstants(_context3D:Context3D, view:Rectangle):void{
 			
 			_context3D.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0,  Vector.<Number>([m_width, m_height, m_radius, m_angle]));
 			_context3D.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 1,  Vector.<Number>([m_centerX, m_centerY, m_effect, 1.0]));

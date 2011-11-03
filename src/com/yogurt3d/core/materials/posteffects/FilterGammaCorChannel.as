@@ -7,6 +7,7 @@ package com.yogurt3d.core.materials.posteffects
 	
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DProgramType;
+	import flash.geom.Rectangle;
 	import flash.geom.Vector3D;
 	import flash.utils.ByteArray;
 	
@@ -84,7 +85,7 @@ package com.yogurt3d.core.materials.posteffects
 			m_gammaB = _value;
 		}
 		
-		public override function setShaderConstants(_context3D:Context3D, _viewport:Viewport):void{
+		public override function setShaderConstants(_context3D:Context3D, _viewport:Rectangle):void{
 			_context3D.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0,  Vector.<Number>([0.5, 0.5, 0.0, 1.0]));
 			_context3D.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 1,  Vector.<Number>([m_gammaR, m_gammaG, m_gammaB, 1.0]));
 		}

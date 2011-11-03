@@ -29,6 +29,7 @@ package com.yogurt3d.core.materials
 	import com.yogurt3d.core.texture.TextureMap;
 	
 	import flash.display3D.Context3DBlendFactor;
+	import flash.display3D.Context3DCompareMode;
 	import flash.geom.Point;
 	
 	/**
@@ -46,10 +47,10 @@ package com.yogurt3d.core.materials
 		private var m_fresnelPower:uint;
 		private var m_reflectivityMap:TextureMap;
 		
-		//		public  var decal:ShaderTexture;
+		public  var decal:ShaderTexture;
 		private var m_envShader:ShaderEnvMapFresnel;
-		//		private var m_ambShader:ShaderAmbient;
-		//		private var m_diffShader:ShaderDiffuse;
+		private var m_ambShader:ShaderAmbient;
+		private var m_diffShader:ShaderDiffuse;
 		
 		public function MaterialEnvMapFresnel( _envMap:CubeTextureMap=null, 
 											   _colorMap:TextureMap=null,
@@ -74,20 +75,21 @@ package com.yogurt3d.core.materials
 			m_fresnelReflectance = _fresnelReflectance;
 			m_fresnelPower = _fresnelPower;
 			
-			//			shaders.push(m_ambShader = new ShaderAmbient());
-			//			shaders.push(m_diffShader = new ShaderDiffuse());
+			shaders.push(m_ambShader = new ShaderAmbient());
+			shaders.push(m_diffShader = new ShaderDiffuse());
 			
-			m_envShader = new ShaderEnvMapFresnel(m_envMap, m_colorMap, m_normalMap, 
+			m_envShader = new ShaderEnvMapFresnel(m_envMap, null, m_normalMap, 
 				m_reflectivityMap, m_alpha,
 				m_fresnelReflectance, m_fresnelPower );
 			
-			//			if(m_colorMap != null){
-			//				decal = new ShaderTexture(m_colorMap);
-			//				decal.params.blendEnabled = true;
-			//				decal.params.blendSource = Context3DBlendFactor.DESTINATION_COLOR;
-			//				decal.params.blendDestination = Context3DBlendFactor.ZERO;
-			//				shaders.push(decal);
-			//			}
+			if(m_colorMap != null){
+				decal = new ShaderTexture(m_colorMap);
+				decal.params.blendEnabled = true;
+				decal.params.blendSource = Context3DBlendFactor.DESTINATION_COLOR;
+				decal.params.blendDestination = Context3DBlendFactor.ZERO;
+				decal.params.depthFunction = Context3DCompareMode.EQUAL;
+				shaders.push(decal);
+			}
 			shaders.push(m_envShader);
 		}
 		
@@ -166,7 +168,7 @@ package com.yogurt3d.core.materials
 		
 		public override function set opacity(value:Number):void{
 			super.opacity = value;	
-			//m_ambShader.opacity = value;
+			m_ambShader.opacity = value;
 		}
 		
 	}

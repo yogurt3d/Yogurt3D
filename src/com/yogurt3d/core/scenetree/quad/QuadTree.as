@@ -23,7 +23,10 @@ package com.yogurt3d.core.scenetree.quad
 		public function insert( _sceneObject:ISceneObjectRenderable ):void{
 			var min:Vector3D = _sceneObject.geometry.axisAlignedBoundingBox.min;
 			var max:Vector3D = _sceneObject.geometry.axisAlignedBoundingBox.max;
-			trace("[QuadNode](insert)",min,max);
+			Y3DCONFIG::TRACE
+			{
+				trace("[QuadNode](insert)",min,max);
+			}
 			root.insert( _sceneObject );
 		}
 		public function retrieve( _bound:Rectangle ):Vector.<ISceneObjectRenderable>{

@@ -55,11 +55,11 @@ package com.yogurt3d.io.parsers {
 		 * @param verbose File header info is printed when this is set to true.
 		 *
 		 */	
-		public function parse(_data:*, verbose:Boolean = false, split:Boolean = true):*
+		public function parse(_data:*, split:Boolean = true):*
 		{
 			if(_data is ByteArray)
 			{
-				return parseByteArray(_data,verbose, split);
+				return parseByteArray(_data, split);
 			}
 		}
 		/**
@@ -68,7 +68,7 @@ package com.yogurt3d.io.parsers {
 		 * @param verbose File header info is printed when this is set to true.
 		 * 
 		 */				
-		private function parseByteArray(_value:ByteArray, verbose:Boolean = false, split:Boolean = true):*
+		private function parseByteArray(_value:ByteArray, split:Boolean = true):*
 		{
 			var _dataType				:int;
 			var _exportType				:String;	
@@ -95,9 +95,9 @@ package com.yogurt3d.io.parsers {
 				var version:uint = _value.readShort();
 				if( version == 2 )
 				{
-					return parseY3dFormat2( _value, verbose, split );
+					return parseY3dFormat2( _value, split );
 				}else if( version == 3){
-					return parseY3dFormat3( _value, verbose, split );
+					return parseY3dFormat3( _value, split );
 				}
 			}
 			
@@ -112,11 +112,11 @@ package com.yogurt3d.io.parsers {
 			switch(_dataType)
 			{
 				case INANIMATE_MESH_DATA:					
-					return parseByteArrayAsOldInanimate( _value, verbose );
+					return parseByteArrayAsOldInanimate( _value );
 				break;
 				
 				case ANIMATED_MESH_DATA:
-					return parseByteArrayAsOldAnimated( _value, verbose );
+					return parseByteArrayAsOldAnimated( _value );
 				break;
 			}
 		}
@@ -127,7 +127,7 @@ package com.yogurt3d.io.parsers {
 		 * @return 
 		 * 
 		 */
-		private function parseY3dFormat3( _value:ByteArray, verbose:Boolean = false, split:Boolean =  true ):*{
+		private function parseY3dFormat3( _value:ByteArray, split:Boolean =  true ):*{
 			
 			var _verticesData			:Vector.<Number>;
 			var _indicesData			:Vector.<uint>;
@@ -155,7 +155,7 @@ package com.yogurt3d.io.parsers {
 			if( type == INANIMATE_MESH_DATA )
 			{
 				
-				if( verbose )
+				Y3DCONFIG::TRACE
 				{
 					trace("Yogurt3D Mesh File V3");
 					trace("Exporter:", exporter);
@@ -233,7 +233,7 @@ package com.yogurt3d.io.parsers {
 			{
 				var boneCount:int = _value.readShort();
 				
-				if( verbose )
+				Y3DCONFIG::TRACE
 				{
 					trace("Yogurt3D Animated Mesh File");
 					trace("Exporter:", exporter);
@@ -357,7 +357,7 @@ package com.yogurt3d.io.parsers {
 		 * @return 
 		 * 
 		 */
-		private function parseY3dFormat2( _value:ByteArray, verbose:Boolean = false, split:Boolean =  true ):*{
+		private function parseY3dFormat2( _value:ByteArray, split:Boolean =  true ):*{
 			
 			var _verticesData			:Vector.<Number>;
 			var _indicesData			:Vector.<uint>;
@@ -382,7 +382,7 @@ package com.yogurt3d.io.parsers {
 			if( type == INANIMATE_MESH_DATA )
 			{
 				
-				if( verbose )
+				Y3DCONFIG::TRACE
 				{
 					trace("Yogurt3D Mesh File V2");
 					trace("Exporter:", exporter);
@@ -447,7 +447,7 @@ package com.yogurt3d.io.parsers {
 			{
 				var boneCount:int = _value.readShort();
 				
-				if( verbose )
+				Y3DCONFIG::TRACE
 				{
 					trace("Yogurt3D Animated Mesh File");
 					trace("Exporter:", exporter);
@@ -557,7 +557,7 @@ package com.yogurt3d.io.parsers {
 		 * @param verbose 	Prints file header info when set to true.
 		 * @return 	SkeletalAnimatedGPUMesh object containing the animated mesh data.
 		 */		
-		private function parseByteArrayAsOldAnimated( _value:ByteArray, _verbose:Boolean = false) :*{
+		private function parseByteArrayAsOldAnimated( _value:ByteArray ) :*{
 			
 			
 			var _verticesData			:Vector.<Number>;
@@ -609,7 +609,7 @@ package com.yogurt3d.io.parsers {
 			_uvtData					= new Vector.<Number>(_textureCoordCount * 2);
 			
 			
-			if( _verbose )
+			Y3DCONFIG::TRACE
 			{
 				trace("Yogurt3D Animated Mesh File");
 				trace("Version:", 1);
@@ -785,7 +785,7 @@ package com.yogurt3d.io.parsers {
 			_indicesData						= new Vector.<uint>(_indicesCount);
 			_uvtData							= new Vector.<Number>(_textureCoordCount * 2);
 			
-			if( verbose )
+			Y3DCONFIG::TRACE
 			{
 				trace("Yogurt3D Mesh File");
 				trace("Version:", 1);

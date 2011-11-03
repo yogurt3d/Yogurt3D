@@ -8,6 +8,7 @@ package com.yogurt3d.core.materials.posteffects
 	
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DProgramType;
+	import flash.geom.Rectangle;
 	import flash.utils.ByteArray;
 	
 	public class FilterBlur extends Filter
@@ -151,7 +152,7 @@ package com.yogurt3d.core.materials.posteffects
 			
 		}
 		
-		public override function setShaderConstants(_context3D:Context3D, _viewport:Viewport):void{
+		public override function setShaderConstants(_context3D:Context3D, _viewport:Rectangle):void{
 			
 			//trace((1/PostEffect.width as Number), (1/PostEffect.height as Number));
 			

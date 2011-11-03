@@ -359,6 +359,10 @@ package com.yogurt3d.presets.renderers.helper
 						setProgramConstantsFromVector( 	Context3DProgramType.FRAGMENT, _shaderConstants.firstRegister, _light.color.getColorVector(), 1);
 						break;	
 					
+					case EShaderConstantsType.LIGHT_SHADOW_COLOR:
+						setProgramConstantsFromVector( 	Context3DProgramType.FRAGMENT, _shaderConstants.firstRegister, _light.shadowColor.getColorVector(), 1);
+						break;	
+					
 					case EShaderConstantsType.MVP:
 						setProgramConstantsFromMatrix( 	Context3DProgramType.FRAGMENT, _shaderConstants.firstRegister, m_modelViewProjectionMatrix, false);
 						break;

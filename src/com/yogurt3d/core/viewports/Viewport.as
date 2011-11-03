@@ -178,8 +178,11 @@ package com.yogurt3d.core.viewports {
 			graphics.endFill();
 			
 			
+			Y3DCONFIG::TRACE
+			{
+				trace("[Viewport "+m_viewportID+"] x: ", point.x, "y: ", point.y, "width: ", _width, "height: ", _height);
+			}
 			
-			trace("[Viewport "+m_viewportID+"] x: ", point.x, "y: ", point.y, "width: ", _width, "height: ", _height);
 			Yogurt3D.STAGE.stage3Ds[m_viewportID].x = point.x;
 			Yogurt3D.STAGE.stage3Ds[m_viewportID].y = point.y;
 
@@ -199,10 +202,10 @@ package com.yogurt3d.core.viewports {
 				m_context.configureBackBuffer(_width, _height, m_antiAliasing,true);
 		}
 		
-		public override function set visible(value:Boolean):void{
+		/*public override function set visible(value:Boolean):void{
 			super.visible = value;
 			Yogurt3D.STAGE.stage3Ds[m_viewportID].visible = value;
-		}
+		}*/
 
 		/**
 		 * 
@@ -270,12 +273,22 @@ package com.yogurt3d.core.viewports {
 			{
 				m_viewportID = viewports.shift();
 				m_context = Yogurt3D.CONTEXT3D[m_viewportID];
-				m_context.enableErrorChecking = true;
+				
+				Y3DCONFIG::RELEASE
+				{
+					m_context.enableErrorChecking = false;
+				}
+				Y3DCONFIG::DEBUG
+				{
+					m_context.enableErrorChecking = true;
+				}
+				Y3DCONFIG::TRACE
+				{
+					trace("Y3D Driver:", m_context.driverInfo);
+				}
 			}else{
 				throw new Error("Maximum 3 viewports are supported. You must dispose before creating a new one.");
 			}
-			
-			
 			
 			if (_enableMouseManager) {
 				m_pickManager = new PickManager( this );

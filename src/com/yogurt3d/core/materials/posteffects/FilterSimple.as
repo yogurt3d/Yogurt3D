@@ -7,6 +7,7 @@ package com.yogurt3d.core.materials.posteffects
 	
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DProgramType;
+	import flash.geom.Rectangle;
 	import flash.utils.ByteArray;
 
 	public class FilterSimple extends Filter
@@ -47,7 +48,7 @@ package com.yogurt3d.core.materials.posteffects
 			);
 		}
 		
-		public override function setShaderConstants(_context3D:Context3D, view:Viewport):void{
+		public override function setShaderConstants(_context3D:Context3D, view:Rectangle):void{
 	
 			_context3D.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0,  Vector.<Number>([m_color[0], m_color[1], m_color[2], m_color[3]]));
 		}

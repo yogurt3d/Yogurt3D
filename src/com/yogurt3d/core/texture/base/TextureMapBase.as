@@ -26,6 +26,16 @@ package com.yogurt3d.core.texture.base
 			m_type = type;
 		}
 		
+		public function get height():uint
+		{
+			return YOGURT3D_INTERNAL::m_height;
+		}
+
+		public function get width():uint
+		{
+			return YOGURT3D_INTERNAL::m_width;
+		}
+
 		public function get type():ETextureType
 		{
 			return YOGURT3D_INTERNAL::m_type;

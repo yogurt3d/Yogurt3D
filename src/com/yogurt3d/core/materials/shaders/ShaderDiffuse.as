@@ -209,7 +209,7 @@ package com.yogurt3d.core.materials.shaders
 			return super.getProgram( _context3D, _lightType, _meshType );
 		}
 		
-				public override function getVertexProgram(_meshKey:String, _lightType:ELightType = null):ByteArray{
+		public override function getVertexProgram(_meshKey:String, _lightType:ELightType = null):ByteArray{
 			if( _meshKey == "SkinnedMesh")
 			{
 				var assembler:AGALMiniAssembler = new AGALMiniAssembler();

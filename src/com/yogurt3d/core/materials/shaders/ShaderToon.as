@@ -48,7 +48,7 @@ package com.yogurt3d.core.materials.shaders
 		public function ShaderToon(_color:uint, 
 								   _contourColor:uint = 0x000000,
 								   _contourThickness:Number=0.3,
-								   _opacity:Number = 1)
+								   _opacity:Number = 1.0)
 		{
 			super();
 			
@@ -56,7 +56,7 @@ package com.yogurt3d.core.materials.shaders
 			
 			requiresLight				= true;
 
-			attributes.push( EVertexAttribute.POSITION, EVertexAttribute.NORMAL );
+			attributes.push( EVertexAttribute.POSITION, EVertexAttribute.NORMAL, EVertexAttribute.BONE_DATA );
 			
 			params.writeDepth 		= true;
 			
@@ -66,10 +66,9 @@ package com.yogurt3d.core.materials.shaders
 			params.culling			= Context3DTriangleFace.FRONT;
 			
 			// Shader Parameters
-			var _vertexShaderConsts:ShaderConstants;			
 			params.vertexShaderConstants.push(new ShaderConstants(0, EShaderConstantsType.MVP_TRANSPOSED));
-			
 			params.vertexShaderConstants.push(new ShaderConstants(4, EShaderConstantsType.MODEL_TRANSPOSED));
+			params.vertexShaderConstants.push(new ShaderConstants(8, EShaderConstantsType.BONE_MATRICES));
 			
 			
 			var _fragmentShaderConsts:ShaderConstants;
@@ -151,7 +150,25 @@ package com.yogurt3d.core.materials.shaders
 			colorConst.vector[2] = (_val & 255) / 255;
 		}
 		
-				public override function getVertexProgram(_meshKey:String, _lightType:ELightType = null):ByteArray{
+		public override function getVertexProgram(_meshKey:String, _lightType:ELightType = null):ByteArray{
+			
+			
+			if( _meshKey == "SkinnedMesh")
+			{
+				var assembler:AGALMiniAssembler = new AGALMiniAssembler();
+				
+				var code:String = ShaderUtils.getSkeletalAnimationVertexShader( 
+					0, 0, 1, 
+					2, 4, 
+					0, 4, 8, 
+					0, false, false, false  );
+				
+				code += "mov v" + 0 +".xyzw, vt0.xyzw\n";
+				code += "mov v" + 1 + ".xyzw, vt1.xyzw\n";
+				
+				
+				return assembler.assemble(Context3DProgramType.VERTEX, 	code );
+			}
 		
 			var _vertexShader:String = [
 				

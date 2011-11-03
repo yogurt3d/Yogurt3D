@@ -38,11 +38,12 @@ package com.yogurt3d.core.materials
 															  _normalMap:TextureMap=null,
 															  _specularMap:TextureMap=null,
 															  _reflectivityMap:TextureMap=null,
-															  _alpha:Number=1.0,
+															  _alpha:Number=1.0,_opacity:Number=1.0,
 															  _initInternals:Boolean=true)
 		{
 			super(_initInternals);
 			
+			super.opacity = _opacity;
 			m_envMap = _envMap;		
 			m_colorMap = _colorMap;
 			m_alpha = _alpha;
@@ -50,7 +51,7 @@ package com.yogurt3d.core.materials
 			m_reflectivityMap = _reflectivityMap;
 			
 			m_envShader = new ShaderEnvMapping(_envMap, _normalMap, null, m_alpha);
-			m_ambShader = new ShaderAmbient();
+			m_ambShader = new ShaderAmbient(_opacity);
 			
 			shaders = new Vector.<com.yogurt3d.core.materials.shaders.base.Shader>;
 			
@@ -166,6 +167,7 @@ package com.yogurt3d.core.materials
 		public override function set opacity(value:Number):void{
 			super.opacity = value;
 			m_ambShader.opacity = value;
+			m_envShader.alpha = value;
 		}
 	
 	}

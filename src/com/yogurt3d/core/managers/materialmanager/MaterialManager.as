@@ -50,14 +50,20 @@ package com.yogurt3d.core.managers.materialmanager
 			}else{
 				shaderCount[_key] = 1;
 			}
-			//trace("[REGISTER]", _key, "count:", shaderCount[_key] );
+			Y3DCONFIG::TRACE
+			{
+				trace("[REGISTER]", _key, "count:", shaderCount[_key] );
+			}
 		}
 		
 		public static function unregisterShader( _key:String ):void{
 			
 			if( shaderCount[_key] == 1 )
 			{
-				//trace("[DELETE]", _key);
+				Y3DCONFIG::TRACE
+				{
+					trace("[DELETE]", _key);
+				}
 				delete shaderSourceDict[ _key ];
 				if( programDict[_key] )
 				{
@@ -70,7 +76,10 @@ package com.yogurt3d.core.managers.materialmanager
 				delete shaderCount[_key];
 			}else{
 				shaderCount[_key] -= 1;
-				//trace("[UNREGISTER]", _key, "count:", shaderCount[_key] );
+				Y3DCONFIG::TRACE
+				{
+					trace("[UNREGISTER]", _key, "count:", shaderCount[_key] );
+				}
 			}
 			
 		}
@@ -79,7 +88,10 @@ package com.yogurt3d.core.managers.materialmanager
 			if( programDict[_key ] == null || programDict[_key][_context] == null )
 			{
 				if( shaderSourceDict[_key] == null ) return null;
-				//trace("[CREATE]", _key);
+				Y3DCONFIG::TRACE
+				{
+					trace("[CREATE]", _key);
+				}
 				var program:Program3D = _context.createProgram();
 				program.upload( shaderSourceDict[ _key ].vert, shaderSourceDict[ _key ].frag);
 				if( programDict[_key ] == null )

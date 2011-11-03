@@ -41,7 +41,6 @@ package com.yogurt3d.core.materials
 		private var m_colorMap:TextureMap;
 		private var m_normalMap:TextureMap;
 		private var m_alpha:Number;
-		private var m_alphaAmbient:Number;
 		private var m_reflectivityMap:TextureMap;
 		public  var m_decalShader:ShaderTexture;
 
@@ -50,11 +49,10 @@ package com.yogurt3d.core.materials
 		private var m_diffShader:ShaderDiffuse;
 		
 		public function MaterialEnvMapDiffuseTexture( _envMap:CubeTextureMap, 
-									    _colorMap:TextureMap=null,
+									    _colorMap:TextureMap,
 									    _normalMap:TextureMap=null,
 										_reflectivityMap:TextureMap=null,
 									    _alpha:Number=1.0,
-									    _alphaAmbient:Number=1.0,
 										_opacity:Number=1.0,
 									    _initInternals:Boolean=true)
 		{
@@ -66,11 +64,11 @@ package com.yogurt3d.core.materials
 			m_colorMap = _colorMap;
 			m_normalMap = _normalMap;
 			m_alpha = _alpha;
-			m_alphaAmbient = _alphaAmbient;
 			m_reflectivityMap = _reflectivityMap;
 			
 			m_envShader = new ShaderEnvMapping(m_envMap, m_normalMap, m_reflectivityMap, m_alpha);
 			m_ambShader = new ShaderAmbient();
+			m_ambShader.opacity = _opacity;
 			m_diffShader = new ShaderDiffuse();
 			
 			shaders = new Vector.<com.yogurt3d.core.materials.shaders.base.Shader>;
@@ -78,15 +76,20 @@ package com.yogurt3d.core.materials
 			shaders.push(m_ambShader);
 			shaders.push(m_diffShader);
 			
-			if(m_colorMap != null){
-				m_decalShader = new ShaderTexture(m_colorMap);
-				m_decalShader.params.blendEnabled = true;
-				m_decalShader.params.blendSource = Context3DBlendFactor.DESTINATION_COLOR;
-				m_decalShader.params.blendDestination = Context3DBlendFactor.ZERO;
-				m_decalShader.params.depthFunction = Context3DCompareMode.EQUAL;
-				shaders.push(m_decalShader);
-			}
+			
+			m_decalShader = new ShaderTexture(m_colorMap);
+			m_decalShader.params.blendEnabled = true;
+			m_decalShader.params.blendSource = Context3DBlendFactor.DESTINATION_COLOR;
+			m_decalShader.params.blendDestination = Context3DBlendFactor.ZERO;
+			m_decalShader.params.depthFunction = Context3DCompareMode.EQUAL;
+			shaders.push(m_decalShader);
+		
 			shaders.push(m_envShader);
+		}
+		
+		public override function set opacity(_value:Number):void{
+			m_ambShader.opacity = _value;
+		
 		}
 		
 		
@@ -148,14 +151,6 @@ package com.yogurt3d.core.materials
 		public function set alpha(_value:Number):void{
 			m_envShader.alpha = _value;
 			m_alpha = _value;
-		}
-		
-		public function get alphaAmbient():Number{
-			return m_alphaAmbient;	
-		}
-		public function set alphaAmbient(_value:Number):void{
-			m_ambShader.opacity = _value;
-			m_alphaAmbient = _value;
 		}
 		
 		public function get reflectivityMap():TextureMap

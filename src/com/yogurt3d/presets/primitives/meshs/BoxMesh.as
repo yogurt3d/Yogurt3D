@@ -24,9 +24,7 @@ package com.yogurt3d.presets.primitives.meshs
 	import com.yogurt3d.core.managers.idmanager.IDManager;
 	
 	import flash.display.*;
-	
-	import mx.rpc.events.HeaderEvent;
-/**
+	/**
 	 * 
 	 * 
  	 * @author Yogurt3D Engine Core Team
@@ -37,7 +35,6 @@ package com.yogurt3d.presets.primitives.meshs
 		public function BoxMesh( _width:Number = 10.0, _height:Number = 10.0, _length:Number = 10.0, _widthSegments:int = 5, _heightSegments:int = 5, _lengthSegments:int = 5 )
 		{
 			super();
-			
 			createBox( _width, _height, _length, _widthSegments, _heightSegments, _lengthSegments);
 		}
 		

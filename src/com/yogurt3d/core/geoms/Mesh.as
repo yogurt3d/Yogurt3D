@@ -17,22 +17,14 @@
  */
  
 package com.yogurt3d.core.geoms {
-	import com.yogurt3d.Yogurt3D;
 	import com.yogurt3d.core.geoms.interfaces.IMesh;
 	import com.yogurt3d.core.helpers.boundingvolumes.AxisAlignedBoundingBox;
 	import com.yogurt3d.core.helpers.boundingvolumes.BoundingSphere;
 	import com.yogurt3d.core.managers.idmanager.IDManager;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.objects.EngineObject;
-	import com.yogurt3d.core.objects.interfaces.IEngineObject;
 	
-	import flash.display3D.Context3D;
-	import flash.display3D.IndexBuffer3D;
-	import flash.display3D.VertexBuffer3D;
 	import flash.geom.Vector3D;
-	import flash.utils.Dictionary;
-	
-	import mx.states.OverrideBase;
 	
 	use namespace YOGURT3D_INTERNAL;
 	/**

@@ -47,7 +47,7 @@ package com.yogurt3d.io.parsers
 		 * @param verbose File header info is printed when this is set to true.
 		 * @return SkeletalAnimationGPUData object having the animation data.
 		 */	
-		public function parse(_data:*, verbose:Boolean = false, balabala:Boolean = true):*
+		public function parse(_data:*, balabala:Boolean = true):*
 		{
 			if(_data is ByteArray)
 			{
@@ -63,9 +63,9 @@ package com.yogurt3d.io.parsers
 				ByteArray(_data).position = 0;
 				if( short != 8 )
 				{
-					return parseByteArrayOld(_data, verbose );
+					return parseByteArrayOld(_data );
 				}else{
-					return parseByteArray( _data, verbose );
+					return parseByteArray( _data );
 				}
 				
 			}
@@ -77,7 +77,7 @@ package com.yogurt3d.io.parsers
 		 * @param verbose File header info is printed when this is set to true.
 		 * 
 		 */	
-		private function parseByteArray(_value:ByteArray, _verbose:Boolean = false):*
+		private function parseByteArray(_value:ByteArray):*
 		{
 			var _exportType:String = _value.readMultiByte( _value.readShort() * 2,"utf-16");
 			var _version:int        = _value.readShort();
@@ -89,7 +89,7 @@ package com.yogurt3d.io.parsers
 			var _frameCount:int	   = _value.readShort();
 			var _frameRate:int	   = _value.readShort();
 			
-			if( _verbose )
+			Y3DCONFIG::TRACE
 			{
 				trace("Yogurt3D Animation File");
 				trace("Version:", _version);
@@ -130,7 +130,7 @@ package com.yogurt3d.io.parsers
 		 * @param verbose File header info is printed when this is set to true.
 		 * 
 		 */	
-		private function parseByteArrayOld(_value:ByteArray, verbose:Boolean = false):*
+		private function parseByteArrayOld(_value:ByteArray):*
 		{
 			_value.position		= 0;
 			_value.endian		= Endian.LITTLE_ENDIAN;

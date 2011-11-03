@@ -65,10 +65,17 @@ package com.yogurt3d.core.lights
 		
 		private var m_direction			:Vector3D;
 		private var m_attenuation		:Vector.<Number>;
+
+		private var m_range             :Number;
 		
 		private var m_castShadows		:Boolean					= false;
-		
 		private var m_shadowMap			:RenderTextureTarget;
+		private var m_shadowMap2		:RenderTextureTarget;
+		private var m_shadowColor		:Color;
+		
+		private var m_isFilteringOn      :Boolean                  = true;
+		
+		
 		
 		private var m_innerConeAngle	: Number;
 		private var m_outerConeAngle	: Number;
@@ -106,9 +113,12 @@ package com.yogurt3d.core.lights
 			
 			innerConeAngle = 40;
 			outerConeAngle = 60;
+			m_range = 150;
 			
 			m_color = new Color(0,0,0);
 			m_color.setColorUint( 0xFF000000 | _color );
+			
+			m_shadowColor = new Color(0,0,0,1);
 			
 			m_direction = new Vector3D();
 			intensity = _intensity;
@@ -116,16 +126,58 @@ package com.yogurt3d.core.lights
 			setProjection();			
 		}
 		
+		/**
+		 * Changes shadow color and alpha
+		 * @return 
+		 * 
+		 */		
+		public function get shadowColor():Color
+		{
+			return m_shadowColor;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set shadowColor(value:Color):void
+		{
+			if( value != null )
+			{
+				m_shadowColor = value;
+			}
+		}
+
 		public function get color():Color{
 			return m_color;
 		}
 		
 		public function set color( _color:Color):void
 		{
-			m_color = _color;
+			if( _color != null )
+			{
+				m_color = _color;
+			}
 		}
 		
+		public function get isFilteringOn():Boolean
+		{
+			return m_isFilteringOn;
+		}
 		
+		public function set isFilteringOn(_value:Boolean):void
+		{
+			m_isFilteringOn = _value;
+		}
+		
+		public function get range():Number{
+			return m_range;
+		}
+		
+		public function set range( _range:Number):void
+		{
+			m_range = _range;
+			//setProjection();
+		}
 		/**
 		 * @inheritDoc   
 		 * @return 
@@ -173,6 +225,12 @@ package com.yogurt3d.core.lights
 			{
 				m_shadowMap.dispose();
 				m_shadowMap = null;
+			}
+			
+			if( m_shadowMap2 )
+			{
+				m_shadowMap2.dispose();
+				m_shadowMap2 = null;
 			}
 			
 			setProjection();
@@ -270,17 +328,21 @@ package com.yogurt3d.core.lights
 		{
 			if(!m_shadowMap)
 			{
-				if(m_type == ELightType.SPOT || m_type == ELightType.DIRECTIONAL )
-				{
-					m_shadowMap = new RenderTextureTarget(1024,512);
-				}
-				else if (m_type == ELightType.POINT)
-				{
-					// create cube maps - not implemented yet
-				}
+				m_shadowMap = new RenderTextureTarget(1024,1024);
 			}
 			return m_shadowMap;
 		}
+		
+		public function get shadowMap2():RenderTextureTarget
+		{
+			if(!m_shadowMap2 && m_type == ELightType.POINT )
+			{
+				m_shadowMap2 = new RenderTextureTarget(1024,1024);
+			}
+			return m_shadowMap2;
+		}
+		
+		
 		/**
 		 * @private
 		 * @param value
@@ -289,6 +351,11 @@ package com.yogurt3d.core.lights
 		public function set shadowMap(value:RenderTextureTarget):void
 		{
 			m_shadowMap = value;
+		}
+		
+		public function set shadowMap2(value:RenderTextureTarget):void
+		{
+			m_shadowMap2 = value;
 		}
 		
 		/**
@@ -349,44 +416,37 @@ package com.yogurt3d.core.lights
 		 * sets the projection matrix of the light according to light type and the outer angle 
 		 * is used for shadow map generation
 		 */
-		private function setProjection():void{
+		public function setProjection():void{
 			if (m_type == ELightType.SPOT){
-				setProjectionPerspective( outerConeAngle, 1.0, 5, 100.0 );
-			}
-		}
-		
-		
-		
-		YOGURT3D_INTERNAL function setProjectionf():void{
-			
-			var temp:Matrix3D = MatrixUtils.TEMP_MATRIX;
-			temp.copyFrom( transformation.matrixGlobal );
-			temp.position = new Vector3D(0,0,0);
-			temp.invert();
-			
-			//var _x :Vector.<Number> = this.directionVector;
-			
-			var _min :Vector3D = new Vector3D(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
-			var _max :Vector3D = new Vector3D(Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
-			var corner:Vector3D;
-			//var corns:ISceneObjectContainer = Scene(scene).m_rootObject;
-			//trace(Scene(scene).m_rootObject.axisAlignedBoundingBox.min, Scene(scene).m_rootObject.axisAlignedBoundingBox.max);
-			var corners:Vector.<Vector3D> = Scene(scene).m_rootObject.axisAlignedBoundingBox.corners;
-			
-			for(var i:int = 0 ; i < 8; i++)
-			{
-				corner = temp.transformVector(corners[i]);
+				setProjectionPerspective( outerConeAngle, 1.0, 5, 10000.0 );
+			}else if( m_type == ELightType.DIRECTIONAL && scene) {
+				var temp:Matrix3D = MatrixUtils.TEMP_MATRIX;
+				temp.copyFrom( transformation.matrixGlobal );
+				temp.position = new Vector3D(0,0,0);
+				temp.invert();
 				
-				if(corner.x > _max.x) _max.x = corner.x;
-				if(corner.x < _min.x) _min.x = corner.x;
-				if(corner.y > _max.y) _max.y = corner.y;
-				if(corner.y < _min.y) _min.y = corner.y;
-				if(corner.z > _max.z) _max.z = corner.z;
-				if(corner.z < _min.z) _min.z = corner.z;
+				//var _x :Vector.<Number> = this.directionVector;
 				
+				var _min :Vector3D = new Vector3D(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
+				var _max :Vector3D = new Vector3D(Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
+				var corner:Vector3D;
+
+				var corners:Vector.<Vector3D> = Scene(scene).m_rootObject.axisAlignedBoundingBox.corners;
+				
+				for(var i:int = 0 ; i < 8; i++)
+				{
+					corner = temp.transformVector(corners[i]);
+					
+					if(corner.x > _max.x) _max.x = corner.x;
+					if(corner.x < _min.x) _min.x = corner.x;
+					if(corner.y > _max.y) _max.y = corner.y;
+					if(corner.y < _min.y) _min.y = corner.y;
+					if(corner.z > _max.z) _max.z = corner.z;
+					if(corner.z < _min.z) _min.z = corner.z;
+					
+				}
+				setProjectionOrthoAsymmetric(_min.x, _max.x, _min.y, _max.y, -_max.z, -_min.z );
 			}
-			setProjectionOrthoAsymmetric(_min.x, _max.x, _min.y, _max.y, -_max.z, -_min.z );
-			
 		}
 		
 		/**
@@ -410,6 +470,7 @@ package com.yogurt3d.core.lights
 		
 		public function get coneAngles():Vector.<Number>
 		{
+			m_coneAngles[3] = m_range;
 			return m_coneAngles;
 		}
 		

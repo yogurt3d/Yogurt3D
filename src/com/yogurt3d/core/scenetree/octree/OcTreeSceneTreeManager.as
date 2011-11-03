@@ -66,13 +66,16 @@ package com.yogurt3d.core.scenetree.octree
 							)
 						)
 					);
-					trace("OCTREE ",
-						Scene(_scene).YOGURT3D_INTERNAL::m_args.x,
-						Scene(_scene).YOGURT3D_INTERNAL::m_args.y,
-						Scene(_scene).YOGURT3D_INTERNAL::m_args.z,
-						Scene(_scene).YOGURT3D_INTERNAL::m_args.width ,
-						Scene(_scene).YOGURT3D_INTERNAL::m_args.height,
-						Scene(_scene).YOGURT3D_INTERNAL::m_args.depth);
+					Y3DCONFIG::TRACE
+					{
+						trace("OCTREE ",
+							"x", Scene(_scene).YOGURT3D_INTERNAL::m_args.x,
+							"y", Scene(_scene).YOGURT3D_INTERNAL::m_args.y,
+							"z", Scene(_scene).YOGURT3D_INTERNAL::m_args.z,
+							"width", Scene(_scene).YOGURT3D_INTERNAL::m_args.width ,
+							"height", Scene(_scene).YOGURT3D_INTERNAL::m_args.height,
+							"depth", Scene(_scene).YOGURT3D_INTERNAL::m_args.depth);
+					}
 				}
 				else{
 					s_octantByScene[_scene] = new OctTree( 

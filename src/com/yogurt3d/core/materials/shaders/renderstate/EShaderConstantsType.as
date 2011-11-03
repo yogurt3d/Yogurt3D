@@ -93,6 +93,7 @@ package com.yogurt3d.core.materials.shaders.renderstate
 		public static const LIGHT_DIRECTION						:EShaderConstantsType = new EShaderConstantsType();
 		// TODO: delete
 		public static const LIGHT_COLOR							:EShaderConstantsType = new EShaderConstantsType();
+		public static const LIGHT_SHADOW_COLOR					:EShaderConstantsType = new EShaderConstantsType();
 		public static const LIGHT_ATTENUATION					:EShaderConstantsType = new EShaderConstantsType();
 		
 		public static const LIGHT_CONE							:EShaderConstantsType = new EShaderConstantsType();

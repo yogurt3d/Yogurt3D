@@ -21,6 +21,7 @@ package com.yogurt3d.core.materials.shaders
 	import com.adobe.utils.AGALMiniAssembler;
 	import com.yogurt3d.Yogurt3D;
 	import com.yogurt3d.core.lights.ELightType;
+	import com.yogurt3d.core.lights.Light;
 	import com.yogurt3d.core.managers.contextmanager.Context;
 	import com.yogurt3d.core.materials.shaders.base.EVertexAttribute;
 	import com.yogurt3d.core.materials.shaders.base.Shader;
@@ -44,18 +45,21 @@ package com.yogurt3d.core.materials.shaders
 	{
 		public var contColorConst:ShaderConstants;
 		public var contThickness:ShaderConstants;
+		
 			
 		public function ShaderContour(_contourColor:uint = 0x000000,
 								   	  _contourThickness:Number=0.3,
+									  _litThickness:Number=0.00,
+									  _unlitThickness:Number=0.00001,
 								      _opacity:Number = 1)
 		{
 			super();
 			
 			key = "Yogurt3DOriginalsShaderContour";
 			
-			requiresLight				= false;
+			requiresLight				= true;
 			
-			attributes.push( EVertexAttribute.POSITION, EVertexAttribute.UV, EVertexAttribute.NORMAL );
+			attributes.push( EVertexAttribute.POSITION, EVertexAttribute.UV, EVertexAttribute.NORMAL, EVertexAttribute.BONE_DATA);
 			
 			params.writeDepth 		= false;
 			params.blendEnabled 	= true;
@@ -64,23 +68,18 @@ package com.yogurt3d.core.materials.shaders
 			params.culling			= Context3DTriangleFace.FRONT;
 			
 			// Shader Parameters
-			var _vertexShaderConsts:ShaderConstants 	= new ShaderConstants();
-			_vertexShaderConsts.type 					= EShaderConstantsType.MVP_TRANSPOSED;
-			_vertexShaderConsts.firstRegister 			= 0;
-			
-			params.vertexShaderConstants.push(_vertexShaderConsts);
-			
-			_vertexShaderConsts 	= new ShaderConstants();
-			_vertexShaderConsts.type 					= EShaderConstantsType.MODEL_TRANSPOSED;
-			_vertexShaderConsts.firstRegister 			= 4;
-			
-			params.vertexShaderConstants.push(_vertexShaderConsts);
+			params.vertexShaderConstants.push(new ShaderConstants(0, EShaderConstantsType.MVP_TRANSPOSED));
+			params.vertexShaderConstants.push(new ShaderConstants(4, EShaderConstantsType.MODEL_TRANSPOSED));
+			params.vertexShaderConstants.push(new ShaderConstants(8, EShaderConstantsType.BONE_MATRICES));
 			
 			params.fragmentShaderConstants.push(new ShaderConstants(0, EShaderConstantsType.CAMERA_POSITION));
+			params.fragmentShaderConstants.push(new ShaderConstants(1, EShaderConstantsType.LIGHT_POSITION));
+			params.fragmentShaderConstants.push(new ShaderConstants(7, EShaderConstantsType.LIGHT_DIRECTION));
+			
 									
 			var _fragmentShaderConsts:ShaderConstants;
 			_fragmentShaderConsts				 		= new ShaderConstants(2, EShaderConstantsType.CUSTOM_VECTOR);
-			_fragmentShaderConsts.vector 				= Vector.<Number>([ _contourThickness, 0.0, 0.0, 0.0]);
+			_fragmentShaderConsts.vector 				= Vector.<Number>([ _contourThickness, 0.0, _litThickness, _unlitThickness]);
 			params.fragmentShaderConstants.push(_fragmentShaderConsts);
 			contThickness = _fragmentShaderConsts;
 			
@@ -96,8 +95,16 @@ package com.yogurt3d.core.materials.shaders
 			
 		}
 		
+		public function set litThickness(_value:Number):void{
+			contThickness.vector[2] = _value;
+		}
+		
+		public function set unlitThickness(_value:Number):void{
+			contThickness.vector[3] = _value;
+		}
+		
 		public function get contourThickness():Number{
-			return contThickness.vector[2];
+			return contThickness.vector[0];
 		}
 		
 		public function set contourThickness(_val:Number):void{
@@ -124,7 +131,25 @@ package com.yogurt3d.core.materials.shaders
 			contColorConst.vector[3] = _val;
 		}
 		
-				public override function getVertexProgram(_meshKey:String, _lightType:ELightType = null):ByteArray{
+		public override function getVertexProgram(_meshKey:String, _lightType:ELightType = null):ByteArray{
+			
+			if( _meshKey == "SkinnedMesh")
+			{
+				var assembler:AGALMiniAssembler = new AGALMiniAssembler();
+				
+				var code:String = ShaderUtils.getSkeletalAnimationVertexShader( 
+					0, 1, 2, 
+					3, 5, 
+					0, 4, 8, 
+					0, false, false, false  );
+				
+				code += "mov v" + 0 +".xyzw, vt0.xyzw\n";
+				code += "mov v" + 1 + ".xyzw, vt1.xyzw\n";
+				code += "mov v" + 2 + ", va1\n";
+				
+				
+				return assembler.assemble(Context3DProgramType.VERTEX, 	code );
+			}
 			
 			var _vertexShader:String = [
 				
@@ -158,21 +183,32 @@ package com.yogurt3d.core.materials.shaders
 				"mov ft1 v1",
 				"nrm ft1.xyz v1",          // ft1 =  normal
 				
+				(_lightType == ELightType.POINT || _lightType == ELightType.SPOT)?"sub ft0 fc1 ft7":"mov ft0 fc7",
+				
+				"dp3 ft4 ft7 ft1", 			// dot(Normal, EyeVert)
+				"dp3 ft5 ft1 ft0",//dot(normalDirection, lightDirection)
+				"max ft5 ft5 fc2.y",//max(0.0, dot(normalDirection, lightDirection))
+				"sub ft2 fc3.w ft5",
+				ShaderUtils.mix("ft6","ft3","fc2.z", "fc2.w","ft5","ft2"),
+				
+				"slt ft2 ft4 ft6",
+				
 				// for contour calculation
 				"dp3 ft4 ft7 ft1", 			// dot(Normal, EyeVert)
 				"max ft4 ft4 fc2.y", 		// sil =  max(dot(Normal, EyeVert), 0.0);
-				
-				// contour
-				// if (sil > 0.0 && sil < 0.1)
-				// out_color = silhouette_color;
+//				
+//				// contour
+//				// if (sil > 0.0 && sil < 0.1)
+//				// out_color = silhouette_color;
 				"sge ft1 ft4 fc2.y",
 				"slt ft2 ft4 fc2.x",
 				"mul ft7 ft1 ft2",
 				"mul ft7 fc3.w ft7",
 				
 				"mov ft3 fc3",
-				"mov ft3.w ft7",
-				"mov oc ft3",
+				"mul ft2 ft2 fc3.w",
+				"mov ft3.w ft2",
+				"mov oc ft3"
 				
 			].join("\n");
 			

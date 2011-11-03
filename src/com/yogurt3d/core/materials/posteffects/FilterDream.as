@@ -3,13 +3,11 @@
 	 import com.adobe.utils.AGALMiniAssembler;
 	 import com.yogurt3d.core.lights.ELightType;
 	 import com.yogurt3d.core.utils.ShaderUtils;
-	 import com.yogurt3d.core.viewports.Viewport;
 	 
 	 import flash.display3D.Context3D;
 	 import flash.display3D.Context3DProgramType;
+	 import flash.geom.Rectangle;
 	 import flash.utils.ByteArray;
-	 
-	 import mx.states.OverrideBase;
 	 
 	public class FilterDream extends Filter
 	{
@@ -84,7 +82,7 @@
 			);
 		}
 		
-		public override function setShaderConstants(_context3D:Context3D, _viewport:Viewport):void{
+		public override function setShaderConstants(_context3D:Context3D, _viewport:Rectangle):void{
 			
 			_context3D.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0,  Vector.<Number>([0.001, 0.003, 0.005, 0.007]));
 			_context3D.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 1,  Vector.<Number>([0.009, 0.011, 3.0, 9.5]));

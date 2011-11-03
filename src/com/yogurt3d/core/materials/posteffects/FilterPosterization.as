@@ -7,6 +7,7 @@ package com.yogurt3d.core.materials.posteffects
 	
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DProgramType;
+	import flash.geom.Rectangle;
 	import flash.utils.ByteArray;
 	
 	public class FilterPosterization extends Filter
@@ -79,7 +80,7 @@ package com.yogurt3d.core.materials.posteffects
 			m_numColors = _value;
 		}
 		
-		public override function setShaderConstants(_context3D:Context3D, view:Viewport):void{
+		public override function setShaderConstants(_context3D:Context3D, view:Rectangle):void{
 			_context3D.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0,  Vector.<Number>([m_gamma, m_numColors, (1.0/m_gamma as Number), 1.0]));
 		}
 	}

@@ -24,8 +24,7 @@ package com.yogurt3d.core.materials
 		private var m_colorMap:TextureMap;
 		private var m_normalMap:TextureMap;
 		private var m_specularMap:TextureMap;
-		private var m_reflectivityMap:TextureMap;
-		private var m_alphaAmbient:Number;
+		private var m_reflectivityMap:TextureMap;;
 		private var m_alpha:Number;
 		
 		private var m_fresnelReflectance:Number;
@@ -44,7 +43,6 @@ package com.yogurt3d.core.materials
 											   _fresnelReflectance:Number=0.028,
 											   _fresnelPower:uint=5,
 											   _alpha:Number=1.0,
-											   _alphaAmbient:Number=1.0,
 											   _opacity:Number=1.0,
 											   _initInternals:Boolean=true)
 		{
@@ -54,7 +52,6 @@ package com.yogurt3d.core.materials
 			
 			m_envMap = _envMap;		
 			m_colorMap = _colorMap;
-			m_alphaAmbient = _alphaAmbient;
 			m_reflectivityMap = _reflectivityMap;
 			
 			m_fresnelReflectance = _fresnelReflectance;
@@ -68,7 +65,7 @@ package com.yogurt3d.core.materials
 			m_envShader.params.blendSource = Context3DBlendFactor.DESTINATION_COLOR;
 			m_envShader.params.blendDestination = Context3DBlendFactor.ZERO;
 			
-			m_ambShader = new ShaderAmbient(m_alphaAmbient);
+			m_ambShader = new ShaderAmbient(_opacity);
 			
 			shaders = new Vector.<com.yogurt3d.core.materials.shaders.base.Shader>;
 			
@@ -79,6 +76,13 @@ package com.yogurt3d.core.materials
 			
 			normalMap = _normalMap;
 			specularMap = _specularMap;
+		}
+		
+		public function get shininess():Number{
+			return lightShader.shininess;
+		}
+		public function set shininess(_value:Number):void{
+			lightShader.shininess = _value;
 		}
 		
 		public function get envMap():CubeTextureMap
@@ -131,13 +135,6 @@ package com.yogurt3d.core.materials
 			m_envShader.alpha = _value;
 		}
 		
-		public function get alphaAmb():Number{
-			return m_alphaAmbient;
-		}
-		public function set alphaAmb(_value:Number):void{
-			m_alphaAmbient = _value;
-			m_ambShader.opacity = _value;
-		}
 		
 		public function get fresnelReflectance():Number{
 			return m_fresnelReflectance;

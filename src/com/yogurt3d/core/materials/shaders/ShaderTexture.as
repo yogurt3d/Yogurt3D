@@ -207,7 +207,7 @@ package com.yogurt3d.core.materials.shaders
 		 * @inheritDoc
 		 * 
 		 */
-				public override function getVertexProgram(_meshKey:String, _lightType:ELightType = null):ByteArray{
+		public override function getVertexProgram(_meshKey:String, _lightType:ELightType = null):ByteArray{
 			if( _meshKey == "SkinnedMesh" )
 			{
 				var code:String = ShaderUtils.getSkeletalAnimationVertexShader( 

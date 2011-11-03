@@ -56,15 +56,6 @@ package com.yogurt3d.core.materials.shaders
 			params.vertexShaderConstants.push(new ShaderConstants(4, EShaderConstantsType.MODEL_TRANSPOSED));
 			params.vertexShaderConstants.push(new ShaderConstants(8, EShaderConstantsType.BONE_MATRICES));
 			
-//			var _vertexShaderConsts:ShaderConstants 	= new ShaderConstants();
-//			_vertexShaderConsts.type 					= ShaderConstantsType.MVP_TRANSPOSED;
-//			_vertexShaderConsts.firstRegister 			= 0;
-//			params.vertexShaderConstants.push(_vertexShaderConsts);
-//			
-//			_vertexShaderConsts 						= new ShaderConstants();
-//			_vertexShaderConsts.type 					= ShaderConstantsType.MODEL_TRANSPOSED;
-//			_vertexShaderConsts.firstRegister 			= 4;
-//			params.vertexShaderConstants.push(_vertexShaderConsts);
 			
 			// FRAGMENT CONSTANTS
 			params.fragmentShaderConstants.push( new ShaderConstants(0 , EShaderConstantsType.CAMERA_POSITION));
@@ -120,7 +111,7 @@ package com.yogurt3d.core.materials.shaders
 			m_textureConst.texture 	= m_texture;
 		}
 	
-				public override function getVertexProgram(_meshKey:String, _lightType:ELightType = null):ByteArray{
+		public override function getVertexProgram(_meshKey:String, _lightType:ELightType = null):ByteArray{
 			
 			if( _meshKey == "SkinnedMesh")
 			{
@@ -166,7 +157,8 @@ package com.yogurt3d.core.materials.shaders
 				"nrm ft7.xyz ft7.xyz", 	// normalize(V);
 				"mov ft1 v1",           // ft1 = N
 				"nrm ft1.xyz ft1.xyz",	// normalize(N);
-				"mov ft2 fc2",			// L = light direction
+				(_lightType == ELightType.POINT || _lightType == ELightType.SPOT)?"sub ft2 fc1 ft7":"mov ft2 fc2",
+				//"mov ft2 fc2",			// L = light direction
 				//"neg ft2 ft2.xyz",
 				"nrm ft2.xyz ft2.xyz",  // normalize(L)
 				
@@ -182,7 +174,8 @@ package com.yogurt3d.core.materials.shaders
 					
 				"mov ft0 ft2",
 				"div ft0.xyz, ft0.xyz, fc3.w",
-				//"mov ft0.w fc3.w",//set opacity
+				"mul ft3.w ft3.w fc3.w",
+				"mov ft0.w ft3.w",//set opacity
 				"mov oc ft0"
 				
 			].join("\n");

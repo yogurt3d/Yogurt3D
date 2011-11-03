@@ -305,10 +305,13 @@ package com.yogurt3d.core.animation.controllers
 				//      missedFrameCnt should be 0/inconsequential if no frames were skipped
 				for(var missedFrameCnt:int = 0; missedFrameCnt < (currentFrame - m_lastFrame); missedFrameCnt++)
 				{
-					// tsl: replaced instances of currentFrame with (currentFrame - missedFrameCnt) throughout this loop
-					if( m_frameEventListeners[ currentFrame - missedFrameCnt ] != null && (currentFrame - missedFrameCnt) != currentFrame)
+					Y3DCONFIG::TRACE
 					{
-						trace("SkinController::updateWithTimeInfo: caught skipped frame " + (currentFrame - missedFrameCnt));
+						// tsl: replaced instances of currentFrame with (currentFrame - missedFrameCnt) throughout this loop
+						if( m_frameEventListeners[ currentFrame - missedFrameCnt ] != null && (currentFrame - missedFrameCnt) != currentFrame)
+						{
+								trace("SkinController::updateWithTimeInfo: caught skipped frame " + (currentFrame - missedFrameCnt));
+						}
 					}
 					
 					if( m_frameEventListeners[ currentFrame - missedFrameCnt ] != null && m_frameEventListeners[currentFrame - missedFrameCnt].hasEventListener(AnimationEvent.FRAME) )
@@ -348,7 +351,7 @@ package com.yogurt3d.core.animation.controllers
 				if( m_blendMode == BLEND_ANIMATED )
 				{
 					var blendWeight:Number = _time / (m_blendDuration * 1000);
-					trace( blendWeight);
+
 					if( blendWeight < 1 && blendWeight > 0)
 					{
 						var animation2:SkeletalAnimationData = m_animations[ m_blendingAnimation ] as SkeletalAnimationData;

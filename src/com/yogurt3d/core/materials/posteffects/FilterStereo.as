@@ -24,7 +24,6 @@ package com.yogurt3d.core.materials.posteffects
 	import com.yogurt3d.core.cameras.Camera;
 	import com.yogurt3d.core.cameras.interfaces.ICamera;
 	import com.yogurt3d.core.lights.ELightType;
-	import com.yogurt3d.core.transformations.Transformation;
 	import com.yogurt3d.core.utils.MathUtils;
 	import com.yogurt3d.core.utils.ShaderUtils;
 	import com.yogurt3d.core.viewports.Viewport;
@@ -33,11 +32,10 @@ package com.yogurt3d.core.materials.posteffects
 	import flash.display3D.Context3DProgramType;
 	import flash.display3D.Context3DTextureFormat;
 	import flash.geom.Matrix3D;
+	import flash.geom.Rectangle;
 	import flash.geom.Vector3D;
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
-	
-	import mx.states.OverrideBase;
 	
 	/**
 	 * Implements stereo vision for various anaglyph and 3DTV formats.
@@ -482,7 +480,7 @@ package com.yogurt3d.core.materials.posteffects
 			_context3D.setTextureAt(2, null);
 		}
 		
-		public override function setShaderConstants(_context3D:Context3D, _viewport:Viewport):void{
+		public override function setShaderConstants(_context3D:Context3D, _viewport:Rectangle):void{
 			_context3D.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0,  Vector.<Number>([0.5, 0.5, 0.0, 1.0]));
 			_context3D.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 1,  Vector.<Number>([_viewport.width, _viewport.height, .50, 2.0])); //fc1
 			//_context3D.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 2,  Vector.<Number>([1, 0, 0, 1])); //fc2 left test color red

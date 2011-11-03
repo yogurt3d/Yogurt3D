@@ -67,6 +67,12 @@ package com.yogurt3d.core.materials
 			
 			super.opacity = _opacity;
 		}
+		
+		public override function set opacity(value:Number):void{
+			super.opacity = value;
+			m_ambientShader.opacity = value;
+		}
+		
 		public function get shininess():Number{
 			return m_lightShader.shininess;
 		}

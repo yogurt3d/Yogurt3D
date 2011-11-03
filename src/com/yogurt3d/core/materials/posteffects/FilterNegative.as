@@ -8,6 +8,7 @@ package com.yogurt3d.core.materials.posteffects
 	
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DProgramType;
+	import flash.geom.Rectangle;
 	import flash.utils.ByteArray;
 	
 	public class FilterNegative extends Filter
@@ -91,7 +92,7 @@ package com.yogurt3d.core.materials.posteffects
 			m_yMax = _value;
 		}
 		
-		public override function setShaderConstants(_context3D:Context3D, view:Viewport):void{
+		public override function setShaderConstants(_context3D:Context3D, view:Rectangle):void{
 			
 //			trace(xMin, xMax, yMin, xMax);
 			

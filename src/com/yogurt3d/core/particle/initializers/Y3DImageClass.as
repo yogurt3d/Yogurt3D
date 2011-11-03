@@ -23,7 +23,6 @@ package com.yogurt3d.core.particle.initializers
 	 * the particle. It is used with the DisplayObjectRenderer. When using the
 	 * BitmapRenderer it is more efficient to use the SharedImage Initializer.
 	 */
-	
 	public class Y3DImageClass extends InitializerBase
 	{
 		private var m_imageClass:Class;

@@ -7,6 +7,7 @@ package com.yogurt3d.core.materials.posteffects
 	
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DProgramType;
+	import flash.geom.Rectangle;
 	import flash.utils.ByteArray;
 	
 	public class FilterGammaCorrection extends Filter
@@ -62,7 +63,7 @@ package com.yogurt3d.core.materials.posteffects
 			m_gamma = _value;
 		}
 		
-		public override function setShaderConstants(_context3D:Context3D,_veiwport:Viewport):void{
+		public override function setShaderConstants(_context3D:Context3D,_veiwport:Rectangle):void{
 			
 			_context3D.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0,  Vector.<Number>([1/m_gamma, 0.5, 0.0, 1.0]));
 			

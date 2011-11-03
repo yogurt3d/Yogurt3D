@@ -193,15 +193,19 @@ package com.yogurt3d.core.geoms
 		
 		public function printBones():void{
 			
-			trace("*******************************************");
-			
-			trace("Orig Bone Index ", this.originalBoneIndex.length," = ",this.originalBoneIndex);
-			trace("Bone Weights",this.boneWeights.length ," = ",this.boneWeights);
-			trace("Bone Indices", this.boneIndies.length," = ",this.boneIndies);
-			trace("Mesh Indices ",this.indices.length ," = ",this.indices);
-			trace("Bones:", this.bones.length);
-			
-			trace("*******************************************");
+			Y3DCONFIG::TRACE
+			{
+				trace("*******************************************");
+				
+				trace("Orig Bone Index ", this.originalBoneIndex.length," = ",this.originalBoneIndex);
+				trace("Bone Weights",this.boneWeights.length ," = ",this.boneWeights);
+				trace("Bone Indices", this.boneIndies.length," = ",this.boneIndies);
+				trace("Mesh Indices ",this.indices.length ," = ",this.indices);
+				trace("Bones:", this.bones.length);
+				
+				trace("*******************************************");
+			}
+		
 		}
 		
 		public function updateWeightTable():void{

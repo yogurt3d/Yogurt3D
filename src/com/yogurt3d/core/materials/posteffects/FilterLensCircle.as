@@ -7,6 +7,7 @@ package com.yogurt3d.core.materials.posteffects
 	
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DProgramType;
+	import flash.geom.Rectangle;
 	import flash.utils.ByteArray;
 	
 	public class FilterLensCircle extends Filter
@@ -86,7 +87,7 @@ package com.yogurt3d.core.materials.posteffects
 			m_center = _value;
 		}
 		
-		public override function setShaderConstants(_context3D:Context3D, viewport:Viewport):void{
+		public override function setShaderConstants(_context3D:Context3D, viewport:Rectangle):void{
 				
 			_context3D.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0,  Vector.<Number>([m_lensX, m_lensY, m_center, 1.0]));
 			_context3D.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 1,  Vector.<Number>([0.0, 1.0, 2.0, 3.0]));

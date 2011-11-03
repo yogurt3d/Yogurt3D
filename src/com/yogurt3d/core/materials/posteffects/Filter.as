@@ -4,6 +4,7 @@ package com.yogurt3d.core.materials.posteffects
 	import com.yogurt3d.core.lights.ELightType;
 	import com.yogurt3d.core.managers.vbstream.VertexStreamManager;
 	import com.yogurt3d.core.materials.shaders.base.Shader;
+	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.texture.RenderTextureTarget;
 	import com.yogurt3d.core.utils.MathUtils;
 	import com.yogurt3d.core.utils.ShaderUtils;
@@ -18,17 +19,20 @@ package com.yogurt3d.core.materials.posteffects
 	import flash.display3D.IndexBuffer3D;
 	import flash.display3D.VertexBuffer3D;
 	import flash.display3D.textures.Texture;
+	import flash.geom.Rectangle;
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
 
 	public class Filter extends Shader
 	{	
+		use namespace YOGURT3D_INTERNAL;
+		
 		private static var m_vertexBuffer:Dictionary;
 		private static var m_indiceBuffer:Dictionary;
 		
 		private static var vsManager:VertexStreamManager = VertexStreamManager.instance;
 		
-		protected var m_renderTarget:RenderTextureTarget;
+		YOGURT3D_INTERNAL var m_renderTarget:RenderTextureTarget;
 		
 		protected static var m_width:Number;
 		protected static var m_height:Number;
@@ -57,39 +61,35 @@ package com.yogurt3d.core.materials.posteffects
 			}
 		}
 		
-		public function setShaderConstants(_context3D:Context3D, _viewport:Viewport):void{}
+		public function setShaderConstants(_context3D:Context3D, _viewport:Rectangle):void{}
 		
 		public function clearTextures(_context3D:Context3D):void{}
 		
 
 		
-		public function getRenderTarget( _viewport:Viewport):RenderTextureTarget
+		public function getRenderTarget( _rect:Rectangle):RenderTextureTarget
 		{
-			if(m_renderTarget == null){
+			if(m_renderTarget == null)
+			{
 				m_renderTarget = new RenderTextureTarget(
-					m_width  = MathUtils.getClosestPowerOfTwo(_viewport.width),
-					m_height = MathUtils.getClosestPowerOfTwo(_viewport.height)
+					m_width  = MathUtils.getClosestPowerOfTwo(_rect.width),
+					m_height = MathUtils.getClosestPowerOfTwo(_rect.height)
 				);
 			}
 			return m_renderTarget;
 		}
 		
-		public function stopRenderToTexture(_context3d:Context3D):void{
-			
-			_context3d.setRenderToBackBuffer();
-			//_context3d.clear(1,1,1,1);
-		}
-		
-		public function postProcess(_context3d:Context3D, _viewport:Viewport, _sampler:RenderTextureTarget):void{
+		public function postProcess(_context3d:Context3D, _viewport:Rectangle, _sampler:RenderTextureTarget):void{
 			
 			_context3d.setProgram(getProgram(_context3d) );
 			
-			setShaderConstants(_context3d, _viewport);
 			
 			_context3d.setBlendFactors( Context3DBlendFactor.ONE, Context3DBlendFactor.ZERO );
 			_context3d.setColorMask(true,true,true,false);
 			_context3d.setDepthTest( false, Context3DCompareMode.ALWAYS );
 			_context3d.setCulling( Context3DTriangleFace.NONE );
+
+			setShaderConstants(_context3d, _viewport);
 			
 			vsManager.setStream( _context3d, 0, getVertexBuffer(_context3d), 0, Context3DVertexBufferFormat.FLOAT_2 );  // x, y
 			vsManager.setStream( _context3d, 1, getVertexBuffer(_context3d), 2, Context3DVertexBufferFormat.FLOAT_2 ); // u,v 

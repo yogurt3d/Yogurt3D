@@ -46,7 +46,7 @@ package com.yogurt3d.core.managers.rttmanager
 				{
 					_context3d.clear(_cleanColor.r,_cleanColor.g,_cleanColor.b,_cleanColor.a);
 				}else{
-					_context3d.clear(0,0,0,1);
+					_context3d.clear(1,1,1,1);
 				}
 			}
 			m_renderTo = target;

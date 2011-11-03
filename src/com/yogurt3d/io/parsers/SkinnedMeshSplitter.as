@@ -54,12 +54,15 @@ package com.yogurt3d.io.parsers
 			_subMeshDictionary = new Dictionary();
 			
 			//resultMeshes.push(_skeletalAnimatedGPUMesh); 
-			
-			trace("******************SPLITTING***************************");
-		
+			Y3DCONFIG::TRACE
+			{
+				trace("******************SPLITTING***************************");
+			}
 			var _boneLen:int = _skeletalAnimatedGPUMesh.bones.length;
-			trace("Bone count:",_boneLen);
-			
+			Y3DCONFIG::TRACE
+			{
+				trace("Bone count:",_boneLen);
+			}
 			if(_boneLen < SkinnedSubMesh.MAX_BONE_COUNT){			
 				return null;
 			}
@@ -69,10 +72,6 @@ package com.yogurt3d.io.parsers
 			var _indicesLength:uint = _meshIndices.length;
 			
 			var i:uint;
-//			trace("Mesh indice count:",_meshIndices.length);
-////			trace("Mesh indices:",_meshIndices);
-//			trace("Vertex count:",_vertexCount);
-//			trace("Triangle count:",_triangleCount);
 				
 			// first get every indices bone list
 			var vertexBoneMap:Vector.<Vector.<uint>> = new Vector.<Vector.<uint>>(_vertexCount);
@@ -212,14 +211,19 @@ package com.yogurt3d.io.parsers
 				totalMIndices += base.indices.length;
 				totalTri += base.indices.length/3;
 				totalVert += base.vertexCount;
-				trace(part, "Bones:", base.bones.length,
-							"MInd:",base.indices.length,
-							"TriangleCount",base.indices.length/3,
-							"Vertex Count:", base.vertexCount);
+				
+				Y3DCONFIG::TRACE
+				{
+					trace(part, "Bones:", base.bones.length,
+								"MInd:",base.indices.length,
+								"TriangleCount",base.indices.length/3,
+								"Vertex Count:", base.vertexCount);
+				}
 			}
-			
-			trace(totalBones, totalMIndices, totalTri, totalVert);
-			
+			Y3DCONFIG::TRACE
+			{
+				trace("totalBones", totalBones, "totalMIndices", totalMIndices, "totalTri", totalTri, "totalVert", totalVert);
+			}
 			var mesh:SkeletalAnimatedMeshBase = new SkeletalAnimatedMeshBase();
 			for( i= 0; i < partitionList.length; i++)
 			{

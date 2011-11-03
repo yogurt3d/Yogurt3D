@@ -8,6 +8,7 @@ package com.yogurt3d.core.materials.posteffects
 	
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DProgramType;
+	import flash.geom.Rectangle;
 	import flash.geom.Vector3D;
 	import flash.utils.ByteArray;
 	
@@ -101,7 +102,7 @@ package com.yogurt3d.core.materials.posteffects
 			m_color2 = _value;
 		}
 	
-		public override function setShaderConstants(_context3D:Context3D, view:Viewport):void{
+		public override function setShaderConstants(_context3D:Context3D, view:Rectangle):void{
 			
 			_context3D.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0,  m_color0.getColorVector());
 			_context3D.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 1,  m_color1.getColorVector());

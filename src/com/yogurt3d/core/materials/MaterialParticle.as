@@ -45,7 +45,9 @@ package com.yogurt3d.core.materials
 		private var m_texture:TextureMap;
 		private var m_color:uint;
 		
-		public function MaterialParticle( _texture:TextureMap=null, _color:uint=0xFF0000, _opacity:Number=1.0, _initInternals:Boolean=true)
+		public function MaterialParticle( _texture:TextureMap=null, 
+										  _color:uint=0xFF0000, 
+										  _opacity:Number=1.0, _initInternals:Boolean=true)
 		{
 			super(_initInternals);
 			

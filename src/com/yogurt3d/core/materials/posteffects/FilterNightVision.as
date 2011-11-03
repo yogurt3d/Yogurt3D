@@ -13,6 +13,7 @@ package com.yogurt3d.core.materials.posteffects
 	import flash.display3D.Context3DTextureFormat;
 	import flash.display3D.textures.Texture;
 	import flash.geom.Matrix;
+	import flash.geom.Rectangle;
 	import flash.utils.ByteArray;
 		
 	public class FilterNightVision extends Filter
@@ -184,7 +185,7 @@ package com.yogurt3d.core.materials.posteffects
 			_context3D.setTextureAt(2, null);
 		}
 		
-		public function createTextures(_context3D:Context3D, _viewport:Viewport):void{
+		public function createTextures(_context3D:Context3D):void{
 		
 			var m:Matrix = new Matrix;
 			m.scale(m_width / m_noiseTexBitmap.width, m_height /m_noiseTexBitmap.height);
@@ -204,11 +205,11 @@ package com.yogurt3d.core.materials.posteffects
 		
 		}
 		
-		public override function setShaderConstants(_context3D:Context3D, _viewport:Viewport):void{
+		public override function setShaderConstants(_context3D:Context3D, _viewport:Rectangle):void{
 						
 			if(m_noiseTex == null && m_maskTex == null){
 			
-				createTextures(_context3D, _viewport);
+				createTextures(_context3D);
 			}
 			_context3D.setTextureAt(1, m_noiseTex);
 			_context3D.setTextureAt(2, m_maskTex);

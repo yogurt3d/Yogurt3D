@@ -25,6 +25,7 @@ package com.yogurt3d.core.materials.shaders
 	import com.yogurt3d.core.materials.shaders.renderstate.EShaderConstantsType;
 	import com.yogurt3d.core.materials.shaders.renderstate.ShaderConstants;
 	import com.yogurt3d.core.texture.TextureMap;
+	import com.yogurt3d.core.utils.ShaderUtils;
 	
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DBlendFactor;
@@ -96,19 +97,11 @@ package com.yogurt3d.core.materials.shaders
 			
 			requiresLight				= false;
 
-			attributes.push( EVertexAttribute.POSITION, EVertexAttribute.UV, EVertexAttribute.NORMAL, EVertexAttribute.TANGENT );
+			attributes.push( EVertexAttribute.POSITION, EVertexAttribute.UV, EVertexAttribute.NORMAL, EVertexAttribute.TANGENT, EVertexAttribute.BONE_DATA);
 			
-			var _vertexShaderConsts:ShaderConstants 	= new ShaderConstants();
-			_vertexShaderConsts.type 					= EShaderConstantsType.MVP_TRANSPOSED;
-			_vertexShaderConsts.firstRegister 			= 0;// vc0, matrix oldugu icin vc0.vc1.vc2.v
-			
-			params.vertexShaderConstants.push(_vertexShaderConsts);
-			
-			_vertexShaderConsts 						= new ShaderConstants();
-			_vertexShaderConsts.type 					= EShaderConstantsType.MODEL_TRANSPOSED;
-			_vertexShaderConsts.firstRegister 			= 4;// vc4
-			
-			params.vertexShaderConstants.push(_vertexShaderConsts);
+			params.vertexShaderConstants.push(new ShaderConstants(0, EShaderConstantsType.MVP_TRANSPOSED));
+			params.vertexShaderConstants.push(new ShaderConstants(4, EShaderConstantsType.MODEL_TRANSPOSED));
+			params.vertexShaderConstants.push(new ShaderConstants(8, EShaderConstantsType.BONE_MATRICES));
 			
 			
 			m_colorTexture 							= new ShaderConstants();
@@ -248,7 +241,31 @@ package com.yogurt3d.core.materials.shaders
 			m_gainConsts.vector	= Vector.<Number>([ 1.0, m_gain, 1.0, 1.0 ]);
 		}
 		
-				public override function getVertexProgram(_meshKey:String, _lightType:ELightType = null):ByteArray{
+		public override function getVertexProgram(_meshKey:String, _lightType:ELightType = null):ByteArray{
+		
+			if( _meshKey == "SkinnedMesh")
+			{
+				var assembler:AGALMiniAssembler = new AGALMiniAssembler();
+				
+				var code:String = ShaderUtils.getSkeletalAnimationVertexShader( 
+					0, 1, 2, 
+					4, 6, 
+					0, 4, 8, 
+					3, true, true, true  );
+				
+				code += "mov v" + 0 +".xyzw, vt0.xyzw\n";
+				code += "mov v" + 1 + ".xyzw, vt1.xyzw\n";
+				code += "mov v" + 2 + ", va1\n";
+				code += "mov v" + 3 + ".xyzw, vt2.xyzw\n";
+				
+				code += "mov vt3.w vt0.w\n";// binormal calculation
+				code += "crs vt3.xyz vt1.xyz vt2.xyz\n";
+				code += "nrm vt3.xyz vt4.xyz\n";
+				code += "mov v4 vt3\n";// pass binormals 
+				
+				return assembler.assemble(Context3DProgramType.VERTEX, 	code );
+			}
+			
 			//va0 : vertex position 
 			//va1: uvt
 			//va2: normals

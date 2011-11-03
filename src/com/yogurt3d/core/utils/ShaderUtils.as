@@ -158,6 +158,46 @@ package com.yogurt3d.core.utils
 			return _opCode+" "+_target;
 		}
 		
+		// sign function: returns 1.0 if x>0, 0.0 if x=0, -1.0 if x<0
+		// target should be vec4
+		// returns result in target.x
+		// minusOne = -1.0, _one = 1.0, _zero = 0.0
+		// _zeroApp = 0.00001 (for sge)
+		public static function signAGAL(_target:String, _source:String,
+										_minusOne:String, _one:String, _zero:String, 
+										_zeroApp:String):String{
+			var code:String = [
+				agal("sge",_target+".y",_source, _zeroApp),
+				agal("slt",_target+".z",_source, _zero),
+				
+				agal("mul",_target+".y",_target+".y", _one),
+				agal("mul",_target+".z",_target+".z", _minusOne),
+				
+				agal("add",_target+".x",_target+".y", _target+".z"),
+			
+			].join("\n");
+			
+			return code;
+		
+		}
+		
+		// mod function: a - b*floor(a/b)
+		public static function modAGAL(_target:String, _temp:String,_a:String, _b:String):String{
+			
+			var code:String = [
+				agal("div",_temp,_a, _b),// a/b
+				ShaderUtils.floorAGAL(_target, _temp),//floor(a/b)
+				agal("mul",_target,_target, _b),//b*floor(a/b)
+				agal("sub",_target,_a, _target)//a - floor(a/b)
+				
+//				agal("div",_target,_a, _b),
+//				agal("frc",_target,_target),// (frc (a / b))(frc (a / b))
+//				agal("mul",_target,_target,_b)//(frc (a / b)) * b]
+			].join("\n");
+			
+			return code;
+		}
+		
 		// floor function
 		public static function floorAGAL(_target:String, _source:String):String{
 		
@@ -327,6 +367,22 @@ package com.yogurt3d.core.utils
 			].join("\n");
 			return code;
 		}
+		
+		// fresnel for yogurtistan
+		public static function fresnel(_target:String, _normal:String, _incidence:String, _power:String, 
+										   _one:String):String{
+			
+			var code:String = [
+				agal("dp3",_target, _incidence, _normal), //dot(I, N)
+				agal("sub",_target, _one, _target),//1.0 - dot(I, N)
+				agal("pow",_target, _target, _power),//pow(1.0 - dot(I, N), power)
+				
+				
+			].join("\n");
+			return code;
+			
+		}
+		
 		
 	}
 }

@@ -27,6 +27,6 @@ package com.yogurt3d.io.parsers.interfaces
  	 **/
 	public interface IParser
 	{
-		function parse(_value:*, verbose:Boolean = false, split:Boolean = true):*;
+		function parse(_value:*, split:Boolean = true):*;
 	}
 }

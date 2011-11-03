@@ -19,11 +19,7 @@
  
 package com.yogurt3d.core.materials.shaders
 {
-	import com.adobe.utils.AGALMiniAssembler;
-	import com.yogurt3d.Yogurt3D;
-	import com.yogurt3d.core.geoms.SkeletalAnimatedMesh;
 	import com.yogurt3d.core.lights.ELightType;
-	import com.yogurt3d.core.managers.contextmanager.Context;
 	import com.yogurt3d.core.materials.shaders.base.EVertexAttribute;
 	import com.yogurt3d.core.materials.shaders.base.Shader;
 	import com.yogurt3d.core.materials.shaders.renderstate.EShaderConstantsType;
@@ -38,8 +34,6 @@ package com.yogurt3d.core.materials.shaders
 	import flash.display3D.Context3DTriangleFace;
 	import flash.display3D.Program3D;
 	import flash.utils.ByteArray;
-	
-	import mx.states.OverrideBase;
 
 	/**
 	 * Ambient pass for multi-pass rendering pipeline.

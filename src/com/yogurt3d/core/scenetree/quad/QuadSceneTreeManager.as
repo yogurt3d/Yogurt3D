@@ -57,10 +57,13 @@ package com.yogurt3d.core.scenetree.quad
 						Scene(_scene).YOGURT3D_INTERNAL::m_args.width ,
 						Scene(_scene).YOGURT3D_INTERNAL::m_args.height
 					), 3, 4 );
-					trace("QUAD ",Scene(_scene).YOGURT3D_INTERNAL::m_args.x,
-						Scene(_scene).YOGURT3D_INTERNAL::m_args.z,
-						Scene(_scene).YOGURT3D_INTERNAL::m_args.width ,
-						Scene(_scene).YOGURT3D_INTERNAL::m_args.height);
+					Y3DCONFIG::TRACE
+					{
+						trace("QUAD ",Scene(_scene).YOGURT3D_INTERNAL::m_args.x,
+							Scene(_scene).YOGURT3D_INTERNAL::m_args.z,
+							Scene(_scene).YOGURT3D_INTERNAL::m_args.width ,
+							Scene(_scene).YOGURT3D_INTERNAL::m_args.height);
+					}
 				}
 				else{
 					s_quadByScene[_scene] = new QuadTree( new Rectangle(-10000,-10000,20000,20000), 3, 2 );

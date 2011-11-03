@@ -24,8 +24,6 @@ package com.yogurt3d.core.transformations
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
 	
-	import mx.charts.chartClasses.NumericAxis;
-	
 	/**
 	 * 
 	 * 

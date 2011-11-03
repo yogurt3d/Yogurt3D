@@ -30,6 +30,7 @@ package com.yogurt3d.core.materials.shaders
 	
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DBlendFactor;
+	import flash.display3D.Context3DCompareMode;
 	import flash.display3D.Context3DProgramType;
 	import flash.display3D.Context3DTriangleFace;
 	import flash.display3D.Program3D;
@@ -88,16 +89,16 @@ package com.yogurt3d.core.materials.shaders
 			params.blendSource 		= Context3DBlendFactor.SOURCE_ALPHA;
 			params.blendDestination = Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA;
 			params.culling			= Context3DTriangleFace.FRONT;
+			params.depthFunction    = Context3DCompareMode.LESS;
 			
-			requiresLight				= false;
+	
+			requiresLight			= false;
 			
-			attributes.push(EVertexAttribute.POSITION, EVertexAttribute.UV, EVertexAttribute.NORMAL );
+			attributes.push(EVertexAttribute.POSITION, EVertexAttribute.UV, EVertexAttribute.NORMAL, EVertexAttribute.BONE_DATA);
 			
-			var _vertexShaderConsts:ShaderConstants;
-
 			params.vertexShaderConstants.push(new ShaderConstants(0, EShaderConstantsType.MVP_TRANSPOSED));
-
 			params.vertexShaderConstants.push(new ShaderConstants(4, EShaderConstantsType.MODEL_TRANSPOSED));
+			params.vertexShaderConstants.push(new ShaderConstants(8, EShaderConstantsType.BONE_MATRICES));
 			
 			// environmental map
 			m_envMapTexture 							= new ShaderConstants(0, EShaderConstantsType.TEXTURE);
@@ -111,7 +112,7 @@ package com.yogurt3d.core.materials.shaders
 			
 			// fc1 : fresnel
 			m_fresnelConst   							= new ShaderConstants(1, EShaderConstantsType.CUSTOM_VECTOR);
-			m_fresnelConst.vector						= Vector.<Number>([ m_fresnel.x, m_fresnel.y, m_fresnel.z, 0.0 ]);
+			m_fresnelConst.vector						= Vector.<Number>([ m_fresnel.x, m_fresnel.y, 0.0, 0.0 ]);
 			params.fragmentShaderConstants.push(m_fresnelConst);
 			
 			// fc2: camera pos
@@ -178,7 +179,25 @@ package com.yogurt3d.core.materials.shaders
 			m_ioConst.vector[3]	= m_opacity;
 		}
 		
-				public override function getVertexProgram(_meshKey:String, _lightType:ELightType = null):ByteArray{
+		public override function getVertexProgram(_meshKey:String, _lightType:ELightType = null):ByteArray{
+			
+			if( _meshKey == "SkinnedMesh")
+			{
+				var assembler:AGALMiniAssembler = new AGALMiniAssembler();
+				
+				var code:String = ShaderUtils.getSkeletalAnimationVertexShader( 
+					0, 1, 2, 
+					3, 5, 
+					0, 4, 8, 
+					0, false, false, false  );
+				
+				code += "mov v" + 0 +".xyzw, vt0.xyzw\n";
+				code += "mov v" + 1 + ".xyzw, vt1.xyzw\n";
+				code += "mov v" + 2 + ", va1\n";
+	
+				return assembler.assemble(Context3DProgramType.VERTEX, 	code );
+			}
+			
 			//va0 : vertex position 
 			//va1: uvt
 			//va2: normals		

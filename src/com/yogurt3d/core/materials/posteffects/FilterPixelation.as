@@ -8,6 +8,7 @@ package com.yogurt3d.core.materials.posteffects
 	
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DProgramType;
+	import flash.geom.Rectangle;
 	import flash.utils.ByteArray;
 	
 	public class FilterPixelation extends Filter
@@ -72,7 +73,7 @@ package com.yogurt3d.core.materials.posteffects
 			m_pixelHeight = _value;
 		}
 		
-		public override function setShaderConstants(_context3D:Context3D, view:Viewport):void{
+		public override function setShaderConstants(_context3D:Context3D, view:Rectangle):void{
 			
 			var dx:Number = 1/m_width * m_pixelWidth;
 			var dy:Number = 1/m_height * m_pixelHeight;

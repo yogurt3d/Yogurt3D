@@ -37,16 +37,12 @@ package com.yogurt3d.core.materials
 	{
 		
 		private var m_refShader:ShaderRefraction;
-		private var m_ambShader:ShaderAmbient;
 		private var m_fresnelShader:ShaderEnvMapFresnel;
-		public  var decal:ShaderTexture;
 		
 		private var m_envMap:CubeTextureMap;
 		private var m_normalMap:TextureMap;
 		private var m_refractivityMap:TextureMap;
-		private var m_colorMap:TextureMap;
 	
-		private var m_alpha:Number;
 		private var m_refIndex:Number;
 		private var m_fresnelReflectance:Number;
 		
@@ -56,8 +52,7 @@ package com.yogurt3d.core.materials
 		private var m_hasFresnel:Boolean;
 		
 	
-		public function MaterialRefraction( _envMap:CubeTextureMap=null, 
-											_colorMap:TextureMap=null,
+		public function MaterialRefraction( _envMap:CubeTextureMap, 
 											_color:uint = 0xFFFFFF,
 											_refIndex:Number = 1.0,
 											_normalMap:TextureMap=null,
@@ -72,42 +67,24 @@ package com.yogurt3d.core.materials
 			
 			m_envMap = _envMap;		
 			m_normalMap = _normalMap;
-			m_alpha = _alpha;
 			m_refractivityMap = _refractivityMap;
 			m_refIndex = _refIndex;
 			m_color = _color;
-			m_colorMap = _colorMap;
+			super.opacity = _alpha;
 			
 			m_hasFresnel = _hasFresnel;
 						
 			shaders.push( 
 				m_refShader = new ShaderRefraction(m_envMap, m_color ,
 												   m_refIndex,  m_normalMap, 
-												   m_refractivityMap, m_alpha));
+												   m_refractivityMap, _alpha));
 			
 			m_fresnelReflectance = _fresnelReflectance;
 			m_fresnelPower = _fresnelPower;
-			
-			if(m_colorMap != null){
-				decal = new ShaderTexture(m_colorMap);
-				decal.params.blendEnabled = true;
-				decal.params.blendSource = Context3DBlendFactor.DESTINATION_COLOR;
-				decal.params.blendDestination = Context3DBlendFactor.ZERO;
-				shaders.push(decal);
-			}
-			
+				
 			if(m_hasFresnel)
 				shaders.push(m_fresnelShader = new ShaderEnvMapFresnel(m_envMap, null, m_normalMap, m_refractivityMap, _alpha, _fresnelReflectance, _fresnelPower));
 			
-		}
-		
-		public function get colorMap():TextureMap{
-			return m_colorMap;
-		}
-		
-		public function set colorMap(_value:TextureMap):void{
-			m_colorMap = _value;
-			decal.texture = _value;
 		}
 		
 		public function get fresnelReflectance():Number{
@@ -139,6 +116,17 @@ package com.yogurt3d.core.materials
 		}
 		public function set hasFresnel(_value:Boolean):void{
 			m_hasFresnel = _value;
+			
+			if(m_hasFresnel){
+				if(shaders.indexOf(m_fresnelShader) == -1){
+					m_fresnelShader = new ShaderEnvMapFresnel(envMap, null, normalMap, refractivityMap, opacity, fresnelReflectance, fresnelPower);
+					shaders.push(m_fresnelShader);
+				}
+				m_fresnelShader.alpha = this.opacity;
+			}else{
+				m_fresnelShader.alpha = 0;
+			}
+		
 		}
 		
 		public function get color():uint{
@@ -167,15 +155,12 @@ package com.yogurt3d.core.materials
 			m_refShader.refractivityMap = value;
 			m_fresnelShader.reflectivityMap = value;
 		}
-		
-		
-		public function get alpha():Number{
-			return m_alpha;
-		}
-		public function set alpha(_alpha:Number):void{
+	
+		public override function set opacity(_alpha:Number):void{
 			m_refShader.alpha = _alpha;
-			m_fresnelShader.alpha = _alpha;
-			m_alpha = _alpha;
+			if(m_hasFresnel)
+				m_fresnelShader.alpha = _alpha;
+			super.opacity = _alpha;
 		}
 		
 		public function get normalMap():TextureMap

@@ -40,7 +40,6 @@ package com.yogurt3d.core.materials
 	public class MaterialTwoColorFresnel extends Material
 	{
 		private var m_normalMap:TextureMap;
-		private var m_alpha:Number;
 		private var m_fresnelReflectance:Number;
 		private var m_fresnelPower:uint;
 		private var m_reflectivityMap:TextureMap;
@@ -50,16 +49,15 @@ package com.yogurt3d.core.materials
 		
 		private var m_freShader:ShaderTwoColorFresnel;
 		
-		public function MaterialTwoColorFresnel( _normalMap:TextureMap=null,
-											   _reflectivityMap:TextureMap=null,
-											   _fresnelReflectance:Number=0.028,
-											   _fresnelPower:uint=5,
-											   _alpha:Number=1.0,
-											   _opacity:Number=1.0,
-											   _color1:uint=0xFFFFFF,
-											   _color2:uint=0xFF0000,
-											   _gain:Number=0,
-											   _initInternals:Boolean=true)
+		public function MaterialTwoColorFresnel(  _color1:uint=0xFFFFFF,
+												  _color2:uint=0xFF0000,
+												  _fresnelReflectance:Number=0.028,
+												  _fresnelPower:uint=5,
+												  _gain:Number=0,
+												  _normalMap:TextureMap=null,
+											   	  _reflectivityMap:TextureMap=null,
+											   	  _opacity:Number=1.0,
+												  _initInternals:Boolean=true)
 		{
 			super(_initInternals);
 			
@@ -68,7 +66,6 @@ package com.yogurt3d.core.materials
 			m_normalMap = _normalMap;
 			
 			m_reflectivityMap = _reflectivityMap;
-			m_alpha = _alpha;
 			m_fresnelReflectance = _fresnelReflectance;
 			m_fresnelPower = _fresnelPower;
 			
@@ -78,7 +75,7 @@ package com.yogurt3d.core.materials
 			m_gain = _gain;
 						
 			m_freShader = new ShaderTwoColorFresnel(m_normalMap, 
-													m_reflectivityMap, m_alpha,
+													m_reflectivityMap, _opacity,
 													m_fresnelReflectance, m_fresnelPower, 
 													m_color1, m_color2);
 
@@ -100,14 +97,6 @@ package com.yogurt3d.core.materials
 		}
 		public function set normalMapUVOffset( _point:Point ):void{
 			m_freShader.normalMapUVOffset = _point;
-		}
-		
-		public function get alpha():Number{
-			return m_alpha;
-		}
-		public function set alpha(_value:Number):void{
-			m_alpha = _value;
-			m_freShader.alpha = _value;
 		}
 		
 		public function get fresnelReflectance():Number{
@@ -161,8 +150,9 @@ package com.yogurt3d.core.materials
 			m_freShader.gain = _value;
 		}
 		
-		public override function set opacity(value:Number):void{
-			super.opacity = value;	
+		public override function set opacity(_value:Number):void{
+			super.opacity = _value;
+			m_freShader.alpha = _value;
 		}
 	}
 }
