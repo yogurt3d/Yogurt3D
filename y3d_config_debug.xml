@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<flex-config>
+   <compiler locale="en_US" swf-version="13">
+		<define>
+			<name>Y3DCONFIG::TRACE</name>
+			<value>true</value>
+		</define>
+		<define>
+			<name>Y3DCONFIG::DEBUG</name>
+			<value>true</value>
+		</define>
+		<define>
+			<name>Y3DCONFIG::RELEASE</name>
+			<value>!Y3DCONFIG::DEBUG</value>
+		</define>
+	</compiler>
+	<metadata>
+		<title>Yogurt3D</title>
+		<description>http://www.yogurt3d.com</description>
+		<publisher>Yogurt3D Engine Corp.</publisher>
+		<creator>Yogurt3D Engine Corp.</creator>
+		<language>EN</language>
+   </metadata>
+</flex-config>
