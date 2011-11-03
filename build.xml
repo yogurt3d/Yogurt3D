@@ -2,12 +2,12 @@
 <project name="y3d" default="main" basedir=".">
 	
 
-	<property name="FLEX_HOME" value="C:\Program Files (x86)\Adobe\Adobe Flash Builder 4\sdks\4.5.1\" />
-	<property name="YOGURT3D_VERSION" value="v2.0_b_10400" />
+	<property name="FLEX_HOME" value="C:/Program Files (x86)/Adobe/Adobe Flash Builder 4/sdks/4.5.1" />
+	<property name="flex_frameworks_libs_dir" value="${FLEX_HOME}/frameworks/libs"/> 
+	<property name="YOGURT3D_VERSION" value="v2.0_b_10900" />
 	
 	<echo message="SDK in ${FLEX_HOME}"/>
 	
-	<available property="flexTasksJar" value="${FLEX_HOME}/lib/flexTasks.jar" file="${FLEX_HOME}/lib/flexTasks.jar"/>
 	<available property="flexTasksJar" value="${FLEX_HOME}/ant/lib/flexTasks.jar" file="${FLEX_HOME}/ant/lib/flexTasks.jar"/>
 	
 	<taskdef resource="flexTasks.tasks" classpath="${flexTasksJar}"/>
@@ -26,11 +26,22 @@
 
 	<target name="compile" depends="" description="Compile SWC">
 		
-		<echo message="Compiling ${ant.project.name}_${YOGURT3D_VERSION}.swc"/>
+		<echo message="Compiling ${ant.project.name}_${YOGURT3D_VERSION}_debug.swc"/>
 		
-		<compc fork="true" output="${basedir}/bin/${ant.project.name}_${YOGURT3D_VERSION}.swc">
-		    <source-path path-element="${basedir}/src"/>
-		    <include-sources dir="${basedir}/src" includes="**/*.as **/*.mxml"/>
+		<compc fork="true" output="${basedir}/bin/${ant.project.name}_${YOGURT3D_VERSION}_debug.swc" >
+			<arg line="-load-config+=y3d_config_debug.xml"   /> 
+			<source-path path-element="${basedir}/src"/>
+			<include-sources dir="${basedir}/src" includes="**/*.as **/*.mxml"/>
+			<arg line="-external-library-path+=${basedir}/libs" />
+		</compc>
+		
+		<echo message="Compiling ${ant.project.name}_${YOGURT3D_VERSION}_release.swc"/>
+		
+		<compc fork="true" output="${basedir}/bin/${ant.project.name}_${YOGURT3D_VERSION}_release.swc">
+			<arg line="-load-config+=y3d_config_release.xml"   /> 
+			<source-path path-element="${basedir}/src"/>
+			<include-sources dir="${basedir}/src" includes="**/*.as **/*.mxml"/>
+			<arg line="-external-library-path+=${basedir}/libs" />
 		</compc>
 		
 	</target>
@@ -42,11 +53,23 @@
 		<asdoc output="${basedir}/asdoc-output" lenient="true" failonerror="true" keep-xml="true" skip-xsl="false" warnings="true" strict="false">
 		    <compiler.source-path path-element="${basedir}/src"/>
 			<doc-sources path-element="${basedir}/src"/>
+			<arg line="-load-config+=${basedir}/y3d_config_release.xml"  /> 
+			<external-library-path file="${flex_frameworks_libs_dir}/*.swc"/>  <!-- Needed to include Flex classes -->
+			<external-library-path file="${flex_frameworks_libs_dir}/player/11.0/*.swc"/> 
+			<external-library-path file="${basedir}/libs/*.swc"/> 
 		</asdoc>
 		
 		<echo message="Expanding SWC file with ASDoc"/>
 		
-		<zip destfile="${basedir}/bin/${ant.project.name}_${YOGURT3D_VERSION}.swc" update="true">
+		<zip destfile="${basedir}/bin/${ant.project.name}_${YOGURT3D_VERSION}_debug.swc" update="true">
+		    <zipfileset dir="${basedir}/asdoc-output/tempdita" prefix="docs">
+		    	<include name="*.xml"/>
+		    	<include name="*.dite"/>
+				<exclude name="ASDoc_Config.xml"/>
+				<exclude name="overviews.xml"/>
+		    </zipfileset>
+		</zip>
+		<zip destfile="${basedir}/bin/${ant.project.name}_${YOGURT3D_VERSION}_release.swc" update="true">
 		    <zipfileset dir="${basedir}/asdoc-output/tempdita" prefix="docs">
 		    	<include name="*.xml"/>
 		    	<include name="*.dite"/>
@@ -56,25 +79,26 @@
 		</zip>
 		<echo message="Backing up SWC file into rar"/>
 		<zip destfile="${basedir}/bin/${ant.project.name}_${YOGURT3D_VERSION}_src.zip"  update="true">
-					<zipfileset dir="${basedir}/bin" prefix="bin">
-						<include name="*.swc"/>
-					</zipfileset>
-					<zipfileset dir="${basedir}/src" prefix="src">
-					</zipfileset>
-				</zip>
+			<zipfileset dir="${basedir}/bin" prefix="bin">
+				<include name="*.swc"/>
+			</zipfileset>
+			<zipfileset dir="${basedir}/src" prefix="src">
+			</zipfileset>
+		</zip>
 		<zip destfile="${basedir}/bin/${ant.project.name}_${YOGURT3D_VERSION}_bin.zip"  update="true">
-					<zipfileset dir="${basedir}/bin">
-						<include name="*.swc"/>
-					</zipfileset>
-				</zip>
-		<copy file="${basedir}/bin/${ant.project.name}_${YOGURT3D_VERSION}.swc" tofile="${basedir}/bin/y3d_v2_molehill.swc"/>
+			<zipfileset dir="${basedir}/bin">
+				<include name="*.swc"/>
+			</zipfileset>
+		</zip>
+		<copy file="${basedir}/bin/${ant.project.name}_${YOGURT3D_VERSION}_debug.swc" tofile="${basedir}/bin/y3d_v2_molehill.swc"/>
 		
 	</target>
 
 	<target name="post-cleanup" depends="doc">
 		<delete failonerror="false">
 			<fileset dir="${basedir}/bin">
-				<include name="${ant.project.name}_${YOGURT3D_VERSION}.swc"/>
+				<include name="${ant.project.name}_${YOGURT3D_VERSION}_debug.swc"/>
+				<include name="${ant.project.name}_${YOGURT3D_VERSION}_release.swc"/>
 			</fileset>
 		</delete>
 		<delete dir="${basedir}/asdoc-output/tempdita" failonerror="false" includeEmptyDirs="true"/>
