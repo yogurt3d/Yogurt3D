@@ -29,10 +29,14 @@ package com.yogurt3d.core.sceneobjects {
 	import com.yogurt3d.core.sceneobjects.interfaces.IScene;
 	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObjectRenderable;
 	import com.yogurt3d.core.transformations.Transformation;
+	import com.yogurt3d.core.utils.MatrixUtils;
+	import com.yogurt3d.core.viewports.Viewport;
 	import com.yogurt3d.presets.primitives.meshs.WireMesh;
 	
 	import flash.display3D.Context3DTriangleFace;
 	import flash.events.Event;
+	import flash.geom.Matrix3D;
+	import flash.geom.Utils3D;
 
 	/**
 	 * <strong>ISceneObjectRenderable</strong> interface abstract type.
@@ -53,8 +57,7 @@ package com.yogurt3d.core.sceneobjects {
 		YOGURT3D_INTERNAL var m_useHandCursor		:Boolean 	= false;
 		YOGURT3D_INTERNAL var m_culling				:String 	= Context3DTriangleFace.BACK;
 		
-		YOGURT3D_INTERNAL var m_wireframe			:SceneObjectRenderable;
-		YOGURT3D_INTERNAL var m_wireframeToBeAdded	:Boolean = false;
+		YOGURT3D_INTERNAL var m_drawWireFrame	:Boolean = false;
 		
 		use namespace YOGURT3D_INTERNAL;
 		
@@ -63,55 +66,56 @@ package com.yogurt3d.core.sceneobjects {
 			super(_initInternals);
 		}
 		
-		public function deactivateWireFrame():void{
-			if( m_wireframe )
-			{
-				if( scene )
-				{
-					scene.removeChild(m_wireframe );
-				}
-				m_wireframe.geometry.dispose();
-				m_wireframe.material.dispose();
-				m_wireframe.dispose();
-				m_wireframe = null;
-			}
+		public function get wireframe():Boolean{
+			return m_drawWireFrame;
+		}
+		public function set wireframe( _value:Boolean ):void{
+			m_drawWireFrame = _value;
 		}
 		
-		public function activateWireFrame( _color:uint = 0xFFFFFF, _tickness:Number = 0.01 ):void{
-			if( m_wireframe == null )
-			{
-				m_wireframe = new SceneObjectRenderable();
-				var wire:WireMesh;
-				m_wireframe.geometry = wire = new WireMesh();
-				wire.addMesh( this.geometry, _tickness );
-				m_wireframe.material = new MaterialFill( _color );
-				if( scene != null )
-				{
-					scene.addChild( m_wireframe );
-				}else{
-					m_wireframeToBeAdded = true;
-				}
-			}else{
-				deactivateWireFrame();
-				activateWireFrame( _color, _tickness );
-			}
-		}
+		YOGURT3D_INTERNAL var projectedVectices:Vector.<Number>;
+		YOGURT3D_INTERNAL var projectedUV:Vector.<Number>;
 		
-		public function hideWireFrame():Boolean{
-			if( m_wireframe )
+		
+		YOGURT3D_INTERNAL function drawWireFrame(_matrix:Matrix3D, _viewport:Viewport):void{
+			var matrix:Matrix3D = MatrixUtils.TEMP_MATRIX;
+			matrix.copyFrom( _matrix );
+			matrix.prepend( transformation.matrixGlobal );
+			
+			if( projectedVectices == null || projectedVectices.length != geometry.subMeshList[0].vertexCount * 2)
 			{
-				m_wireframe.visible = false;
-				return true;
+				projectedVectices = new Vector.<Number>(geometry.subMeshList[0].vertexCount * 2);
 			}
-			return false;
-		}
-		public function showWireFrame():Boolean{
-			if( m_wireframe )
+			
+			if( projectedUV == null || projectedUV.length != geometry.subMeshList[0].vertexCount * 3)
 			{
-				m_wireframe.visible = true;
-				return true;
+				projectedUV = new Vector.<Number>(geometry.subMeshList[0].vertexCount * 3);
 			}
-			return false;
+			
+			Utils3D.projectVectors( matrix, geometry.subMeshList[0].vertices,projectedVectices,projectedUV);
+			
+			_viewport.graphics.lineStyle(1,0xff0000);
+			
+			for( var i:int = 0 ; i < geometry.subMeshList[0].triangleCount; i++ )
+			{
+				var i1:uint = geometry.subMeshList[0].indices[ i * 3 + 0 ];
+				var i2:uint = geometry.subMeshList[0].indices[ i * 3 + 1 ];
+				var i3:uint = geometry.subMeshList[0].indices[ i * 3 + 2 ];
+				
+				var x1:Number = projectedVectices[i1*2];
+				var y1:Number = projectedVectices[i1*2+1];
+				
+				var x2:Number = projectedVectices[i2*2];
+				var y2:Number = projectedVectices[i2*2+1];
+				
+				var x3:Number = projectedVectices[i3*2];
+				var y3:Number = projectedVectices[i3*2+1];
+				
+				_viewport.graphics.moveTo( x1, y1 );
+				_viewport.graphics.lineTo( x2, y2 );
+				_viewport.graphics.lineTo( x3, y3 );
+				_viewport.graphics.lineTo( x1, y1 );
+			}
 		}
 		
 		/**
@@ -119,11 +123,6 @@ package com.yogurt3d.core.sceneobjects {
 		 * */
 		public override function addedToScene( _scene:IScene ):void{
 			super.addedToScene( _scene );
-			if(m_wireframeToBeAdded && m_wireframe )
-			{
-				_scene.addChild( m_wireframe );
-			}
-			m_wireframeToBeAdded = false;
 		}
 		
 		/**

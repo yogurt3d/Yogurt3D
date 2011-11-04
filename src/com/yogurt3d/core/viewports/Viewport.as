@@ -24,7 +24,9 @@ package com.yogurt3d.core.viewports {
 	import com.yogurt3d.core.managers.mousemanager.PickManager;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.objects.interfaces.IEngineObject;
+	import com.yogurt3d.core.sceneobjects.SceneObjectRenderable;
 	import com.yogurt3d.core.sceneobjects.interfaces.IScene;
+	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObjectRenderable;
 	
 	import flash.display.Sprite;
 	import flash.display3D.Context3D;
@@ -354,6 +356,24 @@ package com.yogurt3d.core.viewports {
 		}
 		
 		public function update( _scene:IScene ):void{
+			var renderable:Vector.<ISceneObjectRenderable> = _scene.renderableSet;
+			graphics.clear();
+			graphics.beginFill(0xFF0000, 0 );
+			graphics.drawRect( 0,0, m_width, m_height );
+			graphics.endFill();
+			var matrix:Matrix3D = new Matrix3D();
+			matrix.copyFrom( _scene.activeCamera.transformation.matrixGlobal );
+			matrix.invert();
+			matrix.append( _scene.activeCamera.projectionMatrix );
+			matrix.append( this.matrix );
+			
+			for( var i:int = 0; i < renderable.length; i++ )
+			{
+				if(SceneObjectRenderable(renderable[i]).wireframe)
+				{
+					SceneObjectRenderable(renderable[i]).YOGURT3D_INTERNAL::drawWireFrame(matrix,this );
+				}
+			}
 			if( m_pickManager )
 			{
 				m_pickManager.update( _scene, _scene.activeCamera );
