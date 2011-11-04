@@ -73,7 +73,7 @@ package com.yogurt3d.core.lights
 		private var m_shadowMap2		:RenderTextureTarget;
 		private var m_shadowColor		:Color;
 		
-		private var m_isFilteringOn      :Boolean                  = true;
+		private var m_isFilteringOn      :Boolean                  = false;
 		
 		
 		
