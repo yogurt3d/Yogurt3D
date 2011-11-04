@@ -147,9 +147,10 @@ package com.yogurt3d.core.managers.contextmanager
 		{
 			if( m_isActive )
 			{
+				m_scene.prepareSceneForNewFrame();
 				m_renderer.render( m_scene, m_viewport );
+			    m_viewport.update( m_scene );
 			}
-			m_viewport.update( m_scene );
 		}
 		
 		/**

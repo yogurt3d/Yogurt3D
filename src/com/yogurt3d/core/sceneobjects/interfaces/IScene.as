@@ -49,6 +49,8 @@ package com.yogurt3d.core.sceneobjects.interfaces
 		 * */
 		function get renderableSet():Vector.<ISceneObjectRenderable>;
 		
+		function prepareSceneForNewFrame():void;
+		
 		/**
 		 * <strong>ICamera</strong>
 		 * objects added to this <strong>IScene</strong> instance 

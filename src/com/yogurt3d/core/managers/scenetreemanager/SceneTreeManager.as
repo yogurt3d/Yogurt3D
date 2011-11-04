@@ -57,6 +57,8 @@ package com.yogurt3d.core.managers.scenetreemanager
 		private static var s_cameraObjectsByScene			:Dictionary;
 		private static var s_sceneTreeManagerByScene		:Dictionary;
 		
+		private static var s_renderableSetByScene			:Dictionary;
+		
 		public static function setSceneRootObject(_rootObject:ISceneObject, _scene:IScene):void
 		{
 			s_sceneBySceneObjects[_rootObject]	= _scene;
@@ -115,11 +117,22 @@ package com.yogurt3d.core.managers.scenetreemanager
 			return s_sceneObjectsByScene[_scene];
 		}
 		
+		public static function clearSceneFrameData( _scene:IScene ):void{
+			if( s_renderableSetByScene[ _scene ] != null )
+			{
+				delete s_renderableSetByScene[ _scene ];
+			}
+		}
+		
 		public static function getSceneRenderableSet(_scene:IScene):Vector.<ISceneObjectRenderable>
 		{
+			if( s_renderableSetByScene[ _scene ] )
+			{
+				return s_renderableSetByScene[ _scene ];
+			}
 			if( s_sceneTreeManagerByScene[ _scene ] )
 			{
-				return IRenderableManager(s_sceneTreeManagerByScene[ _scene ]).getSceneRenderableSet( _scene );
+				return s_renderableSetByScene[ _scene ] = IRenderableManager(s_sceneTreeManagerByScene[ _scene ]).getSceneRenderableSet( _scene );
 			}
 			return null; // s_renderableObjectsByScene[_scene];
 		}
@@ -542,6 +555,7 @@ package com.yogurt3d.core.managers.scenetreemanager
 			//s_renderableObjectsByScene		= new Dictionary(true);
 			s_cameraObjectsByScene			= new Dictionary(true);
 			s_lightsByScene					= new Dictionary(true);
+			s_renderableSetByScene			= new Dictionary(true);
 			
 			return true;
 		}

@@ -86,6 +86,11 @@ package com.yogurt3d.core.sceneobjects
 			return SceneTreeManager.getSceneRenderableSet(this);
 		}
 		
+		public function prepareSceneForNewFrame():void
+		{
+			SceneTreeManager.clearSceneFrameData( this );
+		}
+		
 		/**
 		 * @inheritDoc
 		 * */
