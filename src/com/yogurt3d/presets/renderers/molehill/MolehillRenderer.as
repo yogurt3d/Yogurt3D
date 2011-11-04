@@ -294,6 +294,8 @@ package com.yogurt3d.presets.renderers.molehill
 						
 						if(_light.isFilteringOn)
 						{
+							vsManager.cleanVertexBuffers( _context3d );
+							
 							var lightShadowMapRect:Rectangle = new Rectangle(0,0,_light.shadowMap.width,_light.shadowMap.height);
 							rtManager.setRenderTo( _context3d, m_shadowFilter.getRenderTarget( lightShadowMapRect ) );
 							
