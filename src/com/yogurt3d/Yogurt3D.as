@@ -101,7 +101,6 @@ package com.yogurt3d {
 		public var enginePostUpdateCallback		:Function;
 		
 		public static var CONTEXT3D						:Dictionary;
-		public static var STAGE							:Stage;
 		
 		private static var m_instance:Yogurt3D;
 		/**
@@ -112,6 +111,8 @@ package com.yogurt3d {
 			m_fps					= EngineDefaults.DEFAULT_FRAMERATE;
 			m_contextManager		= new ContextManager();
 			m_updateTimer			= new Timer(THOUSAND_MS / m_fps);
+			
+			CONTEXT3D = new Dictionary;
 			
 			initPlugins();
 			
@@ -127,72 +128,23 @@ package com.yogurt3d {
 		}
 		
 		/**
+		 * Not used anymore
 		 * Creates and readies GPU Hardware.
 		 * @param event
 		 * 
 		 */	
-		public function init(_stage:Stage):void {			
-			STAGE = _stage;
-			
-			CONTEXT3D = new Dictionary;
-			
-			_stage.stage3Ds[0].addEventListener( Event.CONTEXT3D_CREATE, initHandler1 );
-			_stage.stage3Ds[0].requestContext3D();			
+		public function init(/*_stage:Stage*/):void {						
+			dispatchEvent( new Yogurt3DEvent( Yogurt3DEvent.READY ) );
 		}
-		/**
-		 * @private 
-		 * @param event
-		 * 
-		 */		
-		private function initHandler1(event:Event):void
-		{
-			CONTEXT3D[0] = STAGE.stage3Ds[0].context3D;
-			
-			STAGE.stage3Ds[1].addEventListener( Event.CONTEXT3D_CREATE, initHandler2 );
-			STAGE.stage3Ds[1].requestContext3D();
-			
-			Yogurt3D.DEBUG_TEXT = CONTEXT3D[0].driverInfo;
-			
-		}
-		/**
-		 * @private 
-		 * @param event
-		 * 
-		 */	
-		private function initHandler2(event:Event):void
-		{
-			CONTEXT3D[1] = STAGE.stage3Ds[1].context3D;
-			
-			STAGE.stage3Ds[2].addEventListener( Event.CONTEXT3D_CREATE, initHandler3 );
-			STAGE.stage3Ds[2].requestContext3D();
-			
-		}
-		/**
-		 * @private 
-		 * @param event
-		 * 
-		 */	
-		private function initHandler3(event:Event):void
-		{
-			CONTEXT3D[2] = STAGE.stage3Ds[2].context3D;
-				
-			STAGE.stage3Ds[3].addEventListener( Event.CONTEXT3D_CREATE, initHandler4 );
-			STAGE.stage3Ds[3].requestContext3D();		
-			
-		}
-		/**
-		 * @private 
-		 * @param event
-		 * 
-		 */	
+
 		private function initHandler4(event:Event):void
 		{
 			// This last context is used for picking
-			CONTEXT3D[3] = STAGE.stage3Ds[3].context3D;
-			STAGE.stage3Ds[3].x = -50;
-			STAGE.stage3Ds[3].y = -50;
+			//CONTEXT3D[3] = STAGE.stage3Ds[3].context3D;
+			//STAGE.stage3Ds[3].x = -50;
+			//STAGE.stage3Ds[3].y = -50;
 			//Context3D( CONTEXT3D[3] ).configureBackBuffer( 1, 1, 0, true );
-			dispatchEvent( new Yogurt3DEvent( Yogurt3DEvent.READY ) );
+			//dispatchEvent( new Yogurt3DEvent( Yogurt3DEvent.READY ) );
 		}
 		
 		public static function get instance():Yogurt3D {			

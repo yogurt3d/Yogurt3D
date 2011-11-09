@@ -145,7 +145,7 @@ package com.yogurt3d.core.managers.contextmanager
 		 */
 		public function update():void
 		{
-			if( m_isActive )
+			if( m_isActive && m_viewport.context3d )
 			{
 				m_scene.prepareSceneForNewFrame();
 				m_renderer.render( m_scene, m_viewport );

@@ -30,6 +30,7 @@ package com.yogurt3d.core.viewports {
 	
 	import flash.display.Sprite;
 	import flash.display3D.Context3D;
+	import flash.events.Event;
 	import flash.geom.Matrix3D;
 	import flash.geom.Point;
 	import flash.utils.Dictionary;
@@ -70,8 +71,8 @@ package com.yogurt3d.core.viewports {
 		 */
 		public function Viewport(enablePicking:Boolean = false) {
 			super();
-			
 			initInternals(enablePicking);		
+			
 			trackObject();
 		}
 
@@ -86,7 +87,7 @@ package com.yogurt3d.core.viewports {
 			{
 				m_antiAliasing = value;
 				
-				if( !(m_width == 0 || m_height == 0) )
+				if( !(m_width == 0 || m_height == 0) && m_context )
 					m_context.configureBackBuffer(m_width, m_height, m_antiAliasing,true);
 			}
 		}
@@ -135,6 +136,10 @@ package com.yogurt3d.core.viewports {
 		 */
 		public function dispose() : void {
 			IDManager.removeObject(this);
+			
+			Yogurt3D.CONTEXT3D[m_viewportID].dispose();
+			
+			delete Yogurt3D.CONTEXT3D[m_viewportID];
 			
 			m_context = null;
 			
@@ -185,13 +190,16 @@ package com.yogurt3d.core.viewports {
 				trace("[Viewport "+m_viewportID+"] x: ", point.x, "y: ", point.y, "width: ", _width, "height: ", _height);
 			}
 			
-			Yogurt3D.STAGE.stage3Ds[m_viewportID].x = point.x;
-			Yogurt3D.STAGE.stage3Ds[m_viewportID].y = point.y;
-
-			if( !(_width == 0 || _height == 0) )
-				m_context.configureBackBuffer(_width, _height, m_antiAliasing,true);
-			
-			
+			if( m_context )
+			{
+				
+				stage.stage3Ds[m_viewportID].x = point.x;
+				stage.stage3Ds[m_viewportID].y = point.y;
+	
+				if( !(_width == 0 || _height == 0) )
+					m_context.configureBackBuffer(_width, _height, m_antiAliasing,true);
+				
+			}
 			m_matrix = new Matrix3D(Vector.<Number>([
 				_width / 2, 0, 0, 0,
 				0,  -_height / 2, 0, 0,
@@ -200,7 +208,7 @@ package com.yogurt3d.core.viewports {
 		}
 		
 		public function setBackBuffer( _width:uint, _height:uint ):void{
-			if( !(_width == 0 || _height == 0) )
+			if( !(_width == 0 || _height == 0) && m_context )
 				m_context.configureBackBuffer(_width, _height, m_antiAliasing,true);
 		}
 		
@@ -264,6 +272,49 @@ package com.yogurt3d.core.viewports {
 			setViewport(x, y, m_width, value);
 		}
 
+		private function onAddedToStage( _e:Event ):void
+		{
+			removeEventListener( Event.ADDED_TO_STAGE, onAddedToStage );
+			
+			if( Yogurt3D.CONTEXT3D[m_viewportID] == null )
+			{
+				stage.stage3Ds[m_viewportID].addEventListener( Event.CONTEXT3D_CREATE, initHandler );
+				stage.stage3Ds[m_viewportID].requestContext3D();		
+			}else{
+				m_context = Yogurt3D.CONTEXT3D[m_viewportID];
+			}
+		}
+		
+		private function onRemovedFromStage( _e:Event ):void
+		{
+			
+		}
+		
+		
+		private function initHandler( _E:Event ):void{
+			stage.stage3Ds[m_viewportID].removeEventListener( Event.CONTEXT3D_CREATE, initHandler );
+			Yogurt3D.CONTEXT3D[m_viewportID] = stage.stage3Ds[m_viewportID].context3D;
+			
+			m_context = stage.stage3Ds[m_viewportID].context3D;
+			
+			Y3DCONFIG::RELEASE
+			{
+				m_context.enableErrorChecking = false;
+			}
+			Y3DCONFIG::DEBUG
+			{
+				m_context.enableErrorChecking = true;
+			}
+			Y3DCONFIG::TRACE
+			{
+				trace("Creating viewport number:", m_viewportID);
+				trace("Y3D Driver:", m_context.driverInfo);
+			}
+			
+			setViewport(super.x, super.y, super.width, super.height);
+			
+		}
+		
 		/**
 		 * @inheritDoc   
 		 * @param _enableMouseManager
@@ -273,21 +324,8 @@ package com.yogurt3d.core.viewports {
 			
 			if( viewports.length > 0 )
 			{
+				// get an empty stage3d index
 				m_viewportID = viewports.shift();
-				m_context = Yogurt3D.CONTEXT3D[m_viewportID];
-				
-				Y3DCONFIG::RELEASE
-				{
-					m_context.enableErrorChecking = false;
-				}
-				Y3DCONFIG::DEBUG
-				{
-					m_context.enableErrorChecking = true;
-				}
-				Y3DCONFIG::TRACE
-				{
-					trace("Y3D Driver:", m_context.driverInfo);
-				}
 			}else{
 				throw new Error("Maximum 3 viewports are supported. You must dispose before creating a new one.");
 			}
@@ -295,6 +333,9 @@ package com.yogurt3d.core.viewports {
 			if (_enableMouseManager) {
 				m_pickManager = new PickManager( this );
 			}
+			
+			addEventListener( Event.ADDED_TO_STAGE, onAddedToStage );
+			addEventListener( Event.REMOVED_FROM_STAGE, onRemovedFromStage );
 			
 		}
 
@@ -357,26 +398,30 @@ package com.yogurt3d.core.viewports {
 		
 		public function update( _scene:IScene ):void{
 			var renderable:Vector.<ISceneObjectRenderable> = _scene.renderableSet;
-			graphics.clear();
-			graphics.beginFill(0xFF0000, 0 );
-			graphics.drawRect( 0,0, m_width, m_height );
-			graphics.endFill();
-			var matrix:Matrix3D = new Matrix3D();
-			matrix.copyFrom( _scene.activeCamera.transformation.matrixGlobal );
-			matrix.invert();
-			matrix.append( _scene.activeCamera.projectionMatrix );
-			matrix.append( this.matrix );
-			
-			for( var i:int = 0; i < renderable.length; i++ )
+			if( renderable )
 			{
-				if(SceneObjectRenderable(renderable[i]).wireframe)
+				graphics.clear();
+				graphics.beginFill(0xFF0000, 0 );
+				graphics.drawRect( 0,0, m_width, m_height );
+				graphics.endFill();
+				var matrix:Matrix3D = new Matrix3D();
+				matrix.copyFrom( _scene.activeCamera.transformation.matrixGlobal );
+				matrix.invert();
+				matrix.append( _scene.activeCamera.projectionMatrix );
+				matrix.append( this.matrix );
+				
+				for( var i:int = 0; i < renderable.length; i++ )
 				{
-					SceneObjectRenderable(renderable[i]).YOGURT3D_INTERNAL::drawWireFrame(matrix,this );
+					if(SceneObjectRenderable(renderable[i]).wireframe)
+					{
+						SceneObjectRenderable(renderable[i]).YOGURT3D_INTERNAL::drawWireFrame(matrix,this );
+					}
 				}
-			}
-			if( m_pickManager )
-			{
-				m_pickManager.update( _scene, _scene.activeCamera );
+			
+				if( m_pickManager )
+				{
+					m_pickManager.update( _scene, _scene.activeCamera );
+				}
 			}
 		}
 		

@@ -194,6 +194,7 @@ package com.yogurt3d.presets.renderers.molehill
 				
 			}
 			rendererHelper.endScene();
+			rendererHelper.clearTextures( _context3d );
 			
 			_context3d.present();
 			// clear vertex buffers
