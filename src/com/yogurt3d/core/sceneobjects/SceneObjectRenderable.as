@@ -58,6 +58,9 @@ package com.yogurt3d.core.sceneobjects {
 		YOGURT3D_INTERNAL var m_culling				:String 	= Context3DTriangleFace.BACK;
 		
 		YOGURT3D_INTERNAL var m_drawWireFrame	:Boolean = false;
+
+		YOGURT3D_INTERNAL var projectedVectices:Vector.<Number>;
+		YOGURT3D_INTERNAL var projectedUV:Vector.<Number>;
 		
 		use namespace YOGURT3D_INTERNAL;
 		
@@ -73,51 +76,49 @@ package com.yogurt3d.core.sceneobjects {
 			m_drawWireFrame = _value;
 		}
 		
-		YOGURT3D_INTERNAL var projectedVectices:Vector.<Number>;
-		YOGURT3D_INTERNAL var projectedUV:Vector.<Number>;
-		
-		
-		YOGURT3D_INTERNAL function drawWireFrame(_matrix:Matrix3D, _viewport:Viewport):void{
-			var matrix:Matrix3D = MatrixUtils.TEMP_MATRIX;
-			matrix.copyFrom( _matrix );
-			matrix.prepend( transformation.matrixGlobal );
-			
-			if( projectedVectices == null || projectedVectices.length != geometry.subMeshList[0].vertexCount * 2)
-			{
-				projectedVectices = new Vector.<Number>(geometry.subMeshList[0].vertexCount * 2);
-			}
-			
-			if( projectedUV == null || projectedUV.length != geometry.subMeshList[0].vertexCount * 3)
-			{
-				projectedUV = new Vector.<Number>(geometry.subMeshList[0].vertexCount * 3);
-			}
-			
-			Utils3D.projectVectors( matrix, geometry.subMeshList[0].vertices,projectedVectices,projectedUV);
-			
-			_viewport.graphics.lineStyle(1,0xff0000);
-			
-			for( var i:int = 0 ; i < geometry.subMeshList[0].triangleCount; i++ )
-			{
-				var i1:uint = geometry.subMeshList[0].indices[ i * 3 + 0 ];
-				var i2:uint = geometry.subMeshList[0].indices[ i * 3 + 1 ];
-				var i3:uint = geometry.subMeshList[0].indices[ i * 3 + 2 ];
+		Y3DCONFIG::DEBUG
+		{
+			YOGURT3D_INTERNAL function drawWireFrame(_matrix:Matrix3D, _viewport:Viewport):void{
+				var matrix:Matrix3D = MatrixUtils.TEMP_MATRIX;
+				matrix.copyFrom( _matrix );
+				matrix.prepend( transformation.matrixGlobal );
 				
-				var x1:Number = projectedVectices[i1*2];
-				var y1:Number = projectedVectices[i1*2+1];
+				if( projectedVectices == null || projectedVectices.length != geometry.subMeshList[0].vertexCount * 2)
+				{
+					projectedVectices = new Vector.<Number>(geometry.subMeshList[0].vertexCount * 2);
+				}
 				
-				var x2:Number = projectedVectices[i2*2];
-				var y2:Number = projectedVectices[i2*2+1];
+				if( projectedUV == null || projectedUV.length != geometry.subMeshList[0].vertexCount * 3)
+				{
+					projectedUV = new Vector.<Number>(geometry.subMeshList[0].vertexCount * 3);
+				}
 				
-				var x3:Number = projectedVectices[i3*2];
-				var y3:Number = projectedVectices[i3*2+1];
+				Utils3D.projectVectors( matrix, geometry.subMeshList[0].vertices,projectedVectices,projectedUV);
 				
-				_viewport.graphics.moveTo( x1, y1 );
-				_viewport.graphics.lineTo( x2, y2 );
-				_viewport.graphics.lineTo( x3, y3 );
-				_viewport.graphics.lineTo( x1, y1 );
+				_viewport.graphics.lineStyle(1,0xff0000);
+				
+				for( var i:int = 0 ; i < geometry.subMeshList[0].triangleCount; i++ )
+				{
+					var i1:uint = geometry.subMeshList[0].indices[ i * 3 + 0 ];
+					var i2:uint = geometry.subMeshList[0].indices[ i * 3 + 1 ];
+					var i3:uint = geometry.subMeshList[0].indices[ i * 3 + 2 ];
+					
+					var x1:Number = projectedVectices[i1*2];
+					var y1:Number = projectedVectices[i1*2+1];
+					
+					var x2:Number = projectedVectices[i2*2];
+					var y2:Number = projectedVectices[i2*2+1];
+					
+					var x3:Number = projectedVectices[i3*2];
+					var y3:Number = projectedVectices[i3*2+1];
+					
+					_viewport.graphics.moveTo( x1, y1 );
+					_viewport.graphics.lineTo( x2, y2 );
+					_viewport.graphics.lineTo( x3, y3 );
+					_viewport.graphics.lineTo( x1, y1 );
+				}
 			}
 		}
-		
 		
 		/**
 		 * @inheritDoc
