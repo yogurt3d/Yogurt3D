@@ -82,6 +82,9 @@ package com.yogurt3d.core.frustum{
 		public function setProjectionOrtho(_width:Number, _height:Number, _near:Number, _far:Number):void
 		{		
 			ProjectionUtils.setProjectionOrtho( m_projectionMatrix, _width, _height, _near, _far );
+			
+			//CalcFrustumBSPers(_fovy, _aspect, _near, _far);
+			//CalcFrustumPointsPers(_fovy, _aspect, _near, _far);
 		}
 		/**
 		 * @inheritDoc   
@@ -96,6 +99,9 @@ package com.yogurt3d.core.frustum{
 		public function setProjectionOrthoAsymmetric(_left:Number, _right:Number, _bottom:Number, _top:Number, _near:Number, _far:Number):void
 		{
 			ProjectionUtils.setProjectionOrthoAsymmetric(m_projectionMatrix, _left, _right, _bottom, _top, _near, _far);
+			
+			//CalcFrustumBSPers(_fovy, _aspect, _near, _far);
+			//CalcFrustumPointsPers(_fovy, _aspect, _near, _far);
 		}
 		/**
 		 * @inheritDoc   
@@ -125,6 +131,9 @@ package com.yogurt3d.core.frustum{
 		public function setProjectionPerspectiveAsymmetric(_width:Number, _height:Number, _near:Number, _far:Number):void
 		{
 			ProjectionUtils.setProjectionPerspectiveAsymmetric(m_projectionMatrix, _width,_height, _near, _far);
+			
+			//CalcFrustumBSPers(_fovy, _aspect, _near, _far);
+			//CalcFrustumPointsPers(_fovy, _aspect, _near, _far);
 		}
 		
 		public function CalcFrustumBSPers(_fovy:Number, _aspect:Number, _near:Number, _far:Number):void
