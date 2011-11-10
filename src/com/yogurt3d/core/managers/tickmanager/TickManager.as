@@ -36,7 +36,7 @@ package com.yogurt3d.core.managers.tickmanager {
 		private static var s_timeScale			:Number;
 		public  static var LATEST_SYSTEM_TIME	:uint;
 		private static var s_tickedObjectsCount	:uint;
-		private static var s_tickedObjects		:Vector.<Object>;
+		private static var s_tickedObjects		:Vector.<ITickedObject>;
 		private static var s_timeInfosByObject	:Dictionary;
 		private static var s_startTimesByObject	:Dictionary;
 		
@@ -57,7 +57,7 @@ package com.yogurt3d.core.managers.tickmanager {
 			
 			if(s_tickedObjects.indexOf(_value) == -1)
 			{
-				s_tickedObjects[s_tickedObjectsCount]	= {object:_value, priority:_priority};
+				s_tickedObjects[s_tickedObjectsCount]	= _value;
 				s_timeInfosByObject[_value]				= new TimeInfo();
 				
 				/*s_tickedObjects = s_tickedObjects.sort( function( _a:*, _b:* ):Number{
@@ -94,7 +94,7 @@ package com.yogurt3d.core.managers.tickmanager {
 			
 			for(var i:int = 0; i < s_tickedObjectsCount; i++)
 			{
-				var _object				:ITickedObject		= s_tickedObjects[i].object;
+				var _object				:ITickedObject		= s_tickedObjects[i];
 				var _timeInfo			:TimeInfo			= s_timeInfosByObject[_object];
 				var _objectStartTime	:Number				= s_startTimesByObject[_object];
 				
@@ -119,7 +119,7 @@ package com.yogurt3d.core.managers.tickmanager {
 			s_tickedObjectsCount	= 0;
 			s_timeInfosByObject		= new Dictionary();
 			s_startTimesByObject	= new Dictionary();
-			s_tickedObjects			= new Vector.<Object>();
+			s_tickedObjects			= new Vector.<ITickedObject>();
 			
 			return true;
 		}
