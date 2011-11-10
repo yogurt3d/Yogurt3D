@@ -38,6 +38,11 @@ package com.yogurt3d.core.helpers.boundingvolumes
 		YOGURT3D_INTERNAL var m_radiusSqr	:Number;
 		YOGURT3D_INTERNAL var m_center		:Vector3D;
 		
+		public function set center(value:Vector3D):void
+		{
+			YOGURT3D_INTERNAL::m_center = value;
+		}
+
 		override public function clone():IEngineObject{
 			return new BoundingSphere(m_radiusSqr, m_center);
 			
