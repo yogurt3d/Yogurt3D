@@ -326,7 +326,7 @@ package com.yogurt3d.core.lights
 		 */
 		public function setProjection():void{
 			if (m_type == ELightType.SPOT){
-				frustum.setProjectionPerspective( outerConeAngle, 1.0, 5, 10000.0 );
+				frustum.setProjectionPerspective( outerConeAngle, 1.0, 1, m_range );
 			}else if( m_type == ELightType.DIRECTIONAL && scene) {
 				var temp:Matrix3D = MatrixUtils.TEMP_MATRIX;
 				temp.copyFrom( transformation.matrixGlobal );
