@@ -1,14 +1,12 @@
 package com.yogurt3d.core.scenetree.quad
 {
-	import com.yogurt3d.core.cameras.Camera;
-	import com.yogurt3d.core.cameras.Frustum;
+	import com.yogurt3d.core.cameras.interfaces.ICamera;
+	import com.yogurt3d.core.frustum.Frustum;
 	import com.yogurt3d.core.helpers.boundingvolumes.BoundingSphere;
 	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObjectRenderable;
 	
-	import flash.display.Scene;
 	import flash.geom.Rectangle;
 	import flash.geom.Vector3D;
-	import flash.utils.getTimer;
 	
 	public class QuadTree
 	{
@@ -33,7 +31,7 @@ package com.yogurt3d.core.scenetree.quad
 			return root.retrieve( _bound );
 		}
 		
-		public function visibilityProcess( camera:Camera ) :void
+		public function visibilityProcess( camera:ICamera ) :void
 		{
 			list.length = 0;
 			return _visibilityProcess( camera, root, true );
@@ -41,7 +39,7 @@ package com.yogurt3d.core.scenetree.quad
 		
 		
 		// recursive
-		private function _visibilityProcess( camera:Camera, node:QuadNode, bTestChildren:Boolean) :void
+		private function _visibilityProcess( camera:ICamera, node:QuadNode, bTestChildren:Boolean) :void
 		{		
 			if(bTestChildren) 
 			{

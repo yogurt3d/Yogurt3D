@@ -19,31 +19,19 @@
 
 package com.yogurt3d.core.lights
 {
-	import com.yogurt3d.core.geoms.SkeletalAnimatedMesh;
-	import com.yogurt3d.core.geoms.SkinnedSubMesh;
-	import com.yogurt3d.core.geoms.interfaces.IMesh;
+	import com.yogurt3d.core.cameras.interfaces.ICamera;
+	import com.yogurt3d.core.frustum.Frustum;
 	import com.yogurt3d.core.helpers.ProjectionUtils;
-	import com.yogurt3d.core.managers.vbstream.VertexStreamManager;
 	import com.yogurt3d.core.materials.base.Color;
 	import com.yogurt3d.core.materials.shaders.ShaderDepthMap;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.sceneobjects.Scene;
+	import com.yogurt3d.core.sceneobjects.SceneObject;
 	import com.yogurt3d.core.sceneobjects.SceneObjectContainer;
-	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObjectRenderable;
-	import com.yogurt3d.core.sceneobjects.interfaces.ISelfRenderable;
 	import com.yogurt3d.core.texture.RenderTextureTarget;
 	import com.yogurt3d.core.transformations.Transformation;
 	import com.yogurt3d.core.utils.MatrixUtils;
 	
-	import flash.display3D.Context3D;
-	import flash.display3D.Context3DBlendFactor;
-	import flash.display3D.Context3DCompareMode;
-	import flash.display3D.Context3DProgramType;
-	import flash.display3D.Context3DTextureFormat;
-	import flash.display3D.Context3DTriangleFace;
-	import flash.display3D.Context3DVertexBufferFormat;
-	import flash.display3D.VertexBuffer3D;
-	import flash.display3D.textures.Texture;
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
 	
@@ -55,7 +43,7 @@ package com.yogurt3d.core.lights
 	 * @author Yogurt3D Engine Core Team
 	 * @company Yogurt3D Corp.
 	 **/
-	public class Light extends SceneObjectContainer
+	public class Light extends SceneObject implements ICamera
 	{		
 		private static var m_depthProgram:ShaderDepthMap;
 		
@@ -75,13 +63,11 @@ package com.yogurt3d.core.lights
 		
 		private var m_isFilteringOn      :Boolean                  = false;
 		
-		
+		private var m_frustum :Frustum;
 		
 		private var m_innerConeAngle	: Number;
 		private var m_outerConeAngle	: Number;
 		private var m_coneAngles		: Vector.<Number>;
-		
-		YOGURT3D_INTERNAL var m_projectionMatrix		:Matrix3D;
 		
 		/**
 		 * 
@@ -92,40 +78,25 @@ package com.yogurt3d.core.lights
 		 */
 		public function Light(_type:ELightType = null, _color:uint = 0xFFFFFF, _intensity:Number=1)
 		{
-			m_type 	= _type;
+			m_type 					= _type;
 			
 			if( m_type == null )
 			{
-				m_type = ELightType.POINT;
-			}
-			m_attenuation = new Vector.<Number>(4,true);
-			m_attenuation[0] = 1;
-			m_attenuation[1] = 0;
-			m_attenuation[2] = 0;
-			m_attenuation[3] = 1;
+				m_type 				= ELightType.POINT;
+			}			
 			
-			m_innerConeAngle = 20;
-			m_outerConeAngle = 30;
-			
-			m_coneAngles = new Vector.<Number>(4,true);
-			m_coneAngles[0] = m_innerConeAngle;
-			m_coneAngles[1] = m_outerConeAngle;
-			
-			innerConeAngle = 40;
-			outerConeAngle = 60;
-			m_range = 150;
-			
-			m_color = new Color(0,0,0);
+			m_color 				= new Color(0,0,0);
 			m_color.setColorUint( 0xFF000000 | _color );
+			intensity 				= _intensity;
 			
-			m_shadowColor = new Color(0,0,0,1);
-			
-			m_direction = new Vector3D();
-			intensity = _intensity;
-			
-			setProjection();			
+			super( true );
 		}
 		
+		public function get frustum():Frustum
+		{
+			return m_frustum;
+		}
+
 		/**
 		 * Changes shadow color and alpha
 		 * @return 
@@ -176,16 +147,7 @@ package com.yogurt3d.core.lights
 		public function set range( _range:Number):void
 		{
 			m_range = _range;
-			//setProjection();
-		}
-		/**
-		 * @inheritDoc   
-		 * @return 
-		 * @default perspective projection with 45 fovy, 4/3 aspect ratio, near plane at 1 and far plane at 500
-		 */
-		public function get projectionMatrix():Matrix3D
-		{
-			return m_projectionMatrix;
+			m_coneAngles[3] = m_range;
 		}
 		
 		/**
@@ -359,66 +321,12 @@ package com.yogurt3d.core.lights
 		}
 		
 		/**
-		 * @inheritDoc  
-		 * @param _width
-		 * @param _height
-		 * @param _near
-		 * @param _far
-		 * 
-		 */		
-		public function setProjectionOrtho(_width:Number, _height:Number, _near:Number, _far:Number):void
-		{		
-			m_projectionMatrix = ProjectionUtils.setProjectionOrtho( _width, _height, _near, _far );
-		}
-		/**
-		 * @inheritDoc   
-		 * @param _left
-		 * @param _right
-		 * @param _bottom
-		 * @param _top
-		 * @param _near
-		 * @param _far
-		 * 
-		 */		
-		public function setProjectionOrthoAsymmetric(_left:Number, _right:Number, _bottom:Number, _top:Number, _near:Number, _far:Number):void
-		{
-			m_projectionMatrix = ProjectionUtils.setProjectionOrthoAsymmetric(_left, _right, _bottom, _top, _near, _far);
-		}
-		/**
-		 * @inheritDoc   
-		 * @param _fovy
-		 * @param _aspect
-		 * @param _near
-		 * @param _far
-		 * 
-		 */		
-		public function setProjectionPerspective(_fovy:Number, _aspect:Number, _near:Number, _far:Number):void
-		{	
-			m_projectionMatrix = ProjectionUtils.setProjectionPerspective(_fovy, _aspect, _near, _far);
-		}
-		/**
-		 * @inheritDoc   
-		 * @param _left
-		 * @param _right
-		 * @param _bottom
-		 * @param _top
-		 * @param _near
-		 * @param _far
-		 * 
-		 */		
-		public function setProjectionPerspectiveAsymmetric(_width:Number, _height:Number,  _near:Number, _far:Number):void
-		{
-			
-			m_projectionMatrix = ProjectionUtils.setProjectionPerspectiveAsymmetric(_width, _height, _near, _far);
-		}
-		
-		/**
 		 * sets the projection matrix of the light according to light type and the outer angle 
 		 * is used for shadow map generation
 		 */
 		public function setProjection():void{
 			if (m_type == ELightType.SPOT){
-				setProjectionPerspective( outerConeAngle, 1.0, 5, 10000.0 );
+				frustum.setProjectionPerspective( outerConeAngle, 1.0, 5, 10000.0 );
 			}else if( m_type == ELightType.DIRECTIONAL && scene) {
 				var temp:Matrix3D = MatrixUtils.TEMP_MATRIX;
 				temp.copyFrom( transformation.matrixGlobal );
@@ -445,7 +353,7 @@ package com.yogurt3d.core.lights
 					if(corner.z < _min.z) _min.z = corner.z;
 					
 				}
-				setProjectionOrthoAsymmetric(_min.x, _max.x, _min.y, _max.y, -_max.z, -_min.z );
+				frustum.setProjectionOrthoAsymmetric(_min.x, _max.x, _min.y, _max.y, -_max.z, -_min.z );
 			}
 		}
 		
@@ -457,7 +365,32 @@ package com.yogurt3d.core.lights
 		{
 			super.initInternals();
 			
-			m_projectionMatrix			= new Matrix3D();
+			m_frustum = new Frustum();
+			
+			m_frustum.setProjectionPerspective( 45.0, 4.0/3.0, 1.0, 500.0 );
+			
+			m_attenuation 			= new Vector.<Number>(4,true);
+			m_attenuation[0] 		= 1;
+			m_attenuation[1] 		= 0;
+			m_attenuation[2] 		= 0;
+			m_attenuation[3] 		= 1;
+			
+			m_innerConeAngle 		= 20;
+			m_outerConeAngle 		= 30;
+			
+			m_coneAngles 			= new Vector.<Number>(4,true);
+			m_coneAngles[0] 		= m_innerConeAngle;
+			m_coneAngles[1] 		= m_outerConeAngle;
+			
+			innerConeAngle 			= 40;
+			outerConeAngle 			= 60;
+			range 					= 150;
+			
+			m_shadowColor 			= new Color(0,0,0,1);
+			
+			m_direction 			= new Vector3D();
+			
+			setProjection();
 		}
 		/**
 		 * @inheritDoc 
@@ -470,10 +403,8 @@ package com.yogurt3d.core.lights
 		
 		public function get coneAngles():Vector.<Number>
 		{
-			m_coneAngles[3] = m_range;
 			return m_coneAngles;
 		}
-		
 		
 	}
 }

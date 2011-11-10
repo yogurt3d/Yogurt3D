@@ -47,7 +47,7 @@ package com.yogurt3d.core.sceneobjects.interfaces
 		 * (including hierarchical ones, children, grand children)
 		 * in a one dimensional (flattened) vector.
 		 * */
-		function get renderableSet():Vector.<ISceneObjectRenderable>;
+		function getRenderableSet(_camera:ICamera):Vector.<ISceneObjectRenderable>;
 		
 		function prepareSceneForNewFrame():void;
 		
@@ -127,9 +127,6 @@ package com.yogurt3d.core.sceneobjects.interfaces
 		function get skyBox():SkyBox;
 
 		function set skyBox(_value:SkyBox):void;
-		
-		function get activeCamera():ICamera;
-		function set activeCamera(value:ICamera):void;
 		
 		function get postEffects():Vector.<Filter>;
 	}

@@ -15,13 +15,12 @@ package com.yogurt3d.core.helpers
  	 **/
 	public class ProjectionUtils
 	{
-		public static function setProjectionOrtho(_width:Number, _height:Number, _near:Number, _far:Number):Matrix3D
+		public static function setProjectionOrtho(_matrix:Matrix3D,_width:Number, _height:Number, _near:Number, _far:Number):Matrix3D
 		{
 			var _xScale:Number = 2.0 / _width;
 			var _yScale:Number = 2.0 / _height;
 			var _deltaZ:Number = _near - _far;//right handed
 			
-			var _matrix:Matrix3D = new Matrix3D();
 			_matrix.copyRawDataFrom(Vector.<Number>([
 				_xScale, 0.0, 0.0, 0.0,
 				0.0, _yScale, 0.0, 0.0,
@@ -32,13 +31,12 @@ package com.yogurt3d.core.helpers
 			return _matrix;
 		}
 		
-		public static function setProjectionOrthoAsymmetric(_left:Number, _right:Number, _bottom:Number, _top:Number, _near:Number, _far:Number):Matrix3D
+		public static function setProjectionOrthoAsymmetric(_matrix:Matrix3D, _left:Number, _right:Number, _bottom:Number, _top:Number, _near:Number, _far:Number):Matrix3D
 		{
 			var _deltaX:Number = _right-_left;
 			var _deltaY:Number = _top -_bottom;
 			var _deltaZ:Number = _near - _far;//right handed
 			
-			var _matrix:Matrix3D = new Matrix3D();
 			_matrix.copyRawDataFrom(Vector.<Number>([
 				2.0 / _deltaX, 0.0, 0.0, 0.0,
 				0.0, 2.0 / _deltaY, 0.0, 0.0,
@@ -49,13 +47,12 @@ package com.yogurt3d.core.helpers
 			return _matrix;
 		}
 		
-		public static function setProjectionPerspective(_fovy:Number, _aspect:Number, _near:Number, _far:Number):Matrix3D
+		public static function setProjectionPerspective(_matrix:Matrix3D,_fovy:Number, _aspect:Number, _near:Number, _far:Number):Matrix3D
 		{	
 			var _yScale:Number = 1.0/Math.tan(_fovy/2.0*Transformation.DEG_TO_RAD);
 			var _xScale:Number = _yScale / _aspect; 
 			var _deltaZ:Number = _near-_far;//right handed
 			
-			var _matrix:Matrix3D = new Matrix3D();
 			_matrix.copyRawDataFrom(Vector.<Number>([
 				_xScale, 0.0, 0.0, 0.0,
 				0.0, _yScale, 0.0, 0.0,
@@ -65,7 +62,7 @@ package com.yogurt3d.core.helpers
 			
 			return _matrix;
 		}
-		public static function setProjectionPerspectiveAsymmetric(width:Number, _height:Number, _near:Number, _far:Number):Matrix3D
+		public static function setProjectionPerspectiveAsymmetric(_matrix:Matrix3D,width:Number, _height:Number, _near:Number, _far:Number):Matrix3D
 		{
 			var _deltaZ			:Number				= _near - _far;
 			
@@ -91,7 +88,6 @@ package com.yogurt3d.core.helpers
 			_m[12] = 0;
 			_m[13] = 0;
 			
-			var _matrix:Matrix3D = new Matrix3D();
 			_matrix.copyRawDataFrom( _m );
 			
 			return _matrix;

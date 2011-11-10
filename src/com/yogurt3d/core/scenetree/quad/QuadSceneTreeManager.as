@@ -1,6 +1,6 @@
 package com.yogurt3d.core.scenetree.quad
 {
-	import com.yogurt3d.core.cameras.Frustum;
+	import com.yogurt3d.core.frustum.Frustum;
 	import com.yogurt3d.core.cameras.interfaces.ICamera;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.sceneobjects.Scene;
@@ -106,21 +106,21 @@ package com.yogurt3d.core.scenetree.quad
 			}
 		}
 		
-		public function getSceneRenderableSet(_scene:IScene):Vector.<ISceneObjectRenderable>
+		public function getSceneRenderableSet(_scene:IScene, _camera:ICamera):Vector.<ISceneObjectRenderable>
 		{
 			var temp :Vector3D;
 			
-			var camera:ICamera =  _scene.activeCamera;
+			var camera:ICamera =  _camera;
 			
 			if( s_quadByScene[_scene] != null && s_dynamicChildrenByScene[_scene] != null )
 			{
-				camera.extractPlanes();
+				camera.frustum.extractPlanes(camera.transformation);
 				
 				temp = camera.transformation.matrixGlobal.transformVector(camera.frustum.m_bSCenterOrginal);
 				
 				camera.frustum.boundingSphere.YOGURT3D_INTERNAL::m_center = temp;
 				
-				s_quadByScene[_scene].visibilityProcess( _scene.activeCamera );
+				s_quadByScene[_scene].visibilityProcess( _camera );
 				
 				var remove:Array = [];
 				var len:uint = s_quadByScene[_scene].list.length;
@@ -146,13 +146,13 @@ package com.yogurt3d.core.scenetree.quad
 				return s_dynamicChildrenByScene[_scene].concat( s_quadByScene[_scene].list );
 			}else if( s_quadByScene[_scene] )
 			{
-				camera.extractPlanes();
+				camera.frustum.extractPlanes(camera.transformation);
 				
 				temp = camera.transformation.matrixGlobal.transformVector(camera.frustum.m_bSCenterOrginal);
 				
 				camera.frustum.boundingSphere.YOGURT3D_INTERNAL::m_center = temp;
 				
-				s_quadByScene[_scene].visibilityProcess( _scene.activeCamera );
+				s_quadByScene[_scene].visibilityProcess( _camera );
 				
 				return s_quadByScene[_scene].list;
 			}else if( s_dynamicChildrenByScene[_scene] ){

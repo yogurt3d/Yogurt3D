@@ -38,6 +38,7 @@ package com.yogurt3d.core.managers.contextmanager
 	{
 		YOGURT3D_INTERNAL var m_scene			:IScene;
 		YOGURT3D_INTERNAL var m_viewport		:Viewport;
+		YOGURT3D_INTERNAL var m_camera			:ICamera;
 		YOGURT3D_INTERNAL var m_renderer		:IRenderer;
 		YOGURT3D_INTERNAL var m_isActive		:Boolean;
 		
@@ -75,7 +76,7 @@ package com.yogurt3d.core.managers.contextmanager
 		 */
 		public function get camera():ICamera
 		{
-			return m_scene.activeCamera;
+			return m_camera;
 		}
 		
 		/**
@@ -85,7 +86,7 @@ package com.yogurt3d.core.managers.contextmanager
 		 */
 		public function set camera(_value:ICamera):void
 		{
-			m_scene.activeCamera = _value;
+			m_camera = _value;
 		}
 		
 		
@@ -148,8 +149,8 @@ package com.yogurt3d.core.managers.contextmanager
 			if( m_isActive && m_viewport.context3d )
 			{
 				m_scene.prepareSceneForNewFrame();
-				m_renderer.render( m_scene, m_viewport );
-			    m_viewport.update( m_scene );
+				m_renderer.render( m_scene, m_camera, m_viewport );
+			    m_viewport.update( m_scene, m_camera );
 			}
 		}
 		

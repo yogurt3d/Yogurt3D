@@ -61,6 +61,7 @@ package com.yogurt3d.core.sceneobjects {
 		
 		YOGURT3D_INTERNAL var m_visible:Boolean = true;
 		
+		// SIGNALS BEGIN
 		YOGURT3D_INTERNAL var m_onStaticChanged					: Signal;
 		
 		YOGURT3D_INTERNAL var m_onRenderLayerChanged			: Signal;
@@ -82,6 +83,7 @@ package com.yogurt3d.core.sceneobjects {
 		YOGURT3D_INTERNAL var m_onAddedToScene   				: Signal;
 		
 		YOGURT3D_INTERNAL var m_onRemovedFromScene   			: Signal;
+		//SIGNALS END
 		
 		use namespace YOGURT3D_INTERNAL;
 

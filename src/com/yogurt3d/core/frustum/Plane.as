@@ -15,7 +15,7 @@
 * You should have received a copy of the YOGURT3D CLICK-THROUGH AGREEMENT
 * License along with this library. If not, see <http://www.yogurt3d.com/yogurt3d/downloads/yogurt3d-click-through-agreement.html>. 
 */
-package com.yogurt3d.core.cameras
+package com.yogurt3d.core.frustum
 {
 	
 	import flash.geom.Vector3D;

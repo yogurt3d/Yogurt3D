@@ -124,15 +124,19 @@ package com.yogurt3d.core.managers.scenetreemanager
 			}
 		}
 		
-		public static function getSceneRenderableSet(_scene:IScene):Vector.<ISceneObjectRenderable>
+		public static function getSceneRenderableSet(_scene:IScene, _camera:ICamera):Vector.<ISceneObjectRenderable>
 		{
-			if( s_renderableSetByScene[ _scene ] )
+			if( s_renderableSetByScene[ _scene ] && s_renderableSetByScene[ _scene ][_camera] )
 			{
-				return s_renderableSetByScene[ _scene ];
+				return s_renderableSetByScene[ _scene ][_camera];
 			}
+			if( s_renderableSetByScene[ _scene ] == null )
+			{
+				s_renderableSetByScene[ _scene ] = new Dictionary();
+			}			
 			if( s_sceneTreeManagerByScene[ _scene ] )
 			{
-				return s_renderableSetByScene[ _scene ] = IRenderableManager(s_sceneTreeManagerByScene[ _scene ]).getSceneRenderableSet( _scene );
+				return s_renderableSetByScene[ _scene ][_camera] = IRenderableManager(s_sceneTreeManagerByScene[ _scene ]).getSceneRenderableSet( _scene, _camera );
 			}
 			return null; // s_renderableObjectsByScene[_scene];
 		}

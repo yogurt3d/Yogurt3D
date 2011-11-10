@@ -19,7 +19,7 @@ package com.yogurt3d.core.scenetree.octree
 {
 	
 	import com.yogurt3d.core.cameras.Camera;
-	import com.yogurt3d.core.cameras.Frustum;
+	import com.yogurt3d.core.frustum.Frustum;
 	import com.yogurt3d.core.cameras.interfaces.ICamera;
 	import com.yogurt3d.core.helpers.boundingvolumes.AxisAlignedBoundingBox;
 	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObjectRenderable;

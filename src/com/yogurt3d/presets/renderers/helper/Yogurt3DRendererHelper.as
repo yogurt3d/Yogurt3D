@@ -91,7 +91,7 @@ package com.yogurt3d.presets.renderers.helper
 		
 		public function beginScene(_camera:ICamera=null):void
 		{
-			m_projectionMatrix.copyFrom( _camera.projectionMatrix );
+			m_projectionMatrix.copyFrom( _camera.frustum.projectionMatrix );
 			
 			m_viewMatrix.copyFrom( _camera.transformation.matrixGlobal );
 			m_viewMatrix.invert();
@@ -258,7 +258,7 @@ package com.yogurt3d.presets.renderers.helper
 						setProgramConstantsFromMatrix( 	Context3DProgramType.VERTEX, _shaderConstants.firstRegister, _light.transformation.matrixGlobal,	true	);
 						break;
 					case EShaderConstantsType.LIGHT_PROJECTION:
-						setProgramConstantsFromMatrix( 	Context3DProgramType.VERTEX, _shaderConstants.firstRegister, _light.projectionMatrix,				false	);
+						setProgramConstantsFromMatrix( 	Context3DProgramType.VERTEX, _shaderConstants.firstRegister, _light.frustum.projectionMatrix,				false	);
 						break;
 					case EShaderConstantsType.LIGHT_VIEW_PROJECTION_TRANSPOSED:
 						m_tempMatrix.copyFrom( _light.transformation.matrixGlobal );
@@ -267,13 +267,13 @@ package com.yogurt3d.presets.renderers.helper
 						m_tempMatrix.invert();
 						m_tempMatrix.prepend(_object.transformation.matrixGlobal);
 						if(_light.type != ELightType.POINT)
-							m_tempMatrix.append( _light.projectionMatrix );
+							m_tempMatrix.append( _light.frustum.projectionMatrix );
 						
 						
 						setProgramConstantsFromMatrix( 	Context3DProgramType.VERTEX, _shaderConstants.firstRegister, m_tempMatrix,							true	);
 						break;
 					case EShaderConstantsType.LIGHT_PROJECTION_TRANSPOSED:
-						setProgramConstantsFromMatrix( 	Context3DProgramType.VERTEX, _shaderConstants.firstRegister, _light.projectionMatrix,				true	);
+						setProgramConstantsFromMatrix( 	Context3DProgramType.VERTEX, _shaderConstants.firstRegister, _light.frustum.projectionMatrix,				true	);
 						break;
 					case EShaderConstantsType.SKYBOX_MATRIX_TRANSPOSED:
 						m_tempMatrix.copyFrom(_camera.transformation.matrixGlobal);

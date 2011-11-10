@@ -137,7 +137,7 @@ package com.yogurt3d.presets.renderers.molehill
 			_context3d = Yogurt3D.CONTEXT3D[3] = _e.target.context3D;
 		}
 		
-		public function render(_scene:IScene, _viewport:Viewport):void
+		public function render(_scene:IScene, _camera:ICamera, _viewport:Viewport):void
 		{		
 			m_lastHit = null;
 			
@@ -159,7 +159,7 @@ package com.yogurt3d.presets.renderers.molehill
 				_context3d.configureBackBuffer(50,50,0,true);
 				m_initialized = true;
 			}
-			var _camera:ICamera = _scene.activeCamera;
+			
 			var _renderableObject:ISceneObjectRenderable;
 			var _mesh:IMesh;
 			var _vertexBuffer:VertexBuffer3D;
@@ -189,13 +189,13 @@ package com.yogurt3d.presets.renderers.molehill
 			_context3d.setProgramConstantsFromVector( Context3DProgramType.VERTEX, 4, m_viewportData, 1 );
 			
 			// foe each renderable object loop
-			var _renderableSet:Vector.<ISceneObjectRenderable> = _scene.renderableSet;
+			var _renderableSet:Vector.<ISceneObjectRenderable> = _scene.getRenderableSet(_camera);
 			
 			var len:uint = (_renderableSet)?_renderableSet.length:0;
 			
 			m_viewMatrix.copyFrom( _camera.transformation.matrixGlobal );
 			m_viewMatrix.invert();
-			m_viewMatrix.append(_camera.projectionMatrix);
+			m_viewMatrix.append(_camera.frustum.projectionMatrix);
 			
 			for( var i:int = 0; i < len; i++ )
 			{

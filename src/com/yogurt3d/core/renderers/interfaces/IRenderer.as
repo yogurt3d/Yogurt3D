@@ -31,6 +31,6 @@ package com.yogurt3d.core.renderers.interfaces
  	 **/
 	public interface IRenderer extends IEngineObject
 	{
-		function render (_scene:IScene, _viewport:Viewport):void;
+		function render (_scene:IScene, _camera:ICamera, _viewport:Viewport):void;
 	}
 }

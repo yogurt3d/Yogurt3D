@@ -1,5 +1,6 @@
 package com.yogurt3d.core.scenetree
 {
+	import com.yogurt3d.core.cameras.interfaces.ICamera;
 	import com.yogurt3d.core.sceneobjects.interfaces.IScene;
 	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObject;
 	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObjectRenderable;
@@ -8,6 +9,6 @@ package com.yogurt3d.core.scenetree
 	{
 		function addChild(_child:ISceneObjectRenderable, _scene:IScene, index:int = -1):void;
 		function removeChild(_child:ISceneObjectRenderable, _scene:IScene):void;
-		function getSceneRenderableSet(_scene:IScene):Vector.<ISceneObjectRenderable>;
+		function getSceneRenderableSet(_scene:IScene, _camera:ICamera):Vector.<ISceneObjectRenderable>;
 	}
 }

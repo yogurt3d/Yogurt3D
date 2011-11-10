@@ -1,6 +1,6 @@
 package com.yogurt3d.core.scenetree.octree
 {
-	import com.yogurt3d.core.cameras.Frustum;
+	import com.yogurt3d.core.frustum.Frustum;
 	import com.yogurt3d.core.cameras.interfaces.ICamera;
 	import com.yogurt3d.core.helpers.boundingvolumes.AxisAlignedBoundingBox;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
@@ -143,21 +143,21 @@ package com.yogurt3d.core.scenetree.octree
 			
 		}
 		
-		public function getSceneRenderableSet(_scene:IScene):Vector.<ISceneObjectRenderable>
+		public function getSceneRenderableSet(_scene:IScene, _camera:ICamera):Vector.<ISceneObjectRenderable>
 		{
 			var temp :Vector3D;
 			
-			var camera:ICamera =  _scene.activeCamera;
+			var camera:ICamera =  _camera;
 			
 			if( s_octantByScene[_scene] != null && s_dynamicChildrenByScene[_scene] != null )
 			{
-				camera.extractPlanes();
+				camera.frustum.extractPlanes(camera.transformation);
 				
 				temp = camera.transformation.matrixGlobal.transformVector(camera.frustum.m_bSCenterOrginal);
 				
 				camera.frustum.boundingSphere.YOGURT3D_INTERNAL::m_center = temp;
 				
-				s_octantByScene[_scene].visibilityProcess( _scene.activeCamera );
+				s_octantByScene[_scene].visibilityProcess( _camera );
 				
 				var remove:Array = [];
 				for( var i:int = 0; i < s_octantByScene[_scene].listlength; i++ )
@@ -182,13 +182,13 @@ package com.yogurt3d.core.scenetree.octree
 				return s_dynamicChildrenByScene[_scene].concat( s_octantByScene[_scene].list );
 			}else if( s_octantByScene[_scene] )
 			{
-				camera.extractPlanes();
+				camera.frustum.extractPlanes(camera.transformation);
 				
 				temp = camera.transformation.matrixGlobal.transformVector(camera.frustum.m_bSCenterOrginal);
 				
 				camera.frustum.boundingSphere.YOGURT3D_INTERNAL::m_center = temp;
 				
-				s_octantByScene[_scene].visibilityProcess( _scene.activeCamera );
+				s_octantByScene[_scene].visibilityProcess( _camera );
 				
 				return s_octantByScene[_scene].list;
 			}else if( s_dynamicChildrenByScene[_scene] ){

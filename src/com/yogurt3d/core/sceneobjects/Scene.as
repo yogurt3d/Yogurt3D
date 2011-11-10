@@ -49,8 +49,6 @@ package com.yogurt3d.core.sceneobjects
 		
 		YOGURT3D_INTERNAL var m_postEffects:Vector.<Filter>;
 		
-		private var m_activeCamera	:ICamera;
-
 		private var m_sceneColor:Color;
 		
 		private var m_skyBox:SkyBox;
@@ -81,9 +79,9 @@ package com.yogurt3d.core.sceneobjects
 		/**
 		 * @inheritDoc
 		 * */
-		public function get renderableSet():Vector.<ISceneObjectRenderable>
+		public function getRenderableSet(_camera:ICamera):Vector.<ISceneObjectRenderable>
 		{
-			return SceneTreeManager.getSceneRenderableSet(this);
+			return SceneTreeManager.getSceneRenderableSet(this,_camera);
 		}
 		
 		public function prepareSceneForNewFrame():void
@@ -114,7 +112,7 @@ package com.yogurt3d.core.sceneobjects
 		
 		public function get triangleCount():int
 		{
-			var _renderableSet		:Vector.<ISceneObjectRenderable>	= SceneTreeManager.getSceneRenderableSet(this);
+			var _renderableSet		:Vector.<ISceneObjectRenderable>	= SceneTreeManager.getSceneRenderableSet(this, null);
 			var _renderableCount	:int								= _renderableSet.length;
 			var _triangleCount		:int								= 0;
 			
@@ -210,17 +208,6 @@ package com.yogurt3d.core.sceneobjects
 		{
 			m_sceneColor = value;
 		}
-		
-		public function get activeCamera():ICamera
-		{
-			return m_activeCamera;
-		}
-		
-		public function set activeCamera(value:ICamera):void
-		{
-			m_activeCamera = value;
-		}
-		
 		
 		public function get skyBox():SkyBox
 		{

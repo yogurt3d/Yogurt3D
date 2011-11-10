@@ -402,8 +402,8 @@ package com.yogurt3d.core.viewports {
 			
 		}
 		
-		public function update( _scene:IScene ):void{
-			var renderable:Vector.<ISceneObjectRenderable> = _scene.renderableSet;
+		public function update( _scene:IScene, _camera:ICamera ):void{
+			var renderable:Vector.<ISceneObjectRenderable> = _scene.getRenderableSet(_camera);
 			if( renderable )
 			{
 				graphics.clear();
@@ -411,9 +411,9 @@ package com.yogurt3d.core.viewports {
 				graphics.drawRect( 0,0, m_width, m_height );
 				graphics.endFill();
 				var matrix:Matrix3D = new Matrix3D();
-				matrix.copyFrom( _scene.activeCamera.transformation.matrixGlobal );
+				matrix.copyFrom( _camera.transformation.matrixGlobal );
 				matrix.invert();
-				matrix.append( _scene.activeCamera.projectionMatrix );
+				matrix.append( _camera.frustum.projectionMatrix );
 				matrix.append( this.matrix );
 				
 				for( var i:int = 0; i < renderable.length; i++ )
@@ -426,7 +426,7 @@ package com.yogurt3d.core.viewports {
 			
 				if( m_pickManager )
 				{
-					m_pickManager.update( _scene, _scene.activeCamera );
+					m_pickManager.update( _scene, _camera );
 				}
 			}
 		}
