@@ -82,10 +82,10 @@ package com.yogurt3d.presets.renderers.molehill
 		
 		
 		//shadow mapping shaders
-		YOGURT3D_INTERNAL var m_shadowDepthShader		:ShaderDepthMap;
-		YOGURT3D_INTERNAL var m_shadowRenderShader		:ShaderShadow;
-		YOGURT3D_INTERNAL var m_shadowFilter			:FilterBoxBlur 			= new FilterBoxBlur();
-		YOGURT3D_INTERNAL var m_lastProgram				:Program3D;
+		private var m_shadowDepthShader					:ShaderDepthMap;
+		private var m_shadowRenderShader				:ShaderShadow;
+		private var m_shadowFilter						:FilterBoxBlur;
+		private var m_lastProgram						:Program3D;
 		
 		private var vsManager							:VertexStreamManager 	= VertexStreamManager.instance;
 		
@@ -99,7 +99,7 @@ package com.yogurt3d.presets.renderers.molehill
 
 		public static var RENDER_STATS					:String;
 		
-		public static const BACKBUFFER					:BackBuffer = new BackBuffer();
+		public static const BACKBUFFER					:BackBuffer;
 		
 		public var tempRect								:Rectangle 	= new Rectangle();
 		
@@ -109,10 +109,8 @@ package com.yogurt3d.presets.renderers.molehill
 		}
 		
 		private function renderLayerSort( _a:ISceneObjectRenderable, _b:ISceneObjectRenderable ):Number{
-			if(_a.renderLayer > _b.renderLayer )
-			{return 1;}
-			else if( _a.renderLayer < _b.renderLayer )
-			{return -1;}
+			if(_a.renderLayer > _b.renderLayer ){return 1;}
+			else if( _a.renderLayer < _b.renderLayer ){return -1;}
 			else{return 0;}
 		}
 		
@@ -208,17 +206,18 @@ package com.yogurt3d.presets.renderers.molehill
 
 		override protected function initInternals():void
 		{
-			m_shadowDepthShader = new ShaderDepthMap();
+			BACKBUFFER 						= new BackBuffer();
 			
-			m_shadowRenderShader  = new ShaderShadow();
+			m_shadowDepthShader 			= new ShaderDepthMap();
 			
-			rendererHelper = new rendererHelperClass() as IRendererHelper;
-			setProgramConstants = rendererHelper.setProgramConstants;
+			m_shadowRenderShader  			= new ShaderShadow();
+			
+			m_shadowFilter 					= new FilterBoxBlur();
+			
+			rendererHelper 					= new rendererHelperClass() as IRendererHelper;
+			setProgramConstants 			= rendererHelper.setProgramConstants;
 		}	
 		
-		/**
-		 * Render shadow maps
-		 **/
 		private function renderShadowMaps(_lights:Vector.<Light>, _context3d:Context3D, _scene:IScene, _camera:ICamera):void
 		{
 			var k:int;
@@ -394,10 +393,6 @@ package com.yogurt3d.presets.renderers.molehill
 			}
 		}
 		
-		/**
-		 * End Render shadow maps
-		 **/
-		
 		private function renderShadow(_renderableSet:Vector.<ISceneObjectRenderable>,  _light:Light, _camera:ICamera):void
 		{
 			var _renderableObject:ISceneObjectRenderable;
@@ -460,9 +455,7 @@ package com.yogurt3d.presets.renderers.molehill
 			}
 			
 		}
-		
-		
-		
+
 		private function renderSceneObjects(  _renderableSet :Vector.<ISceneObjectRenderable>,  _lights :Vector.<Light>, _camera:ICamera ):void{
 			var _renderableObject:ISceneObjectRenderable;
 			var _mesh:IMesh;
