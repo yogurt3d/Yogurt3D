@@ -28,6 +28,8 @@ package com.yogurt3d.core.transformations {
 	import flash.geom.Matrix3D;
 	import flash.geom.Orientation3D;
 	import flash.geom.Vector3D;
+	
+	import org.osflash.signals.Signal;
 
 	/**
 	 * 
@@ -64,6 +66,8 @@ package com.yogurt3d.core.transformations {
 		private var m_scale											:Vector3D;
 		
 		private var m_decomposedMatrix								:Vector.<Vector3D>;
+		
+		YOGURT3D_INTERNAL var m_onChange										: Signal;
 		
 		/**
 		 * 
@@ -130,6 +134,8 @@ package com.yogurt3d.core.transformations {
 			m_isLocalDirty 		= true;
 			m_isGlobalDirty 	= true;	
 			
+			m_onChange.dispatch( this );
+			
 			invalidateChildren();	
 		}		
 		
@@ -139,7 +145,7 @@ package com.yogurt3d.core.transformations {
 		YOGURT3D_INTERNAL function invalidateChildren():void {
 			if ( !m_ownerSceneObject ) return;
 			
-			var _children		:Vector.<ISceneObject>	= ISceneObject(m_ownerSceneObject).children;
+			var _children		:Vector.<ISceneObject>	= m_ownerSceneObject.children;
 			if ( !_children ) return;
 			
 			var _childrenCount	:int					= _children.length;
@@ -147,6 +153,8 @@ package com.yogurt3d.core.transformations {
 			for( var i:int; i < _childrenCount; i++ )
 			{
 				_children[i].transformation.m_isGlobalDirty = true;
+				_children[i].transformation.m_onChange.dispatch( _children[i].transformation );
+				
 				_children[i].transformation.invalidateChildren();
 			}				
 		}		
@@ -191,6 +199,8 @@ package com.yogurt3d.core.transformations {
 			m_temprotation = new Vector3D();
 			
 			m_scale = new Vector3D(1,1,1);
+			
+			m_onChange 				= new Signal( Transformation );
 		}
 
 		/**
