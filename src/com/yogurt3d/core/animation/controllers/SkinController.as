@@ -28,13 +28,11 @@ package com.yogurt3d.core.animation.controllers
 	import com.yogurt3d.core.objects.interfaces.ITickedObject;
 	import com.yogurt3d.core.transformations.Quaternion;
 	import com.yogurt3d.core.utils.Vector3DUtils;
-	import com.yogurt3d.io.cache.GlobalCache;
 	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
 	import flash.utils.Dictionary;
-	import flash.utils.getTimer;
 	
 	use namespace YOGURT3D_INTERNAL;
 	
@@ -352,7 +350,6 @@ package com.yogurt3d.core.animation.controllers
 				{
 					var blendWeight:Number = _time / (m_blendDuration * 1000);
 					
-					trace(blendWeight);
 					if( blendWeight < 1 )
 					{
 						var _time2:uint = _timeInfo.objectTime - m_startTimeOld;
