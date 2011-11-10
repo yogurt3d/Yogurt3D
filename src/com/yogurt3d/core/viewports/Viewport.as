@@ -24,8 +24,10 @@ package com.yogurt3d.core.viewports {
 	import com.yogurt3d.core.managers.mousemanager.PickManager;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.objects.interfaces.IEngineObject;
+	import com.yogurt3d.core.sceneobjects.SceneObject;
 	import com.yogurt3d.core.sceneobjects.SceneObjectRenderable;
 	import com.yogurt3d.core.sceneobjects.interfaces.IScene;
+	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObject;
 	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObjectRenderable;
 	
 	import flash.display.Sprite;
@@ -402,10 +404,33 @@ package com.yogurt3d.core.viewports {
 			
 		}
 		
+		Y3DCONFIG::DEBUG
+		{
+			private function drawWireFrame( _scn:ISceneObject, matrix:Matrix3D ):void{
+				if( _scn is SceneObjectRenderable && SceneObjectRenderable(_scn).wireframe)
+				{
+					SceneObjectRenderable(_scn).YOGURT3D_INTERNAL::drawWireFrame(matrix,this );
+				}
+				else if(_scn is SceneObjectRenderable && SceneObjectRenderable(_scn).aabbWireframe){
+					SceneObjectRenderable(_scn).YOGURT3D_INTERNAL::drawAABBWireFrame( matrix, this );
+				}
+				else if(_scn is SceneObject && SceneObject(_scn).aabbWireframe){
+					SceneObject(_scn).YOGURT3D_INTERNAL::drawAABBWireFrame( matrix, this );
+				}
+				if( _scn.children && _scn.children.length>0 )
+				{
+					for( var i:int = 0; i < _scn.children.length; i++ )
+					{
+						drawWireFrame(_scn.children[i], matrix);
+					}
+				}
+			}
+		}
+		
 		public function update( _scene:IScene, _camera:ICamera ):void{
 			Y3DCONFIG::DEBUG
 			{
-				var renderable:Vector.<ISceneObjectRenderable> = _scene.getRenderableSet(_camera);
+				var renderable:Vector.<ISceneObject> = _scene.children;
 				if( renderable )
 				{
 					graphics.clear();
@@ -420,10 +445,7 @@ package com.yogurt3d.core.viewports {
 					
 					for( var i:int = 0; i < renderable.length; i++ )
 					{
-						if(SceneObjectRenderable(renderable[i]).wireframe || SceneObjectRenderable(renderable[i]).aabbWireframe)
-						{
-							SceneObjectRenderable(renderable[i]).YOGURT3D_INTERNAL::drawWireFrame(matrix,this );
-						}
+						drawWireFrame(renderable[i], matrix );
 					}
 				
 				}
