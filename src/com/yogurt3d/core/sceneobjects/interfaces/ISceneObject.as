@@ -276,7 +276,11 @@ package com.yogurt3d.core.sceneobjects.interfaces {
 		 */
 		function get renderLayer():int
 			
-			
+		/**
+		 *  
+		 * @return 
+		 * 
+		 */			
 		function get isStatic():Boolean;
 		
 		
