@@ -193,6 +193,8 @@ package com.yogurt3d.presets.renderers.molehill
 			rendererHelper.clearTextures( _context3d );
 			
 			_context3d.present();
+			
+			m_lastProgram = null;
 			// clear vertex buffers
 			Y3DCONFIG::DEBUG
 			{
