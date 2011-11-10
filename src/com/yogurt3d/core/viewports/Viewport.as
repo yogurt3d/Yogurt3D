@@ -403,31 +403,34 @@ package com.yogurt3d.core.viewports {
 		}
 		
 		public function update( _scene:IScene, _camera:ICamera ):void{
-			var renderable:Vector.<ISceneObjectRenderable> = _scene.getRenderableSet(_camera);
-			if( renderable )
+			Y3DCONFIG::DEBUG
 			{
-				graphics.clear();
-				graphics.beginFill(0xFF0000, 0 );
-				graphics.drawRect( 0,0, m_width, m_height );
-				graphics.endFill();
-				var matrix:Matrix3D = new Matrix3D();
-				matrix.copyFrom( _camera.transformation.matrixGlobal );
-				matrix.invert();
-				matrix.append( _camera.frustum.projectionMatrix );
-				matrix.append( this.matrix );
-				
-				for( var i:int = 0; i < renderable.length; i++ )
+				var renderable:Vector.<ISceneObjectRenderable> = _scene.getRenderableSet(_camera);
+				if( renderable )
 				{
-					if(SceneObjectRenderable(renderable[i]).wireframe)
+					graphics.clear();
+					graphics.beginFill(0xFF0000, 0 );
+					graphics.drawRect( 0,0, m_width, m_height );
+					graphics.endFill();
+					var matrix:Matrix3D = new Matrix3D();
+					matrix.copyFrom( _camera.transformation.matrixGlobal );
+					matrix.invert();
+					matrix.append( _camera.frustum.projectionMatrix );
+					matrix.append( this.matrix );
+					
+					for( var i:int = 0; i < renderable.length; i++ )
 					{
-						SceneObjectRenderable(renderable[i]).YOGURT3D_INTERNAL::drawWireFrame(matrix,this );
+						if(SceneObjectRenderable(renderable[i]).wireframe)
+						{
+							SceneObjectRenderable(renderable[i]).YOGURT3D_INTERNAL::drawWireFrame(matrix,this );
+						}
 					}
+				
 				}
-			
-				if( m_pickManager )
-				{
-					m_pickManager.update( _scene, _camera );
-				}
+			}
+			if( m_pickManager )
+			{
+				m_pickManager.update( _scene, _camera );
 			}
 		}
 		
