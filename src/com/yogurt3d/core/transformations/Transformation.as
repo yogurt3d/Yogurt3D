@@ -81,6 +81,11 @@ package com.yogurt3d.core.transformations {
 		
 		
 		
+		public function get onChange():Signal
+		{
+			return YOGURT3D_INTERNAL::m_onChange;
+		}
+
 		/**
 		 * Calculates local matrix from transformation properties
 		 */
