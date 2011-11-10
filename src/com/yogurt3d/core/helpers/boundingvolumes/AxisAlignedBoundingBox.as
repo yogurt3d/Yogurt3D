@@ -108,26 +108,40 @@ package com.yogurt3d.core.helpers.boundingvolumes {
 		
 		
 		public function update( _transformation:Matrix3D ):AxisAlignedBoundingBox {	
-			
+
 			m_tempTransformation.copyFrom( _transformation );
-			var _position:Vector3D 	= m_tempTransformation.position;
 			m_tempTransformation.position = m_zeroVector;
 			
-			m_center = _position.add( m_center_original );
+			m_center = _transformation.transformVector( m_center_original );
 			
 			m_tempTransformation.transformVectors( m_vectors, m_transformedVectors );
 			
-			m_halfSize.x				= Math.max( Math.abs(m_transformedVectors[0]), Math.abs(m_transformedVectors[3]) , Math.abs(m_transformedVectors[6]), Math.abs(m_transformedVectors[9]) );  
-			m_halfSize.y				= Math.max( Math.abs(m_transformedVectors[1]), Math.abs(m_transformedVectors[4]) , Math.abs(m_transformedVectors[7]), Math.abs(m_transformedVectors[10]) );
-			m_halfSize.z				= Math.max( Math.abs(m_transformedVectors[2]), Math.abs(m_transformedVectors[5]) , Math.abs(m_transformedVectors[8]), Math.abs(m_transformedVectors[11]) );
-			
+			m_halfSize.x				= Math.max( 
+												Math.abs(m_transformedVectors[0]), 
+												Math.abs(m_transformedVectors[3]), 
+												Math.abs(m_transformedVectors[6]), 
+												Math.abs(m_transformedVectors[9]) 
+											);  
+			m_halfSize.y				= Math.max( 
+												Math.abs(m_transformedVectors[1]), 
+												Math.abs(m_transformedVectors[4]), 
+												Math.abs(m_transformedVectors[7]), 
+												Math.abs(m_transformedVectors[10]) 
+											);
+			m_halfSize.z				= Math.max( 
+												Math.abs(m_transformedVectors[2]), 
+												Math.abs(m_transformedVectors[5]), 
+												Math.abs(m_transformedVectors[8]), 
+												Math.abs(m_transformedVectors[11]) 
+											);
+		
 			m_size.setTo(m_halfSize.x*2, m_halfSize.y*2, m_halfSize.z*2);
 			
 			m_max = m_center.add( m_halfSize );			
 			m_min = m_center.subtract( m_halfSize );
 			
-			m_cornersDirty = true;
 			
+			m_cornersDirty = true;
 			return this;
 		}
 		
