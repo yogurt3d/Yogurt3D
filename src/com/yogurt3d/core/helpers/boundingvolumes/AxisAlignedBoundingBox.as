@@ -266,6 +266,42 @@ package com.yogurt3d.core.helpers.boundingvolumes {
 			return true;
 		}
 		
+		public function merge( _aabb:AxisAlignedBoundingBox ):AxisAlignedBoundingBox{
+			
+			var resolatedMax:Vector3D = _aabb.max;
+			var resolatedMin:Vector3D = _aabb.min;
+			
+			if(resolatedMax.x > m_max.x) m_max.x = resolatedMax.x;
+			if(resolatedMin.x < m_min.x) m_min.x = resolatedMin.x;
+			if(resolatedMax.y > m_max.y) m_max.y = resolatedMax.y;
+			if(resolatedMin.y < m_min.y) m_min.y = resolatedMin.y;
+			if(resolatedMax.z > m_max.z) m_max.z = resolatedMax.z;
+			if(resolatedMin.z < m_min.z) m_min.z = resolatedMin.z;
+			
+			
+			m_size = m_max.subtract( m_min );
+			m_halfSize.setTo(m_size.x*0.5, m_size.y*0.5, m_size.z*0.5);
+			
+			m_halfSize_original = m_halfSize.clone();
+			m_size_Original = m_size.clone();
+			
+			m_center = m_max.add( m_min );
+			m_center.scaleBy(.5);
+			m_center_original = m_center.clone();
+			
+			
+			m_vectors			= Vector.<Number>([ 
+				-m_halfSize_original.x, m_halfSize_original.y, m_halfSize_original.z,
+				m_halfSize_original.x,-m_halfSize_original.y, m_halfSize_original.z,
+				m_halfSize_original.x, m_halfSize_original.y,-m_halfSize_original.z,
+				m_halfSize_original.x, m_halfSize_original.y, m_halfSize_original.z 
+			]);
+			
+			m_cornersDirty = true;
+			
+			return this;
+		}
+		
 		public function recalculateFor( _min:Vector3D, _max:Vector3D ):AxisAlignedBoundingBox{
 			m_max = _max;
 			m_min = _min;
@@ -276,7 +312,7 @@ package com.yogurt3d.core.helpers.boundingvolumes {
 			m_halfSize_original = m_halfSize.clone();
 			m_size_Original = m_size.clone();
 			
-			m_center = m_min.add( m_min );
+			m_center = m_max.add( m_min );
 			m_center.scaleBy(.5);
 			m_center_original = m_center.clone();
 			
