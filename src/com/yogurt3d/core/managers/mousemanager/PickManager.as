@@ -75,6 +75,7 @@ package com.yogurt3d.core.managers.mousemanager
 			m_viewport.addEventListener( MouseEvent.MOUSE_UP, onUp );
 			m_viewport.addEventListener( MouseEvent.MOUSE_MOVE, onMove );
 			m_viewport.addEventListener( MouseEvent.DOUBLE_CLICK, onDoubleClick );
+			m_viewport.doubleClickEnabled = true;
 		}
 
 		public function dispose():void{
@@ -90,7 +91,7 @@ package com.yogurt3d.core.managers.mousemanager
 				var event:MouseEvent3D = new MouseEvent3D( MouseEvent3D.MOUSE_DOWN );
 				event.target3d = m_currentObject; event.currentTarget3d = m_currentObject;
 				event.intersection = m_currentIntersection;
-				m_currentObject.dispatchEvent( event );
+				m_currentObject.onMouseDown.dispatch( event );
 				m_downObject = m_currentObject;
 			}
 		}
@@ -99,14 +100,15 @@ package com.yogurt3d.core.managers.mousemanager
 			if( m_currentObject != null )
 			{
 				var event:MouseEvent3D = new MouseEvent3D( MouseEvent3D.MOUSE_UP );
+				event.intersection = m_currentIntersection;
 				event.target3d = m_currentObject; event.currentTarget3d = m_currentObject;
-				m_currentObject.dispatchEvent( event );
+				m_currentObject.onMouseUp.dispatch( event );
 				if( m_currentObject == m_downObject )
 				{
 					event = new MouseEvent3D( MouseEvent3D.CLICK );
 					event.target3d = m_currentObject; event.currentTarget3d = m_currentObject;
 					event.intersection = m_currentIntersection;
-					m_currentObject.dispatchEvent( event );
+					m_currentObject.onMouseClick.dispatch( event );
 					
 					m_downObject = null;
 				}
@@ -119,7 +121,7 @@ package com.yogurt3d.core.managers.mousemanager
 				var event:MouseEvent3D = new MouseEvent3D( MouseEvent3D.MOUSE_MOVE );
 				event.intersection = m_currentIntersection;
 				event.target3d = m_currentObject; event.currentTarget3d = m_currentObject;
-				m_currentObject.dispatchEvent( event );
+				m_currentObject.onMouseMove.dispatch( event );
 			}
 		}
 		
@@ -129,7 +131,7 @@ package com.yogurt3d.core.managers.mousemanager
 				var event:MouseEvent3D = new MouseEvent3D( MouseEvent3D.DOUBLE_CLICK );
 				event.target3d = m_currentObject; event.currentTarget3d = m_currentObject;
 				event.intersection = m_currentIntersection;
-				m_currentObject.dispatchEvent( event );
+				m_currentObject.onMouseDoubleClick.dispatch( event );
 			}
 		}
 		
@@ -165,7 +167,7 @@ package com.yogurt3d.core.managers.mousemanager
 							{
 								Mouse.cursor = MouseCursor.AUTO;
 							}
-							m_lastObject.dispatchEvent( event );
+							m_lastObject.onMouseOut.dispatch( event );
 						}
 						
 						if( m_currentObject )
@@ -177,7 +179,7 @@ package com.yogurt3d.core.managers.mousemanager
 							{
 								Mouse.cursor = MouseCursor.BUTTON;
 							}
-							m_currentObject.dispatchEvent( event );
+							m_currentObject.onMouseOver.dispatch( event );
 						}
 					}
 				}

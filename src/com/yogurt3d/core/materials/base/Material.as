@@ -29,6 +29,8 @@ package com.yogurt3d.core.materials.base {
 	import flash.display.TriangleCulling;
 	import flash.events.Event;
 	
+	import org.osflash.signals.Signal;
+	
 	use namespace YOGURT3D_INTERNAL;
 	
 	/**
@@ -51,12 +53,13 @@ package com.yogurt3d.core.materials.base {
 		
 		YOGURT3D_INTERNAL var m_opacity					: Number = 1;
 		
+		public var onOpacityChanged						:Signal;
+		
 		public function Material(_initInternals:Boolean = true)
 		{
 			super(_initInternals);
 		}
 		
-		[Bindable(event="opacityChange")]
 		public function get opacity():Number
 		{
 			return YOGURT3D_INTERNAL::m_opacity;
@@ -67,7 +70,7 @@ package com.yogurt3d.core.materials.base {
 			if( YOGURT3D_INTERNAL::m_opacity !== value)
 			{
 				YOGURT3D_INTERNAL::m_opacity = value;
-				dispatchEvent(new Event("opacityChange"));
+				onOpacityChanged.dispatch();
 			}
 		}
 
@@ -146,6 +149,8 @@ package com.yogurt3d.core.materials.base {
 			m_culling			= TriangleCulling.NEGATIVE;
 			m_doubleSided		= false;
 			m_shaders			= new Vector.<Shader>();
+			
+			onOpacityChanged 	= new Signal();
 			
 			m_emissiveColor = new Color( 0,0,0,1 );
 			m_ambientColor  = new Color( 1,1,1,0 );

@@ -31,6 +31,8 @@ package com.yogurt3d.core.materials
 	import flash.display3D.Context3DCompareMode;
 	import flash.events.Event;
 	
+	import org.osflash.signals.Signal;
+	
 	/**
 	 * 
 	 * 
@@ -45,9 +47,12 @@ package com.yogurt3d.core.materials
 		private var m_normalMap:TextureMap;
 		private var m_alphaTexture:Boolean = false;
 		
+		public var onAlphaTextureChanged						:Signal;
+		
 		public function MaterialDiffuseTexture( _texture:TextureMap = null, _opacity:Number = 1, _initInternals:Boolean=true)
 		{
 			super(_initInternals);
+			onAlphaTextureChanged = new Signal();
 			
 			m_decalShader = new ShaderTexture(_texture, 0);
 			m_decalShader.params.blendEnabled = true;
@@ -63,7 +68,6 @@ package com.yogurt3d.core.materials
 			
 			super.opacity = _opacity;
 		}
-		[Bindable(event="alphaTextureChange")]
 		public function get alphaTexture():Boolean{
 			return m_alphaTexture;
 		}
@@ -80,7 +84,7 @@ package com.yogurt3d.core.materials
 					m_ambientShader.alphaTexture = null;
 				}
 				
-				dispatchEvent(new Event("alphaTextureChange"));
+				onAlphaTextureChanged.dispatch();
 			}
 		}
 		

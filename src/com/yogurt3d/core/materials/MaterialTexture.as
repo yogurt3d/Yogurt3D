@@ -23,6 +23,8 @@ package com.yogurt3d.core.materials
 	import com.yogurt3d.core.texture.TextureMap;
 	
 	import flash.events.Event;
+	
+	import org.osflash.signals.Signal;
 
 	/**
 	 * Material for backward compability. This material is used for basic texturing, without light of self shadowing.
@@ -37,6 +39,9 @@ package com.yogurt3d.core.materials
 	public class MaterialTexture extends Material
 	{
 		private var decalShader:ShaderTexture;
+		
+		public var onAlphaTextureChanged						:Signal;
+		
 		/**
 		 *  Constructor
 		 * @param _bitmapData Texture
@@ -47,10 +52,10 @@ package com.yogurt3d.core.materials
 		public function MaterialTexture(_texture:TextureMap = null, _miplevel:uint=0, _initInternals:Boolean=true)
 		{
 			super(_initInternals);
+			onAlphaTextureChanged = new Signal();
 			shaders.push(decalShader = new ShaderTexture(_texture, _miplevel) );
 		}
 		
-		[Bindable(event="alphaTextureChange")]
 		public function get alphaTexture():Boolean{
 			return decalShader.alphaTexture;
 		}
@@ -59,8 +64,7 @@ package com.yogurt3d.core.materials
 			if( decalShader.alphaTexture != value )
 			{
 				decalShader.alphaTexture = value;
-				
-				dispatchEvent(new Event("alphaTextureChange"));
+				onAlphaTextureChanged.dispatch();
 			}
 		}
 			

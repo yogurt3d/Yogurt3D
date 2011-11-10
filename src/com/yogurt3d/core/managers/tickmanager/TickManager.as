@@ -21,6 +21,9 @@ package com.yogurt3d.core.managers.tickmanager {
 	
 	import flash.utils.Dictionary;
 	import flash.utils.getTimer;
+	
+	import org.osflash.signals.PrioritySignal;
+
 	/**
 	 * 
 	 * 
@@ -37,6 +40,8 @@ package com.yogurt3d.core.managers.tickmanager {
 		private static var s_timeInfosByObject	:Dictionary;
 		private static var s_startTimesByObject	:Dictionary;
 		
+		private static var m_signal				: PrioritySignal;
+		
 		public static function get timeScale():Number
 		{
 			return s_timeScale;
@@ -49,6 +54,7 @@ package com.yogurt3d.core.managers.tickmanager {
 		
 		public static function registerObject(_value:ITickedObject, _priority:int = 0):void
 		{
+			
 			if(s_tickedObjects.indexOf(_value) == -1)
 			{
 				s_tickedObjects[s_tickedObjectsCount]	= {object:_value, priority:_priority};

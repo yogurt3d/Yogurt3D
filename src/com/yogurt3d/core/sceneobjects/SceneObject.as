@@ -36,6 +36,8 @@ package com.yogurt3d.core.sceneobjects {
 	import flash.events.EventDispatcher;
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
+	
+	import org.osflash.signals.Signal;
 
 	/**
 	 * <strong>ISceneObject</strong> interface abstract type.
@@ -59,13 +61,101 @@ package com.yogurt3d.core.sceneobjects {
 		
 		YOGURT3D_INTERNAL var m_visible:Boolean = true;
 		
+		YOGURT3D_INTERNAL var m_onStaticChanged					: Signal;
+		
+		YOGURT3D_INTERNAL var m_onRenderLayerChanged			: Signal;
+		
+		YOGURT3D_INTERNAL var m_onMouseUp						: Signal;
+		
+		YOGURT3D_INTERNAL var m_onMouseDown						: Signal;
+		
+		YOGURT3D_INTERNAL var m_onMouseMove						: Signal;
+		
+		YOGURT3D_INTERNAL var m_onMouseOver						: Signal;
+		
+		YOGURT3D_INTERNAL var m_onMouseOut						: Signal;
+		
+		YOGURT3D_INTERNAL var m_onMouseClick					: Signal;
+		
+		YOGURT3D_INTERNAL var m_onMouseDoubleClick				: Signal;
+		
+		YOGURT3D_INTERNAL var m_onAddedToScene   				: Signal;
+		
+		YOGURT3D_INTERNAL var m_onRemovedFromScene   			: Signal;
+		
 		use namespace YOGURT3D_INTERNAL;
 
 		public function SceneObject(_initInternals:Boolean = true)
 		{
 			super(_initInternals);
 		}
-		
+		/**
+		 * @inheritDoc 
+		 * @return 
+		 * 
+		 */		
+		public function get onAddedToScene():Signal{	return YOGURT3D_INTERNAL::m_onAddedToScene; }
+		/**
+		 * @inheritDoc 
+		 * @return 
+		 * 
+		 */	
+		public function get onRemovedFromScene():Signal{	return YOGURT3D_INTERNAL::m_onRemovedFromScene; }
+		/**
+		 * @inheritDoc 
+		 * @return 
+		 * 
+		 */	
+		public function get onMouseUp():Signal{		return YOGURT3D_INTERNAL::m_onMouseUp;	}
+		/**
+		 * @inheritDoc 
+		 * @return 
+		 * 
+		 */	
+		public function get onMouseDown():Signal{	return YOGURT3D_INTERNAL::m_onMouseDown;}
+		/**
+		 * @inheritDoc 
+		 * @return 
+		 * 
+		 */	
+		public function get onMouseMove():Signal{	return YOGURT3D_INTERNAL::m_onMouseMove;}
+		/**
+		 * @inheritDoc 
+		 * @return 
+		 * 
+		 */	
+		public function get onMouseOver():Signal{	return YOGURT3D_INTERNAL::m_onMouseOver;}
+		/**
+		 * @inheritDoc 
+		 * @return 
+		 * 
+		 */	
+		public function get onMouseOut():Signal{	return YOGURT3D_INTERNAL::m_onMouseOut;}
+		/**
+		 * @inheritDoc 
+		 * @return 
+		 * 
+		 */	
+		public function get onMouseClick():Signal{	return YOGURT3D_INTERNAL::m_onMouseClick;}
+		/**
+		 * @inheritDoc 
+		 * @return 
+		 * 
+		 */	
+		public function get onMouseDoubleClick():Signal{	return YOGURT3D_INTERNAL::m_onMouseDoubleClick;}
+		/**
+		 * @inheritDoc 
+		 * @return 
+		 * 
+		 */	
+		public function get onStaticChanged():Signal{	return m_onStaticChanged;}
+		/**
+		 * @inheritDoc 
+		 * @return 
+		 * 
+		 */	
+		public function get onRenderLayerChanged():Signal{	return m_onRenderLayerChanged;}
+
 		public function get visible():Boolean {
 			return m_visible;
 		}
@@ -85,38 +175,14 @@ package com.yogurt3d.core.sceneobjects {
 			m_visible = _value;
 		}
 		
-		override public function addEventListener(type : String, listener : Function, useCapture : Boolean = false, priority : int = 0, useWeakReference : Boolean = false) : void {
-			var _children:Vector.<ISceneObject> = SceneTreeManager.getChildren(this);
-			if(_children != null){
-				var _numChildren : int = _children.length;
-				for ( var i:int=0; i < _numChildren; i++) {
-					_children[i].addEventListener(type, internalListener, useCapture, priority, useWeakReference);
-				}
-			}
-			super.addEventListener(type, listener, useCapture, priority, useWeakReference);
-		}
-		
-		override public function removeEventListener(type : String, listener : Function, useCapture : Boolean = false) : void {
-			var _children:Vector.<ISceneObject> = SceneTreeManager.getChildren(this);
-			if(_children != null){
-				var _numChildren : int = _children.length;
-				for ( var i:int=0; i < _numChildren; i++) {
-					_children[i].removeEventListener(type, internalListener, useCapture);
-				}
-			}
-			super.removeEventListener(type, listener, useCapture);
-		}
-		
-		private function internalListener(_event:MouseEvent3D):void {
+		/*private function internalListener(_event:MouseEvent3D):void {
 			_event.target3d = _event.target as ISceneObjectRenderable;
 			_event.currentTarget3d = this;
 			var _parent:ISceneObject;
 		
 			dispatchEvent(_event);			
-		}
+		}*/
 		
-		
-		[Bindable(event="isStaticChange")]
 		public function get isStatic():Boolean
 		{
 			return m_isStatic;
@@ -127,11 +193,10 @@ package com.yogurt3d.core.sceneobjects {
 			if( m_isStatic !== value)
 			{
 				m_isStatic = value;
-				dispatchEvent(new Event("isStaticChange"));
+				m_onStaticChanged.dispatch(this);
 			}
 		}
 
-		[Bindable(event="renderLayerChange")]
 		public function get renderLayer():int
 		{
 			return m_renderLayer;
@@ -142,7 +207,7 @@ package com.yogurt3d.core.sceneobjects {
 			if( m_renderLayer !== value)
 			{
 				m_renderLayer = value;
-				dispatchEvent(new Event("renderLayerChange"));
+				m_onRenderLayerChanged.dispatch( this );
 			}
 		}
 		
@@ -160,10 +225,6 @@ package com.yogurt3d.core.sceneobjects {
 		 * */
 		public function get transformation():Transformation
 		{
-			/*if( m_isStatic )
-			{
-				return null;
-			}*/
 			return m_transformation;
 		}
 		
@@ -190,15 +251,6 @@ package com.yogurt3d.core.sceneobjects {
 		public function get scene():IScene
 		{
 			return SceneTreeManager.getScene(this);
-		}
-		
-		
-		public function addedToScene( _scene:IScene ):void{
-			
-		}
-		
-		public function removedFromScene( _scene:IScene ):void{
-			
 		}
 		
 		/**
@@ -338,9 +390,19 @@ package com.yogurt3d.core.sceneobjects {
 		override protected function initInternals():void
 		{
 			super.initInternals();
-			
+			m_onStaticChanged 		= new Signal(ISceneObject);
+			m_onRenderLayerChanged  = new Signal(ISceneObject);
 			m_transformation		= new Transformation(this);
-			m_dispacther			= new EventDispatcher(this);
+			m_onMouseClick			= new Signal(MouseEvent3D);
+			m_onMouseDoubleClick	= new Signal(MouseEvent3D);
+			m_onMouseDown			= new Signal(MouseEvent3D);
+			m_onMouseMove			= new Signal(MouseEvent3D);
+			m_onMouseOut			= new Signal(MouseEvent3D);
+			m_onMouseOver			= new Signal(MouseEvent3D);
+			m_onMouseUp				= new Signal(MouseEvent3D);
+			
+			m_onRemovedFromScene	= new Signal( ISceneObject, IScene );
+			m_onAddedToScene		= new Signal( ISceneObject, IScene );
 		}
 		
 		override public function clone():IEngineObject {
@@ -361,7 +423,37 @@ package com.yogurt3d.core.sceneobjects {
 		}
 		
 		override public function dispose():void {
-			IDManager.removeObject(m_transformation);
+			
+			m_onStaticChanged.removeAll();
+			m_onStaticChanged = null;
+			
+			m_onRenderLayerChanged.removeAll();
+			m_onRenderLayerChanged = null;
+			
+			m_transformation.dispose();
+			m_transformation = null;
+			
+			m_onMouseClick.removeAll();
+			m_onMouseClick = null;
+			
+			m_onMouseDoubleClick.removeAll();
+			m_onMouseDoubleClick = null;
+			
+			m_onMouseDown.removeAll();
+			m_onMouseDown = null;
+			
+			m_onMouseMove.removeAll();
+			m_onMouseMove = null;
+			
+			m_onMouseOut.removeAll();
+			m_onMouseOut = null;
+			
+			m_onMouseOver.removeAll();
+			m_onMouseOver = null;
+			
+			m_onMouseUp.removeAll();
+			m_onMouseUp = null;
+			
 			super.dispose();
 		}
 		

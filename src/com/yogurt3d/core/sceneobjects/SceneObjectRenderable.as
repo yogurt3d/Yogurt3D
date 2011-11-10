@@ -118,12 +118,6 @@ package com.yogurt3d.core.sceneobjects {
 			}
 		}
 		
-		/**
-		 * @inheritDoc
-		 * */
-		public override function addedToScene( _scene:IScene ):void{
-			super.addedToScene( _scene );
-		}
 		
 		/**
 		 * @inheritDoc
@@ -158,19 +152,19 @@ package com.yogurt3d.core.sceneobjects {
 			{
 				if( m_material )
 				{
-					m_material.removeEventListener("opacityChange", opacityChanged );
-					if( "alphaTexture" in m_material )
+					m_material.onOpacityChanged.remove( opacityChanged );
+					if( "onAlphaTextureChanged" in m_material )
 					{
-						m_material.removeEventListener("alphaTextureChange", opacityChanged );
+						Object(m_material).onAlphaTextureChanged.remove( opacityChanged );
 					}
 				}
 				m_material = _value;
-				m_material.addEventListener("opacityChange", opacityChanged );
-				if( "alphaTexture" in m_material )
+				m_material.onOpacityChanged.add( opacityChanged );
+				if( "onAlphaTextureChanged" in m_material )
 				{
-					m_material.addEventListener("alphaTextureChange", opacityChanged );
+					Object(m_material).onAlphaTextureChanged.add(opacityChanged );
 				}
-				opacityChanged( null );
+				opacityChanged( );
 			}
 		}
 		/**
@@ -181,7 +175,7 @@ package com.yogurt3d.core.sceneobjects {
 		 * @param _e
 		 * 
 		 */		
-		private function opacityChanged( _e:Event ):void{
+		private function opacityChanged( ):void{
 			if( (renderLayer == 100 || renderLayer == 50 || renderLayer == 0) )
 			{
 				if( m_material.opacity < 1 )

@@ -24,6 +24,8 @@ package com.yogurt3d.core.sceneobjects.interfaces {
 	import com.yogurt3d.core.viewports.ViewportLayer;
 	
 	import flash.events.IEventDispatcher;
+	
+	import org.osflash.signals.Signal;
 
 	/**
 	 * Base interface for 3d objects that have transformation and
@@ -32,8 +34,212 @@ package com.yogurt3d.core.sceneobjects.interfaces {
  	 * @author Yogurt3D Engine Core Team
  	 * @company Yogurt3D Corp.
  	 **/
-	public interface ISceneObject extends IEngineObject, IEventDispatcher
+	public interface ISceneObject extends IEngineObject
 	{
+		// SIGNALS
+		/**
+		 * Signal for scene object added to scene. Sends the ISceneObject, IScene as parameter <br/>
+		 * @return 
+		 * 
+		 * @example The following code adds a signal for a add to scene event:
+		 
+		 <listing version="3.0">
+		 
+		 sceneObject.onAddedToScene.add( onAdded );
+		 
+		 private function onAdded( _scn:IScene ):void{
+		 ...
+		 }			
+		 </listing>
+		 * 
+		 * 
+		 */
+		function get onAddedToScene():Signal;
+		/**
+		 * Signal for scene object removed from scene. Sends the ISceneObject, IScene as parameter <br/>
+		 * @return 
+		 * 
+		 * @example The following code adds a signal for a remove from scene event:
+		 
+		 <listing version="3.0">
+		 
+		 sceneObject.onRemovedFromScene.add( onRemoved );
+		 
+		 private function onRemoved( _scn:IScene ):void{
+		 ...
+		 }			
+		 </listing>
+		 * 
+		 * 
+		 */
+		function get onRemovedFromScene():Signal;
+		
+		/**
+		 * Signal for static state change. Sends the ISceneObject as parameter <br/>
+		 * @return 
+		 * 
+		 * @example The following code adds a signal to static state change event:
+
+			<listing version="3.0">
+			
+			sceneObject.onStaticChanged.add( onStaticChange );
+			
+			private function onStaticChange( _scn:ISceneObject ):void{
+				...
+			}			
+			</listing>
+		 * 
+		 * 
+		 */
+		function get onStaticChanged():Signal;
+		
+		/**
+		 * Signal for render layer state change. Sends the ISceneObject as parameter <br/>
+		 * @return 
+		 * 
+		 * @example The following code adds a signal to render layer change event:
+		 
+		 <listing version="3.0">
+		 
+		 sceneObject.onRenderLayerChanged.add( onRenderLayerChange );
+		 
+		 private function onRenderLayerChange( _scn:ISceneObject ):void{
+		 	...
+		 }			
+		 </listing>
+		 * 
+		 * 
+		 */
+		function get onRenderLayerChanged():Signal;
+		
+		
+		/**
+		 * Signal for mouse up event. Sends the MouseEvent3D as parameter <br/>
+		 * @return 
+		 * 
+		 * @example The following code adds a signal to mouse up event:
+		 
+		 <listing version="3.0">
+		 
+		 sceneObject.onMouseUp.add( onMouseUpEvent );
+		 
+		 private function onMouseUpEvent( _event:MouseEvent3D ):void{
+		 	...
+		 }			
+		 </listing>
+		 * 
+		 * 
+		 */
+		function get onMouseUp():Signal;
+		/**
+		 * Signal for mouse down event. Sends the MouseEvent3D as parameter <br/>
+		 * @return 
+		 * 
+		 * @example The following code adds a signal to mouse down event:
+		 
+		 <listing version="3.0">
+		 
+		 sceneObject.onMouseDown.add( onMouseDownEvent );
+		 
+		 private function onMouseDownEvent( _event:MouseEvent3D ):void{
+		 	...
+		 }			
+		 </listing>
+		 * 
+		 * 
+		 */
+		function get onMouseDown():Signal;
+		/**
+		 * Signal for mouse move event. Sends the MouseEvent3D as parameter <br/>
+		 * @return 
+		 * 
+		 * @example The following code adds a signal to mouse move event:
+		 
+		 <listing version="3.0">
+		 
+		 sceneObject.onMouseMove.add( onMouseMoveEvent );
+		 
+		 private function onMouseMoveEvent( _event:MouseEvent3D ):void{
+		 ...
+		 }			
+		 </listing>
+		 * 
+		 * 
+		 */
+		function get onMouseMove():Signal;
+		/**
+		 * Signal for mouse over event. Sends the MouseEvent3D as parameter <br/>
+		 * @return 
+		 * 
+		 * @example The following code adds a signal to mouse over event:
+		 
+		 <listing version="3.0">
+		 
+		 sceneObject.onMouseOver.add( onMouseOverEvent );
+		 
+		 private function onMouseOverEvent( _event:MouseEvent3D ):void{
+		 ...
+		 }			
+		 </listing>
+		 * 
+		 * 
+		 */
+		function get onMouseOver():Signal;
+		/**
+		 * Signal for mouse out event. Sends the MouseEvent3D as parameter <br/>
+		 * @return 
+		 * 
+		 * @example The following code adds a signal to mouse out event:
+		 
+		 <listing version="3.0">
+		 
+		 sceneObject.onMouseOut.add( onMouseOutEvent );
+		 
+		 private function onMouseOutEvent( _event:MouseEvent3D ):void{
+		 ...
+		 }			
+		 </listing>
+		 * 
+		 * 
+		 */
+		function get onMouseOut():Signal;
+		/**
+		 * Signal for mouse click event. Sends the MouseEvent3D as parameter <br/>
+		 * @return 
+		 * 
+		 * @example The following code adds a signal to mouse click event:
+		 
+		 <listing version="3.0">
+		 
+		 sceneObject.onMouseClick.add( onMouseClickEvent );
+		 
+		 private function onMouseOutEvent( _event:MouseEvent3D ):void{
+		 ...
+		 }			
+		 </listing>
+		 * 
+		 * 
+		 */
+		function get onMouseClick():Signal;
+		/**
+		 * Signal for mouse double click event. Sends the MouseEvent3D as parameter <br/>
+		 * @return 
+		 * 
+		 * @example The following code adds a signal to mouse double click event:
+		 
+		 <listing version="3.0">
+		 
+		 sceneObject.onMouseDoubleClick.add( onMouseDoubleClickEvent );
+		 
+		 private function onMouseDoubleClickEvent( _event:MouseEvent3D ):void{
+		 ...
+		 }			
+		 </listing>
+		 * 
+		 * 
+		 */
+		function get onMouseDoubleClick():Signal;
+		
 		/**
 		 * Transformation of this object
 		 * */
@@ -62,10 +268,6 @@ package com.yogurt3d.core.sceneobjects.interfaces {
 		 * if no scene is found. 
 		 * */
 		function get scene():IScene;
-		
-		function addedToScene( _scene:IScene ):void;
-		
-		function removedFromScene( _scene:IScene ):void;
 		
 		/**
 		 * Render order of the scene object. Objects with the same renderlayer value are packed together.

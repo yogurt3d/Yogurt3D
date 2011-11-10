@@ -246,7 +246,7 @@ package com.yogurt3d.core.managers.scenetreemanager
 					//} else {
 						//addChildIntoSceneSet(_child, _scene);
 					//}
-					_child.addedToScene( _scene );
+					_child.onAddedToScene.dispatch( _child, _scene );
 				}
 			}
 		}
@@ -365,7 +365,7 @@ package com.yogurt3d.core.managers.scenetreemanager
 			//} else {
 				//removeChildFromSceneSet(_child, _scene);
 			//}
-			_child.removedFromScene(_scene);
+			_child.onRemovedFromScene.dispatch(_child, _scene);
 		}
 		
 		private static function removeContainerChildFromSceneSets(_container:ISceneObject, _scene:IScene):void

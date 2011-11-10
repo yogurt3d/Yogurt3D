@@ -5,6 +5,7 @@ package com.yogurt3d.core.scenetree.octree
 	import com.yogurt3d.core.helpers.boundingvolumes.AxisAlignedBoundingBox;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.sceneobjects.Scene;
+	import com.yogurt3d.core.sceneobjects.SceneObject;
 	import com.yogurt3d.core.sceneobjects.SceneObjectRenderable;
 	import com.yogurt3d.core.sceneobjects.interfaces.IScene;
 	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObject;
@@ -99,12 +100,12 @@ package com.yogurt3d.core.scenetree.octree
 				}
 				s_dynamicChildrenByScene[_scene].push( _child );
 			}
-			_child.addEventListener( "isStaticChange", onStaticChange );
+			_child.onStaticChanged.add(onStaticChange );
 			
 		}
 		
-		private function onStaticChange( _e:Event ):void{
-			var _child:ISceneObjectRenderable = _e.target as ISceneObjectRenderable;
+		private function onStaticChange( _scn:SceneObject ):void{
+			var _child:ISceneObjectRenderable = _scn as ISceneObjectRenderable;
 			if( _child.isStatic )
 			{
 				_child.geometry.axisAlignedBoundingBox.update( SceneObjectRenderable(_child).YOGURT3D_INTERNAL::m_transformation.matrixGlobal );

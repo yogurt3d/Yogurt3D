@@ -32,6 +32,8 @@ package com.yogurt3d.core.texture
 	import flash.events.Event;
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
+	
+	import org.osflash.signals.natives.NativeSignal;
 
 	use namespace YOGURT3D_INTERNAL;
 	/**
@@ -136,7 +138,7 @@ package com.yogurt3d.core.texture
 					m_readyToUpload = true;
 				}else{
 					var loader:Loader = new Loader();
-					loader.contentLoaderInfo.addEventListener(Event.INIT, function( _e:Event ):void{
+					new NativeSignal( loader.contentLoaderInfo, Event.INIT, Event).addOnce( function( _e:Event ):void{
 						displayObject = LoaderInfo(_e.target).content;
 					});
 					loader.loadBytes( byte );

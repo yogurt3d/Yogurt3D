@@ -34,6 +34,8 @@ package com.yogurt3d.core.viewports {
 	import flash.geom.Matrix3D;
 	import flash.geom.Point;
 	import flash.utils.Dictionary;
+	
+	import org.osflash.signals.natives.NativeSignal;
 
 	/**
 	 * 
@@ -135,6 +137,9 @@ package com.yogurt3d.core.viewports {
 		 * 
 		 */
 		public function dispose() : void {
+			removeEventListener( Event.ADDED_TO_STAGE, onAddedToStage );
+			removeEventListener( Event.REMOVED_FROM_STAGE, onRemovedFromStage );
+
 			IDManager.removeObject(this);
 			
 			Yogurt3D.CONTEXT3D[m_viewportID].dispose();
@@ -144,6 +149,7 @@ package com.yogurt3d.core.viewports {
 			m_context = null;
 			
 			viewports.push( m_viewportID  );
+			
 		}
 		
 		/**
@@ -278,7 +284,8 @@ package com.yogurt3d.core.viewports {
 			
 			if( Yogurt3D.CONTEXT3D[m_viewportID] == null )
 			{
-				stage.stage3Ds[m_viewportID].addEventListener( Event.CONTEXT3D_CREATE, initHandler );
+				new NativeSignal( stage.stage3Ds[m_viewportID], Event.CONTEXT3D_CREATE, Event).addOnce(initHandler);
+				
 				stage.stage3Ds[m_viewportID].requestContext3D();		
 			}else{
 				m_context = Yogurt3D.CONTEXT3D[m_viewportID];
@@ -292,7 +299,6 @@ package com.yogurt3d.core.viewports {
 		
 		
 		private function initHandler( _E:Event ):void{
-			stage.stage3Ds[m_viewportID].removeEventListener( Event.CONTEXT3D_CREATE, initHandler );
 			Yogurt3D.CONTEXT3D[m_viewportID] = stage.stage3Ds[m_viewportID].context3D;
 			
 			m_context = stage.stage3Ds[m_viewportID].context3D;

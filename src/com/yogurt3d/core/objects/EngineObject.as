@@ -28,7 +28,7 @@ package com.yogurt3d.core.objects {
   	 * @author Yogurt3D Engine Core Team
   	 * @company Yogurt3D Corp.
   	 **/
-	public class EngineObject extends EventDispatcher implements IEngineObject
+	public class EngineObject implements IEngineObject
 	{
 		/**
 		 * 
@@ -72,7 +72,7 @@ package com.yogurt3d.core.objects {
 		/**
 		 * @inheritDoc
 		 * */
-		public override function toString():String
+		public function toString():String
 		{
 			return "{systemId:"+IDManager.getSystemIDByObject(this)+", userId:"+IDManager.getUserIDByObject(this)+"}";
 		}

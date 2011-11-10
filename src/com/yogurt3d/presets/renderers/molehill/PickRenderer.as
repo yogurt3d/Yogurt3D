@@ -42,6 +42,7 @@ package com.yogurt3d.presets.renderers.molehill
 	import flash.display3D.Context3DProgramType;
 	import flash.display3D.Program3D;
 	import flash.display3D.VertexBuffer3D;
+	import flash.events.Event;
 	import flash.geom.Matrix3D;
 	import flash.geom.Rectangle;
 	import flash.geom.Vector3D;
@@ -132,9 +133,26 @@ package com.yogurt3d.presets.renderers.molehill
 			m_mouseCoordX = value;
 		}
 
+		private function initHandler( _e:Event ):void{
+			_context3d = Yogurt3D.CONTEXT3D[3] = _e.target.context3D;
+		}
+		
 		public function render(_scene:IScene, _viewport:Viewport):void
 		{		
 			m_lastHit = null;
+			
+			if( _context3d == null  )
+			{
+				if( Yogurt3D.CONTEXT3D[3] == null )
+				{
+					_viewport.stage.stage3Ds[3].addEventListener( Event.CONTEXT3D_CREATE, initHandler );
+					_viewport.stage.stage3Ds[3].requestContext3D();	
+					return;
+				}else{
+					_context3d = Yogurt3D.CONTEXT3D[3]
+				}
+			}
+			
 			
 			if( !m_initialized)
 			{
