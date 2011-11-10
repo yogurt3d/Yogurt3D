@@ -99,7 +99,7 @@ package com.yogurt3d.presets.renderers.molehill
 
 		public static var RENDER_STATS					:String;
 		
-		public static const BACKBUFFER					:BackBuffer;
+		public static const BACKBUFFER					:BackBuffer				= new BackBuffer();
 		
 		public var tempRect								:Rectangle 	= new Rectangle();
 		
@@ -206,8 +206,7 @@ package com.yogurt3d.presets.renderers.molehill
 
 		override protected function initInternals():void
 		{
-			BACKBUFFER 						= new BackBuffer();
-			
+		
 			m_shadowDepthShader 			= new ShaderDepthMap();
 			
 			m_shadowRenderShader  			= new ShaderShadow();
