@@ -60,8 +60,6 @@ package com.yogurt3d.core.sceneobjects {
 		YOGURT3D_INTERNAL var m_culling				:String 	= Context3DTriangleFace.BACK;
 		
 		YOGURT3D_INTERNAL var m_drawWireFrame	:Boolean = false;
-		
-		YOGURT3D_INTERNAL var m_drawAABBWireFrame	:Boolean = false;
 
 		YOGURT3D_INTERNAL var projectedVectices:Vector.<Number>;
 		YOGURT3D_INTERNAL var projectedUV:Vector.<Number>;
@@ -76,25 +74,22 @@ package com.yogurt3d.core.sceneobjects {
 		public function get wireframe():Boolean{
 			return m_drawWireFrame;
 		}
+		
 		public function set wireframe( _value:Boolean ):void{
 			m_drawWireFrame = _value;
 		}
 		
-		public function get aabbWireframe():Boolean{
-			return m_drawAABBWireFrame;
-		}
-		public function set aabbWireframe( _value:Boolean ):void{
-			m_drawAABBWireFrame = _value;
-		}
-		
+
 		Y3DCONFIG::DEBUG
 		{
 			YOGURT3D_INTERNAL function drawWireFrame(_matrix:Matrix3D, _viewport:Viewport):void{
-				var matrix:Matrix3D = MatrixUtils.TEMP_MATRIX;
-				matrix.copyFrom( _matrix );
-				matrix.prepend( transformation.matrixGlobal );
+				
 				if( m_drawWireFrame )
 				{
+					var matrix:Matrix3D = MatrixUtils.TEMP_MATRIX;
+					matrix.copyFrom( _matrix );
+					matrix.prepend( transformation.matrixGlobal );
+					
 					if( projectedVectices == null || projectedVectices.length != geometry.subMeshList[0].vertexCount * 2)
 					{
 						projectedVectices = new Vector.<Number>(geometry.subMeshList[0].vertexCount * 2);
@@ -130,46 +125,9 @@ package com.yogurt3d.core.sceneobjects {
 						_viewport.graphics.lineTo( x1, y1 );
 					}
 				}
-				if( m_drawAABBWireFrame )
-				{					
-					var corners:Vector.<Vector3D> = axisAlignedBoundingBox.corners;
-					var c0:Vector3D = Utils3D.projectVector( _matrix, corners[0] );
-					var c1:Vector3D = Utils3D.projectVector( _matrix, corners[1] );
-					var c2:Vector3D = Utils3D.projectVector( _matrix, corners[2] );
-					var c3:Vector3D = Utils3D.projectVector( _matrix, corners[3] );
-					var c4:Vector3D = Utils3D.projectVector( _matrix, corners[4] );
-					var c5:Vector3D = Utils3D.projectVector( _matrix, corners[5] );
-					var c6:Vector3D = Utils3D.projectVector( _matrix, corners[6] );
-					var c7:Vector3D = Utils3D.projectVector( _matrix, corners[7] );
+								
 					
-					_viewport.graphics.lineStyle(1,0x00FF00);
-					
-					
-					_viewport.graphics.moveTo( c0.x, c0.y ); // sol alt
-					_viewport.graphics.lineTo( c1.x, c1.y  );// sol alt
-					_viewport.graphics.lineTo( c7.x, c7.y  ); // sol ust ileri
-					_viewport.graphics.lineTo( c2.x, c2.y  );// sol ust geri
-					_viewport.graphics.lineTo( c0.x, c0.y ); // sol alt
-					
-					
-					_viewport.graphics.moveTo( c3.x, c3.y  ); // sag alt geri
-					_viewport.graphics.lineTo( c5.x, c5.y  ); // sag geri ust
-					_viewport.graphics.lineTo( c4.x, c4.y  ); // sag ileri ust
-					_viewport.graphics.lineTo( c6.x, c6.y  ); //sag alt ileri
-					_viewport.graphics.lineTo( c3.x, c3.y  ); // sag alt geri
-					
-					_viewport.graphics.moveTo( c3.x, c3.y  ); // sag alt geri
-					_viewport.graphics.lineTo( c0.x, c0.y  ); // sag geri ust
-					
-					_viewport.graphics.moveTo( c6.x, c6.y  ); // sag alt geri
-					_viewport.graphics.lineTo( c1.x, c1.y  ); // sag geri ust
-					
-					_viewport.graphics.moveTo( c4.x, c4.y  ); // sag alt geri
-					_viewport.graphics.lineTo( c7.x, c7.y  ); // sag geri ust
-					
-					_viewport.graphics.moveTo( c5.x, c5.y  ); // sag alt geri
-					_viewport.graphics.lineTo( c2.x, c2.y  ); // sag geri ust
-				}
+				
 			}
 		}
 		/**
