@@ -67,7 +67,7 @@ package com.yogurt3d.core.transformations {
 		
 		private var m_decomposedMatrix								:Vector.<Vector3D>;
 		
-		YOGURT3D_INTERNAL var m_onChange										: Signal;
+		YOGURT3D_INTERNAL var m_onChange							: Signal;
 		
 		/**
 		 * 
