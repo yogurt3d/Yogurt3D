@@ -420,7 +420,7 @@ package com.yogurt3d.core.viewports {
 					
 					for( var i:int = 0; i < renderable.length; i++ )
 					{
-						if(SceneObjectRenderable(renderable[i]).wireframe)
+						if(SceneObjectRenderable(renderable[i]).wireframe || SceneObjectRenderable(renderable[i]).aabbWireframe)
 						{
 							SceneObjectRenderable(renderable[i]).YOGURT3D_INTERNAL::drawWireFrame(matrix,this );
 						}
