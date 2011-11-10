@@ -44,8 +44,6 @@ package com.yogurt3d.core.materials.shaders.base
 		
 		private var m_requiresLight					: Boolean = false;
 		
-		private var m_requiresShadowCastingLight		: Boolean = false;
-		
 		YOGURT3D_INTERNAL var m_params				: ShaderParameters;
 
 		private var m_key:String								= "";
@@ -178,19 +176,6 @@ package com.yogurt3d.core.materials.shaders.base
 		public function set requiresLight(value:Boolean):void
 		{
 			m_requiresLight = value;
-		}
-		
-		public function get requiresShadowCastingLight():Boolean
-		{
-			return m_requiresShadowCastingLight;
-		}
-		
-		/**
-		 * @private 
-		 */
-		public function set requiresShadowCastingLight(value:Boolean):void
-		{
-			m_requiresShadowCastingLight = value;
 		}
 		
 		/**

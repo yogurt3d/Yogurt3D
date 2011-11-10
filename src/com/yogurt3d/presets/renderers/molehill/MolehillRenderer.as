@@ -519,31 +519,27 @@ package com.yogurt3d.presets.renderers.molehill
 					{
 						for ( k = 0; k < _lights.length; k++) {
 							_light = _lights[k];	
-							
-							if( (_shader.requiresShadowCastingLight && _light.castShadows) ||
-								!_shader.requiresShadowCastingLight 
-							){								
-								// draw triangles
-								len = _mesh.subMeshList.length;
-								for( subMeshIndex = 0; subMeshIndex < len; subMeshIndex++)
+														
+							// draw triangles
+							len = _mesh.subMeshList.length;
+							for( subMeshIndex = 0; subMeshIndex < len; subMeshIndex++)
+							{
+								// set shader program
+								program = _shader.getProgram(_context3d, _light.type, _mesh.subMeshList[subMeshIndex].type);
+								if( program != m_lastProgram )
 								{
-									// set shader program
-									program = _shader.getProgram(_context3d, _light.type, _mesh.subMeshList[subMeshIndex].type);
-									if( program != m_lastProgram )
-									{
-										_context3d.setProgram( program );
-										m_lastProgram = program;
-									}	
-									
-									setStreamsFromShader( _context3d, _mesh.subMeshList[subMeshIndex], _shader );
-									
-									// set program constants
-									if( !setProgramConstants(_context3d, _params, _light, _camera, _renderableObject, _mesh.subMeshList[subMeshIndex] ) )
-									{
-										continue;
-									}
-									_context3d.drawTriangles(_mesh.subMeshList[subMeshIndex].getIndexBufferByContext3D(_context3d), 0, _mesh.subMeshList[subMeshIndex].triangleCount);
+									_context3d.setProgram( program );
+									m_lastProgram = program;
+								}	
+								
+								setStreamsFromShader( _context3d, _mesh.subMeshList[subMeshIndex], _shader );
+								
+								// set program constants
+								if( !setProgramConstants(_context3d, _params, _light, _camera, _renderableObject, _mesh.subMeshList[subMeshIndex] ) )
+								{
+									continue;
 								}
+								_context3d.drawTriangles(_mesh.subMeshList[subMeshIndex].getIndexBufferByContext3D(_context3d), 0, _mesh.subMeshList[subMeshIndex].triangleCount);
 							}
 						}
 						

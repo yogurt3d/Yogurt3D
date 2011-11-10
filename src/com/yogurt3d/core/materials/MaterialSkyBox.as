@@ -93,7 +93,6 @@ internal class ShaderSkyBox extends Shader
 		params.culling				= Context3DTriangleFace.NONE;
 		params.loopCount			= 1;
 		requiresLight				= false;
-		requiresShadowCastingLight  = false;
 
 		attributes.push( EVertexAttribute.POSITION );
 
