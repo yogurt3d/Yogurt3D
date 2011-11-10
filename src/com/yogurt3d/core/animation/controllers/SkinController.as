@@ -341,7 +341,7 @@ package com.yogurt3d.core.animation.controllers
 				}
 				
 				// tsl: don't jump back to frame 0 if we're not dealing with a looping animation. If we're at loopCount 0, AND our last frame is the last frame of the animation, then bail.. Don't snap to the 0 frame 
-				if(m_loopCount == 0 && (m_lastFrame >= (animation.frameData.length - 1)))
+				if(m_loopCount == 0 && (m_lastFrame >= (animation.frameData.length - 1)) && m_blendMode != BLEND_ANIMATED)
 					return;
 				
 				// Data of the current frame
@@ -351,9 +351,12 @@ package com.yogurt3d.core.animation.controllers
 				if( m_blendMode == BLEND_ANIMATED )
 				{
 					var blendWeight:Number = _time / (m_blendDuration * 1000);
-
-					if( blendWeight < 1 && blendWeight > 0)
+					
+					trace(blendWeight);
+					if( blendWeight < 1 )
 					{
+						var _time2:uint = _timeInfo.objectTime - m_startTimeOld;
+						
 						var animation2:SkeletalAnimationData = m_animations[ m_blendingAnimation ] as SkeletalAnimationData;
 						var currentFrame2:uint = ( Math.floor(_time2 * ( animation2.frameRate/1000 ) ) + m_startFrameOld ) % animation2.frameData.length;
 							
@@ -363,7 +366,6 @@ package com.yogurt3d.core.animation.controllers
 							boneName = m_mesh.bones[i].name;
 							
 							obj = _currentFrameData[ boneName ];
-							var _time2:uint = _timeInfo.objectTime - m_startTimeOld;
 							
 							var obj2:Object = animation2.frameData[ currentFrame2 ][ boneName ];
 							
