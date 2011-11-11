@@ -98,6 +98,12 @@ package com.yogurt3d.core.sceneobjects {
 		{
 			super(_initInternals);
 		}
+
+		public function get boundingSphere():BoundingSphere
+		{
+			return YOGURT3D_INTERNAL::m_boundingSphere;
+		}
+
 		/**
 		 * @inheritDoc 
 		 * @return 
@@ -366,6 +372,7 @@ package com.yogurt3d.core.sceneobjects {
 			if(m_aabb == null || m_reinitboundingVolumes)
 			{
 				calculateBoundingVolumes();
+				m_reinitboundingVolumes = false;
 			}
 			if( m_boundingVolumesDirty )
 			{
