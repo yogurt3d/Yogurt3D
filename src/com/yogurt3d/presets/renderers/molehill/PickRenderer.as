@@ -204,7 +204,7 @@ package com.yogurt3d.presets.renderers.molehill
 				_renderableObject = _renderableSet[i];
 				
 				// if picking is disabled for object skip
-				if( !_renderableObject.pickEnabled && _renderableObject.visible ) continue;
+				if( !_renderableObject.pickEnabled || !_renderableObject.visible ) continue;
 				if( _renderableObject.geometry == null ) continue;
 				// calculate model view prrojection matrix
 				m_modelViewMatrix.copyFrom( _renderableObject.transformation.matrixGlobal );	
