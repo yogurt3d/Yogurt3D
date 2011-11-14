@@ -18,7 +18,7 @@
 
 
 
-package com.yogurt3d.core.materials.posteffects
+package com.yogurt3d.core.effects.filters
 {
 	import com.adobe.utils.AGALMiniAssembler;
 	import com.yogurt3d.core.cameras.Camera;

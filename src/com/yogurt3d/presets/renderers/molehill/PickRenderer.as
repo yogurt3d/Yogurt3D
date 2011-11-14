@@ -149,7 +149,9 @@ package com.yogurt3d.presets.renderers.molehill
 					_viewport.stage.stage3Ds[3].requestContext3D();	
 					return;
 				}else{
-					_context3d = Yogurt3D.CONTEXT3D[3]
+					_context3d = Yogurt3D.CONTEXT3D[3];
+					_viewport.stage.stage3Ds[3].x = -50;
+					_viewport.stage.stage3Ds[3].y = -50;
 				}
 			}
 			

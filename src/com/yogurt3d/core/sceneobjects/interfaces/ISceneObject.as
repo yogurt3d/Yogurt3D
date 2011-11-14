@@ -19,6 +19,7 @@
  
 package com.yogurt3d.core.sceneobjects.interfaces {
 	import com.yogurt3d.core.helpers.boundingvolumes.AxisAlignedBoundingBox;
+	import com.yogurt3d.core.helpers.boundingvolumes.BoundingSphere;
 	import com.yogurt3d.core.objects.interfaces.IEngineObject;
 	import com.yogurt3d.core.transformations.Transformation;
 	import com.yogurt3d.core.viewports.ViewportLayer;
@@ -246,6 +247,8 @@ package com.yogurt3d.core.sceneobjects.interfaces {
 		function get transformation():Transformation;
 		
 		function get axisAlignedBoundingBox():AxisAlignedBoundingBox;
+		
+		function get boundingSphere():BoundingSphere;
 		
 		/**
 		 * Indicates the container that contains this object.

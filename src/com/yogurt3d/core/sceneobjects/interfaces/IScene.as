@@ -20,9 +20,9 @@
 package com.yogurt3d.core.sceneobjects.interfaces
 {
 	import com.yogurt3d.core.cameras.interfaces.ICamera;
+	import com.yogurt3d.core.effects.Effect;
 	import com.yogurt3d.core.lights.Light;
 	import com.yogurt3d.core.materials.base.Color;
-	import com.yogurt3d.core.materials.posteffects.Filter;
 	import com.yogurt3d.core.objects.interfaces.IEngineObject;
 	import com.yogurt3d.core.sceneobjects.SkyBox;
 	
@@ -128,6 +128,6 @@ package com.yogurt3d.core.sceneobjects.interfaces
 
 		function set skyBox(_value:SkyBox):void;
 		
-		function get postEffects():Vector.<Filter>;
+		function get postEffects():Vector.<Effect>;
 	}
 }

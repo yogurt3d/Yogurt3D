@@ -35,7 +35,7 @@ package com.yogurt3d.core.scenetree.octree
 		public function Octant(sceneObject:ISceneObjectRenderable)
 		{
 			this.sceneObject = sceneObject;
-			m_box = sceneObject.geometry.axisAlignedBoundingBox;
+			m_box = sceneObject.axisAlignedBoundingBox;
 		}
 
 	}

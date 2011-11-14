@@ -90,8 +90,8 @@ package com.yogurt3d.core.scenetree.octree
 			}
 			if( _child.isStatic )
 			{
-				_child.geometry.axisAlignedBoundingBox.update( SceneObjectRenderable(_child).YOGURT3D_INTERNAL::m_transformation.matrixGlobal );
-				_child.geometry.boundingSphere.YOGURT3D_INTERNAL::m_center =  SceneObjectRenderable(_child).YOGURT3D_INTERNAL::m_transformation.matrixGlobal.position;
+				//_child.geometry.axisAlignedBoundingBox.update( SceneObjectRenderable(_child).YOGURT3D_INTERNAL::m_transformation.matrixGlobal );
+				//_child.geometry.boundingSphere.YOGURT3D_INTERNAL::m_center =  SceneObjectRenderable(_child).YOGURT3D_INTERNAL::m_transformation.matrixGlobal.position;
 				s_octantByScene[_scene].insert(_child);
 			}else{
 				if( s_dynamicChildrenByScene[_scene ] == null )
@@ -108,8 +108,8 @@ package com.yogurt3d.core.scenetree.octree
 			var _child:ISceneObjectRenderable = _scn as ISceneObjectRenderable;
 			if( _child.isStatic )
 			{
-				_child.geometry.axisAlignedBoundingBox.update( SceneObjectRenderable(_child).YOGURT3D_INTERNAL::m_transformation.matrixGlobal );
-				_child.geometry.boundingSphere.YOGURT3D_INTERNAL::m_center =  SceneObjectRenderable(_child).geometry.axisAlignedBoundingBox.center;
+				//_child.axisAlignedBoundingBox.update( SceneObjectRenderable(_child).YOGURT3D_INTERNAL::m_transformation.matrixGlobal );
+				//_child.boundingSphere.YOGURT3D_INTERNAL::m_center =  SceneObjectRenderable(_child).geometry.axisAlignedBoundingBox.center;
 				
 				s_octantByScene[_child.scene].insert(_child);
 				_removeChildFromDynamicList( _child, _child.scene );
@@ -168,7 +168,7 @@ package com.yogurt3d.core.scenetree.octree
 					remove.push( i );
 					continue;
 					}*/
-					if( camera.frustum.containmentTestAABB( item.geometry.axisAlignedBoundingBox ) == Frustum.OUT )
+					if( camera.frustum.containmentTestAABB( item.axisAlignedBoundingBox ) == Frustum.OUT )
 					{
 						remove.push( i );
 						continue;
