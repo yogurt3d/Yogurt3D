@@ -92,6 +92,7 @@ package com.yogurt3d {
 		public static var DEBUG_TEXT			:String 			= "";
 		private static const THOUSAND_MS		:int				= 1000;
 		
+		
 		private var m_fps						:int;
 		private var m_contextManager			:IContextManager;
 		private var m_defaultContext			:Context;
@@ -114,7 +115,7 @@ package com.yogurt3d {
 			
 			CONTEXT3D = new Dictionary;
 			
-			initPlugins();
+			initPlugins();			
 			
 			m_updateTimer.addEventListener(TimerEvent.TIMER, handleUpdateTimer);
 		}

@@ -19,6 +19,7 @@
 
 package com.yogurt3d.presets.renderers.molehill
 {
+	import com.yogurt3d.Yogurt3D;
 	import com.yogurt3d.core.cameras.interfaces.ICamera;
 	import com.yogurt3d.core.effects.Effect;
 	import com.yogurt3d.core.effects.filters.Filter;
@@ -205,13 +206,10 @@ package com.yogurt3d.presets.renderers.molehill
 			
 			m_lastProgram = null;
 			// clear vertex buffers
-			/*Y3DCONFIG::DEBUG
+			Y3DCONFIG::DEBUG
 			{
-				Y3DCONFIG::TRACE
-				{
-					trace( "Render Time:", getTimer() - start );
-				}
-			}*/
+				Yogurt3D.DEBUG_TEXT = "Render Time:" + (getTimer() - start) ;
+			}
 			
 		}
 
