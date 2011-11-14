@@ -200,7 +200,7 @@ package com.yogurt3d.core.materials.shaders
 				
 				_normalAGAL = [   
 					
-					"tex ft1 v2 fs1<2d,wrap,linear>",
+					"tex ft1 v2 fs1<2d,wrap,miplinear,linear>",
 					// lookup normal from normal map, move from [0,1] to  [-1, 1] range, normalize
 					// texNormal = texNormal * 2 - 1;
 					"add ft1 ft1 ft1",

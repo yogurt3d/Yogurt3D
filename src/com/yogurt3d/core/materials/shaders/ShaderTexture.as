@@ -112,7 +112,7 @@ package com.yogurt3d.core.materials.shaders
 			params.fragmentShaderConstants.push(_textureShaderConstants);
 			
 			m_alphaShaderConstant 	= new ShaderConstants(0, EShaderConstantsType.CUSTOM_VECTOR );
-			m_alphaShaderConstant.vector 				= Vector.<Number>([0.2,1,0,0]);
+			m_alphaShaderConstant.vector 				= Vector.<Number>([0.2,1.0,0,0]);
 			
 			
 			m_shadowMapShaderConstants = new ShaderConstants(1, EShaderConstantsType.TEXTURE);
@@ -228,18 +228,18 @@ package com.yogurt3d.core.materials.shaders
 		 * 
 		 */
 		public override function getFragmentProgram(_lightType:ELightType=null):ByteArray{
-			var code:String = "tex ft0, v0, fs0<2d,wrap,linear,nomip>\n";
+			var code:String = "tex ft0, v0, fs0<2d,wrap,linear,miplinear>\n";
 			
 			if( m_alphaTexture )
 			{
 				code += "sub ft1.x, ft0.w, fc0.x\nkil ft1.x\n";
 			}
 			if(m_shadowMap){
-				code += "tex ft1, v1.xy, fs1<2d,wrap,linear,nomip>\nmul ft0, ft1, ft0\n";
+				code += "tex ft1, v1.xy, fs1<2d,wrap,linear,miplinear>\nmul ft0, ft1, ft0\n";
 			}
 			
 			
-			//code += "mov ft0.w, fc.y\n";
+			code += "mul ft0.w, ft0.w, fc0.y\n";
 			code += "mov oc, ft0";
 			return ShaderUtils.fragmentAssambler.assemble(Context3DProgramType.FRAGMENT,code);
 		}

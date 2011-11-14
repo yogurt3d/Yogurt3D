@@ -228,6 +228,17 @@ package com.yogurt3d.core.sceneobjects
 			m_postEffects.push( _effect );
 		}
 		
+		public function removeAllEffects():void{
+			var index:uint;
+			for(var i:uint = 0; i < m_postEffects.length; i++){
+				if( (index = m_postEffects.indexOf( m_postEffects[i] ) ) != -1 )
+				{
+					m_postEffects.splice(index,1);
+				}
+			}
+			
+		}
+		
 		public function removePostEffect( _effect:Filter ):void{
 			var index:uint;
 			if( (index = m_postEffects.indexOf( _effect ) ) != -1 )

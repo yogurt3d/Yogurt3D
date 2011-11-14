@@ -77,7 +77,7 @@ package com.yogurt3d.core.materials
 			m_freShader = new ShaderTwoTextureFresnel(m_normalMap, 
 				m_reflectivityMap, _opacity,
 				m_fresnelReflectance, m_fresnelPower, 
-				m_texture1, m_texture2);
+				m_texture1, m_texture2,m_gain);
 			
 			shaders.push(m_freShader);
 		}

@@ -20,6 +20,7 @@ package com.yogurt3d.core.texture
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.texture.base.ITexture;
 	import com.yogurt3d.core.utils.MathUtils;
+	import com.yogurt3d.core.utils.MipmapGenerator;
 	
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
@@ -62,6 +63,8 @@ package com.yogurt3d.core.texture
 		
 		private var m_readyToUpload				:Boolean = false;
 		
+	private var m_mipmap						: Boolean = false;
+		
 		/**
 		 *  
 		 * @param _bitmapData
@@ -69,13 +72,14 @@ package com.yogurt3d.core.texture
 		 * @param _byte
 		 * 
 		 */
-		public function TextureMap( _bitmapData:BitmapData = null, _displayObject:DisplayObject = null, _byte:ByteArray = null)
+		public function TextureMap( _bitmapData:BitmapData = null, _displayObject:DisplayObject = null, _byte:ByteArray = null, _mipmap:Boolean = true)
 		{
 			m_context3DMap = new Dictionary();
 			
 			byteArray = _byte;
 			bitmapData = _bitmapData;
 			displayObject = _displayObject;
+			m_mipmap = _mipmap;
 		}
 		
 		/**
@@ -265,7 +269,12 @@ package com.yogurt3d.core.texture
 					_texture.uploadFromByteArray( m_byteArray, 0, 0 );
 				}else if( m_bitmapData )
 				{
-					_texture.uploadFromBitmapData( m_bitmapData, 0 );
+					if( !m_mipmap )
+					{
+						_texture.uploadFromBitmapData( m_bitmapData, 0 );
+					}else{
+						MipmapGenerator.generateMipMaps( m_bitmapData, _texture, null, true );
+					}
 				}else if( m_displayObject ){
 					uploadFromDisplayObject( _texture );
 				}

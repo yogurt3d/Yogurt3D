@@ -31,6 +31,7 @@ package com.yogurt3d.presets.renderers.molehill
 	import com.yogurt3d.core.materials.base.Material;
 	import com.yogurt3d.core.materials.posteffects.Filter;
 	import com.yogurt3d.core.materials.posteffects.FilterBoxBlur;
+	import com.yogurt3d.core.materials.shaders.ShaderDepth;
 	import com.yogurt3d.core.materials.shaders.ShaderDepthMap;
 	import com.yogurt3d.core.materials.shaders.ShaderShadow;
 	import com.yogurt3d.core.materials.shaders.base.EVertexAttribute;
@@ -103,6 +104,9 @@ package com.yogurt3d.presets.renderers.molehill
 		
 		public var tempRect								:Rectangle 	= new Rectangle();
 		
+		// SSAO staff 
+		YOGURT3D_INTERNAL var m_shaderDepthOcc:ShaderDepth;
+		
 		public function MolehillRenderer(_initInternals:Boolean = true)
 		{
 			super(_initInternals);			
@@ -153,7 +157,7 @@ package com.yogurt3d.presets.renderers.molehill
 			var len:uint; var subMeshIndex:int;
 			
 			// update shadow maps
-			updateShadowMaps( _lights, _context3d, _scene );
+		//	updateShadowMaps( _lights, _context3d, _scene );
 			tempRect.setTo(0,0,_viewport.width,_viewport.height);
 			// condition weather there are screen space post processing effects
 			if(_postEffects.length > 0)
@@ -171,8 +175,10 @@ package com.yogurt3d.presets.renderers.molehill
 				
 			vsManager.cleanVertexBuffers( _context3d );
 			
-			renderSceneObjects(_renderableSet, _lights, _camera);
-			renderShadowMaps(_lights, _context3d, _scene, _camera);
+			createDepthMapsOcc(_renderableSet, _lights, _camera);
+			
+			//renderSceneObjects(_renderableSet, _lights, _camera);
+			//renderShadowMaps(_lights, _context3d, _scene, _camera);
 			
 			vsManager.cleanVertexBuffers( _context3d );
 			
@@ -205,6 +211,74 @@ package com.yogurt3d.presets.renderers.molehill
 			}
 			
 		}
+		
+		private function createDepthMapsOcc( _renderableSet :Vector.<ISceneObjectRenderable>, _lights :Vector.<Light>, _camera:ICamera):void{
+			//			createNDTarget();
+			//			
+			//			rtManager.setRenderTo(_context3d, m_normalDepthMap,true);
+			
+			
+			var _renderableObject:ISceneObjectRenderable;
+			var _mesh:IMesh;
+			var i:int,j:int,k:int,l:int;
+			var len:uint; var subMeshIndex:int;
+			var program:Program3D;
+			
+			var _numberOfRenderableObjects:uint = _renderableSet.length;
+			
+			rendererHelper.beginScene(_camera);
+			
+			var _params:ShaderParameters  = m_shaderDepthOcc.params;
+			
+			for (i = 0; i < _numberOfRenderableObjects; i++ ) {
+				// get renderable object and properties
+				_renderableObject = _renderableSet[i];
+				if( !_renderableObject.visible ) continue;
+				
+				_mesh = _renderableObject.geometry;
+				if (!_mesh) { trace("Renderable object with no geometry.."); continue; }
+				
+				// Set Blending
+				_context3d.setBlendFactors( _params.blendSource, _params.blendDestination);
+				
+				// set color masks
+				_context3d.setColorMask( _params.colorMaskR, _params.colorMaskG, _params.colorMaskB, _params.colorMaskA);
+				// set depth
+				_context3d.setDepthTest( _params.writeDepth, _params.depthFunction );
+				// set culling
+				_context3d.setCulling( _params.culling );
+				
+				len = _mesh.subMeshList.length;
+				for( subMeshIndex = 0; subMeshIndex < len; subMeshIndex++)
+				{
+					//var _vertexBuffer:VertexBuffer3D = _mesh.subMeshList[subMeshIndex].getVertexBufferByContext3D( _context3d );	
+					
+					program = m_shaderDepthOcc.getProgram(_context3d,  null, _mesh.subMeshList[subMeshIndex].type)
+					
+					if( program != m_lastProgram )
+					{
+						_context3d.setProgram( program );
+						m_lastProgram = program;
+					}
+					setStreamsFromShader( _context3d, _mesh.subMeshList[subMeshIndex], m_shaderDepthOcc );
+					
+					if( !setProgramConstants(_context3d, _params, null, _camera, _renderableObject, _mesh.subMeshList[subMeshIndex] ) )
+					{
+						continue;
+					}
+					// set program constants
+					//	if(rendererHelper.setProgramConstants(_context3d, _params, null, _camera, _renderableObject, _mesh.subMeshList[subMeshIndex] ))
+					//	{
+					_context3d.drawTriangles(_mesh.subMeshList[subMeshIndex].getIndexBufferByContext3D(_context3d), 0, _mesh.subMeshList[subMeshIndex].triangleCount);
+					//	}
+				}
+			}
+			
+			m_lastProgram = null;
+			
+			
+			//			rtManager.setRenderTo( _context3d, BACKBUFFER, false );
+		}
 
 		override protected function initInternals():void
 		{
@@ -214,6 +288,8 @@ package com.yogurt3d.presets.renderers.molehill
 			m_shadowRenderShader  			= new ShaderShadow();
 			
 			m_shadowFilter 					= new FilterBoxBlur();
+			
+			m_shaderDepthOcc = new ShaderDepth();
 			
 			rendererHelper 					= new rendererHelperClass() as IRendererHelper;
 			setProgramConstants 			= rendererHelper.setProgramConstants;
