@@ -18,9 +18,9 @@
  
 package com.yogurt3d.core.sceneobjects
 {
+	import com.yogurt3d.Yogurt3D;
 	import com.yogurt3d.core.cameras.interfaces.ICamera;
 	import com.yogurt3d.core.effects.Effect;
-	import com.yogurt3d.core.effects.filters.Filter;
 	import com.yogurt3d.core.lights.Light;
 	import com.yogurt3d.core.managers.idmanager.IDManager;
 	import com.yogurt3d.core.managers.scenetreemanager.SceneTreeManager;
@@ -57,6 +57,8 @@ package com.yogurt3d.core.sceneobjects
 		
 		public function Scene(_sceneTreeManagerDriver:String = "QuadSceneTreeManagerDriver", args:Object = null, _initInternals:Boolean = true)
 		{
+			Yogurt3D.instance;
+			
 			m_driver = _sceneTreeManagerDriver;
 			m_args = args;
 			super(_initInternals);
