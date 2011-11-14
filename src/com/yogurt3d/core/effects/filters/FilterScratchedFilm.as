@@ -1,6 +1,6 @@
 // FROM : http://developer.download.nvidia.com/shaderlibrary/webpages/shader_library.html
 
-package com.yogurt3d.core.materials.posteffects
+package com.yogurt3d.core.effects.filters
 {
 	import com.adobe.utils.AGALMiniAssembler;
 	import com.yogurt3d.core.lights.ELightType;

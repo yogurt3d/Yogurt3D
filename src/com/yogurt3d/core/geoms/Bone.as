@@ -302,6 +302,8 @@ package com.yogurt3d.core.geoms {
 			m_observers.push( _transformation );
 			m_offsets.push( _rotationOffset );
 			m_translationoffsets.push( _translationOffset );
+			
+			update();
 		}
 		
 		public function removeObserver( _transformation:Transformation ):void{
@@ -367,7 +369,7 @@ package com.yogurt3d.core.geoms {
 				for( var i:int = 0; i < m_observers.length; i++)
 				{
 					var mat:Matrix3D = MatrixUtils.TEMP_MATRIX;
-					mat.copyFrom( m_boneParentTransformation.matrixLocal );
+					mat.copyFrom( m_boneParentTransformation.matrixGlobal );
 					transformationMatrix.transpose();
 					
 					mat.prepend( transformationMatrix );

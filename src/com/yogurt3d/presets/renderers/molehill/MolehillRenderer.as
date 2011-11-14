@@ -19,7 +19,11 @@
 
 package com.yogurt3d.presets.renderers.molehill
 {
+	import com.yogurt3d.Yogurt3D;
 	import com.yogurt3d.core.cameras.interfaces.ICamera;
+	import com.yogurt3d.core.effects.Effect;
+	import com.yogurt3d.core.effects.filters.Filter;
+	import com.yogurt3d.core.effects.filters.FilterBoxBlur;
 	import com.yogurt3d.core.geoms.SkeletalAnimatedMesh;
 	import com.yogurt3d.core.geoms.SkinnedSubMesh;
 	import com.yogurt3d.core.geoms.SubMesh;
@@ -29,8 +33,6 @@ package com.yogurt3d.presets.renderers.molehill
 	import com.yogurt3d.core.managers.rttmanager.RenderTargetManager;
 	import com.yogurt3d.core.managers.vbstream.VertexStreamManager;
 	import com.yogurt3d.core.materials.base.Material;
-	import com.yogurt3d.core.materials.posteffects.Filter;
-	import com.yogurt3d.core.materials.posteffects.FilterBoxBlur;
 	import com.yogurt3d.core.materials.shaders.ShaderDepthMap;
 	import com.yogurt3d.core.materials.shaders.ShaderShadow;
 	import com.yogurt3d.core.materials.shaders.base.EVertexAttribute;
@@ -122,7 +124,7 @@ package com.yogurt3d.presets.renderers.molehill
 			}
 			_context3d = _viewport.context3d;
 			
-			var _postEffects:Vector.<Filter> = _scene.postEffects;
+			var _postEffects:Vector.<Effect> = _scene.postEffects;
 			
 			var program:Program3D;
 			
@@ -158,7 +160,7 @@ package com.yogurt3d.presets.renderers.molehill
 			// condition weather there are screen space post processing effects
 			if(_postEffects.length > 0)
 			{
-				rtManager.setRenderTo( _context3d, _postEffects[0].getRenderTarget(tempRect) , true, _scene.sceneColor );
+				rtManager.setRenderTo( _context3d, _postEffects[0].filters[0].getRenderTarget(tempRect) , true, _scene.sceneColor );
 			}
 			else{
 				// if shadow maps changed the render target from the backbuffer 
@@ -178,15 +180,23 @@ package com.yogurt3d.presets.renderers.molehill
 			
 			for(var i:uint = 0; i < _postEffects.length; i++){
 				
-				var sampler:RenderTextureTarget = rtManager.getRenderTarget();
-				
-				if((i+1) < _postEffects.length)
+				for( var j:int = 0; j < _postEffects[i].filters.length; j++ )
 				{
-					rtManager.setRenderTo( _context3d, _postEffects[i+1].getRenderTarget(tempRect), true );
-				}else{
-					rtManager.setRenderTo( _context3d, BACKBUFFER, false );
+					var sampler:RenderTextureTarget = rtManager.getRenderTarget();
+					
+					if((j+1) < _postEffects[i].filters.length)
+					{
+						// there is another filter in the effect
+						rtManager.setRenderTo( _context3d, _postEffects[i].filters[j+1].getRenderTarget(tempRect), true );
+					}else if((i+1) < _postEffects.length){
+						// if there is no filter in this effect move onto next effect is there is
+						rtManager.setRenderTo( _context3d, _postEffects[i+1].filters[0].getRenderTarget(tempRect), true );
+					}else{
+						rtManager.setRenderTo( _context3d, BACKBUFFER, false );
+					}
+					_postEffects[i].filters[j].postProcess(_context3d, tempRect, sampler);
+					
 				}
-				_postEffects[i].postProcess(_context3d, tempRect, sampler);
 				
 			}
 			rendererHelper.endScene();
@@ -198,10 +208,7 @@ package com.yogurt3d.presets.renderers.molehill
 			// clear vertex buffers
 			Y3DCONFIG::DEBUG
 			{
-				Y3DCONFIG::TRACE
-				{
-					trace( "Render Time:", getTimer() - start );
-				}
+				Yogurt3D.DEBUG_TEXT = "Render Time:" + (getTimer() - start) ;
 			}
 			
 		}

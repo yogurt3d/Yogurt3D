@@ -18,13 +18,13 @@
  
 package com.yogurt3d.core.sceneobjects
 {
-	import com.yogurt3d.core.cameras.Camera;
+	import com.yogurt3d.Yogurt3D;
 	import com.yogurt3d.core.cameras.interfaces.ICamera;
+	import com.yogurt3d.core.effects.Effect;
 	import com.yogurt3d.core.lights.Light;
 	import com.yogurt3d.core.managers.idmanager.IDManager;
 	import com.yogurt3d.core.managers.scenetreemanager.SceneTreeManager;
 	import com.yogurt3d.core.materials.base.Color;
-	import com.yogurt3d.core.materials.posteffects.Filter;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.objects.EngineObject;
 	import com.yogurt3d.core.sceneobjects.interfaces.IScene;
@@ -47,7 +47,7 @@ package com.yogurt3d.core.sceneobjects
 		
 		YOGURT3D_INTERNAL var m_driver:String;
 		
-		YOGURT3D_INTERNAL var m_postEffects:Vector.<Filter>;
+		YOGURT3D_INTERNAL var m_postEffects:Vector.<Effect>;
 		
 		private var m_sceneColor:Color;
 		
@@ -57,12 +57,14 @@ package com.yogurt3d.core.sceneobjects
 		
 		public function Scene(_sceneTreeManagerDriver:String = "QuadSceneTreeManagerDriver", args:Object = null, _initInternals:Boolean = true)
 		{
+			Yogurt3D.instance;
+			
 			m_driver = _sceneTreeManagerDriver;
 			m_args = args;
 			super(_initInternals);
 		}
 		
-		public function get postEffects():Vector.<Filter>
+		public function get postEffects():Vector.<Effect>
 		{
 			return YOGURT3D_INTERNAL::m_postEffects;
 		}
@@ -194,7 +196,7 @@ package com.yogurt3d.core.sceneobjects
 			
 			m_sceneColor = new Color(1,1,1,1);
 			
-			m_postEffects = new Vector.<Filter>();
+			m_postEffects = new Vector.<Effect>();
 			
 			SceneTreeManager.setSceneRootObject(ISceneObject(m_rootObject), this);
 		}
@@ -224,11 +226,11 @@ package com.yogurt3d.core.sceneobjects
 			SceneTreeManager.addChild( m_skyBox, m_rootObject );
 		}
 		
-		public function addPostEffect( _effect:Filter ):void{
+		public function addPostEffect( _effect:Effect ):void{
 			m_postEffects.push( _effect );
 		}
 		
-		public function removePostEffect( _effect:Filter ):void{
+		public function removePostEffect( _effect:Effect ):void{
 			var index:uint;
 			if( (index = m_postEffects.indexOf( _effect ) ) != -1 )
 			{

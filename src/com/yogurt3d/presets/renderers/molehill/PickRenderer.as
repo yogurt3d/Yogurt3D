@@ -149,7 +149,9 @@ package com.yogurt3d.presets.renderers.molehill
 					_viewport.stage.stage3Ds[3].requestContext3D();	
 					return;
 				}else{
-					_context3d = Yogurt3D.CONTEXT3D[3]
+					_context3d = Yogurt3D.CONTEXT3D[3];
+					_viewport.stage.stage3Ds[3].x = -50;
+					_viewport.stage.stage3Ds[3].y = -50;
 				}
 			}
 			
@@ -202,7 +204,7 @@ package com.yogurt3d.presets.renderers.molehill
 				_renderableObject = _renderableSet[i];
 				
 				// if picking is disabled for object skip
-				if( !_renderableObject.pickEnabled && _renderableObject.visible ) continue;
+				if( !_renderableObject.pickEnabled || !_renderableObject.visible ) continue;
 				if( _renderableObject.geometry == null ) continue;
 				// calculate model view prrojection matrix
 				m_modelViewMatrix.copyFrom( _renderableObject.transformation.matrixGlobal );	

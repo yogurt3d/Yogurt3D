@@ -16,7 +16,7 @@
 * License along with this library. If not, see <http://www.yogurt3d.com/yogurt3d/downloads/yogurt3d-click-through-agreement.html>. 
 */
 
-package com.yogurt3d.core.materials.posteffects
+package com.yogurt3d.core.effects.filters
 {
 	import com.adobe.utils.AGALMiniAssembler;
 	import com.yogurt3d.core.lights.ELightType;

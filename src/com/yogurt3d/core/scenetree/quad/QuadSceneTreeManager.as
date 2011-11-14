@@ -72,8 +72,8 @@ package com.yogurt3d.core.scenetree.quad
 			}
 			if( _child.isStatic )
 			{
-				_child.geometry.axisAlignedBoundingBox.update( SceneObjectRenderable(_child).YOGURT3D_INTERNAL::m_transformation.matrixGlobal );
-				_child.geometry.boundingSphere.YOGURT3D_INTERNAL::m_center =  SceneObjectRenderable(_child).YOGURT3D_INTERNAL::m_transformation.matrixGlobal.position;
+				//_child.axisAlignedBoundingBox.update( SceneObjectRenderable(_child).YOGURT3D_INTERNAL::m_transformation.matrixGlobal );
+				//_child.boundingSphere.YOGURT3D_INTERNAL::m_center =  SceneObjectRenderable(_child).YOGURT3D_INTERNAL::m_transformation.matrixGlobal.position;
 				s_quadByScene[_scene].insert(_child);
 			}else{
 				if( s_dynamicChildrenByScene[_scene ] == null )
@@ -132,7 +132,7 @@ package com.yogurt3d.core.scenetree.quad
 						remove.push( i );
 						continue;
 					}*/
-					if( camera.frustum.containmentTestAABB( item.geometry.axisAlignedBoundingBox ) == Frustum.OUT )
+					if( camera.frustum.containmentTestAABB( item.axisAlignedBoundingBox ) == Frustum.OUT )
 					{
 						remove.push( i );
 						continue;
