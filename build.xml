@@ -4,7 +4,7 @@
 
 	<property name="FLEX_HOME" value="C:/Program Files (x86)/Adobe/Adobe Flash Builder 4/sdks/4.5.1" />
 	<property name="flex_frameworks_libs_dir" value="${FLEX_HOME}/frameworks/libs"/> 
-	<property name="YOGURT3D_VERSION" value="v2.0_b_20000" />
+	<property name="YOGURT3D_VERSION" value="v2.1" />
 	
 	<echo message="SDK in ${FLEX_HOME}"/>
 	
