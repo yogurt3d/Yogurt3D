@@ -61,6 +61,12 @@ package com.yogurt3d.core.materials.shaders
 			//params.vertexShaderConstants.push( new ShaderConstants(4, EShaderConstantsType.MODEL_TRANSPOSED) );//not used, string removed before assembled
 			
 			params.vertexShaderConstants.push( new ShaderConstants(8, EShaderConstantsType.BONE_MATRICES) );
+
+			var consts:ShaderConstants = new ShaderConstants(0, EShaderConstantsType.CUSTOM_VECTOR );
+			consts.vector = Vector.<Number>([1, 255, 65025, 160581375, 0.003921569, 0.003921569, 0.009, 0 ]);
+			
+			params.fragmentShaderConstants.push( consts );
+			
 		}
 		
 		public override function getVertexProgram( _meshKey:String, _lightType:ELightType=null):ByteArray{
