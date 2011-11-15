@@ -33,18 +33,18 @@ package com.yogurt3d.core.managers.vbstream
 		public function cleanVertexBuffers(_context3d:Context3D):void{
 			if( m_contextBufferAllocationCount[_context3d] > -1 )
 			{
-				for( var i:uint = 0; i <= m_contextBufferAllocationCount[_context3d] ; i++)
+				for( var i:uint = 0; i < m_contextBufferAllocationCount[_context3d] ; i++)
 				{
-					_context3d.setVertexBufferAt( i, null );
+						_context3d.setVertexBufferAt( i, null );
 				}
 				m_contextBufferAllocationCount[_context3d] = -1;
 			}
 		}
 		
 		public function setStream( _context3d:Context3D, index:uint, buffer:VertexBuffer3D, bufferOffset:uint = 0, format:String = "float4" ):void{
-			if(m_contextBufferAllocationCount[_context3d] < index )
+			if(m_contextBufferAllocationCount[_context3d] < index+1 )
 			{
-				m_contextBufferAllocationCount[_context3d] = index;
+				m_contextBufferAllocationCount[_context3d] = index+1;
 			}
 			_context3d.setVertexBufferAt( index, buffer, bufferOffset, format );
 		}
