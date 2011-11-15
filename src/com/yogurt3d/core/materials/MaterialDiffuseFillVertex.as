@@ -1,5 +1,5 @@
 /*
-* MaterialSpecularFill.as
+* MaterialDiffuseFillVertex.as
 * This file is part of Yogurt3D Flash Rendering Engine 
 *
 * Copyright (C) 2011 - Yogurt3D Corp.
@@ -16,16 +16,15 @@
 * License along with this library. If not, see <http://www.yogurt3d.com/yogurt3d/downloads/yogurt3d-click-through-agreement.html>. 
 */
 
+
 package com.yogurt3d.core.materials
 {
 	
 	import com.yogurt3d.core.materials.base.Material;
 	import com.yogurt3d.core.materials.shaders.ShaderAmbient;
 	import com.yogurt3d.core.materials.shaders.ShaderDiffuse;
-	import com.yogurt3d.core.materials.shaders.ShaderShadow;
+	import com.yogurt3d.core.materials.shaders.ShaderDiffuseVertex;
 	import com.yogurt3d.core.materials.shaders.ShaderSolidFill;
-	import com.yogurt3d.core.materials.shaders.ShaderSpecular;
-	import com.yogurt3d.core.materials.shaders.ShaderSpecularVertex;
 	import com.yogurt3d.core.materials.shaders.base.Shader;
 	import com.yogurt3d.core.texture.TextureMap;
 	
@@ -39,13 +38,13 @@ package com.yogurt3d.core.materials
 	 * @author Yogurt3D Engine Core Team
 	 * @company Yogurt3D Corp.
 	 **/
-	public class MaterialSpecularFillVertex extends Material
+	public class MaterialDiffuseFillVertex extends Material
 	{
-		private var m_lightShader:ShaderSpecularVertex;
+		private var lightShader:ShaderDiffuseVertex;
 		private var m_decalShader:ShaderSolidFill;
 		private var m_ambientShader:ShaderAmbient;
 		
-		public function MaterialSpecularFillVertex( _color:uint, _opacity:Number = 1, _initInternals:Boolean=true)
+		public function MaterialDiffuseFillVertex( _color:uint = 0xFFFFFF, _opacity:Number = 1, _initInternals:Boolean=true)
 		{
 			super(_initInternals);
 			
@@ -57,7 +56,7 @@ package com.yogurt3d.core.materials
 			
 			shaders = Vector.<com.yogurt3d.core.materials.shaders.base.Shader>([
 				m_ambientShader = new ShaderAmbient(_opacity),
-				m_lightShader = new ShaderSpecularVertex(_opacity),
+				lightShader = new ShaderDiffuseVertex(),  
 				m_decalShader
 			]);
 			
@@ -70,28 +69,11 @@ package com.yogurt3d.core.materials
 		public function set color(_val:uint):void{
 			m_decalShader.color = _val;
 		}
+		
 		public override function set opacity(value:Number):void{
 			super.opacity = value;
 			m_decalShader.opacity = value;
 			m_ambientShader.opacity = value;
-		}
-		
-		public function get shininess():Number{
-			return m_lightShader.shininess;
-		}
-		
-		public function set shininess(_value:Number):void{
-			m_lightShader.shininess = _value;
-		}
-		
-		public function get specularMap():TextureMap
-		{
-			return m_lightShader.specularMap;
-		}
-		
-		public function set specularMap(value:TextureMap):void
-		{
-			m_lightShader.specularMap = value;
 		}
 	}
 }

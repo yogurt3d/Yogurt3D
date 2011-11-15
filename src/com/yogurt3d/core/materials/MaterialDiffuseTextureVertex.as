@@ -1,5 +1,5 @@
 /*
-* MaterialSpecularFill.as
+* MaterialDiffuseTextureVertex.as
 * This file is part of Yogurt3D Flash Rendering Engine 
 *
 * Copyright (C) 2011 - Yogurt3D Corp.
@@ -22,16 +22,17 @@ package com.yogurt3d.core.materials
 	import com.yogurt3d.core.materials.base.Material;
 	import com.yogurt3d.core.materials.shaders.ShaderAmbient;
 	import com.yogurt3d.core.materials.shaders.ShaderDiffuse;
-	import com.yogurt3d.core.materials.shaders.ShaderShadow;
-	import com.yogurt3d.core.materials.shaders.ShaderSolidFill;
-	import com.yogurt3d.core.materials.shaders.ShaderSpecular;
-	import com.yogurt3d.core.materials.shaders.ShaderSpecularVertex;
+	import com.yogurt3d.core.materials.shaders.ShaderDiffuseVertex;
+	import com.yogurt3d.core.materials.shaders.ShaderTexture;
 	import com.yogurt3d.core.materials.shaders.base.Shader;
 	import com.yogurt3d.core.texture.TextureMap;
 	
-	import flash.display.BitmapData;
+	import flash.display3D.Context3D;
 	import flash.display3D.Context3DBlendFactor;
 	import flash.display3D.Context3DCompareMode;
+	import flash.events.Event;
+	
+	import org.osflash.signals.Signal;
 	
 	/**
 	 * 
@@ -39,59 +40,69 @@ package com.yogurt3d.core.materials
 	 * @author Yogurt3D Engine Core Team
 	 * @company Yogurt3D Corp.
 	 **/
-	public class MaterialSpecularFillVertex extends Material
+	public class MaterialDiffuseTextureVertex extends Material
 	{
-		private var m_lightShader:ShaderSpecularVertex;
-		private var m_decalShader:ShaderSolidFill;
+		private var m_lightShader:ShaderDiffuseVertex;
+		private var m_decalShader:ShaderTexture;
 		private var m_ambientShader:ShaderAmbient;
+
+		private var m_alphaTexture:Boolean = false;
 		
-		public function MaterialSpecularFillVertex( _color:uint, _opacity:Number = 1, _initInternals:Boolean=true)
+		public var onAlphaTextureChanged						:Signal;
+		
+		public function MaterialDiffuseTextureVertex( _texture:TextureMap = null, _opacity:Number = 1, _initInternals:Boolean=true)
 		{
 			super(_initInternals);
+			onAlphaTextureChanged = new Signal();
 			
-			m_decalShader = new ShaderSolidFill(_color,_opacity);
+			m_decalShader = new ShaderTexture(_texture, 0);
 			m_decalShader.params.blendEnabled = true;
 			m_decalShader.params.blendSource = Context3DBlendFactor.DESTINATION_COLOR;
 			m_decalShader.params.blendDestination = Context3DBlendFactor.ZERO;
 			m_decalShader.params.depthFunction = Context3DCompareMode.EQUAL;
 			
 			shaders = Vector.<com.yogurt3d.core.materials.shaders.base.Shader>([
-				m_ambientShader = new ShaderAmbient(_opacity),
-				m_lightShader = new ShaderSpecularVertex(_opacity),
+				m_ambientShader = new ShaderAmbient( _opacity),
+				m_lightShader = new ShaderDiffuseVertex(),  
 				m_decalShader
 			]);
 			
 			super.opacity = _opacity;
 		}
-		public function get color():uint{
-			return m_decalShader.color;
+		public function get alphaTexture():Boolean{
+			return m_alphaTexture;
+		}
+		public function set alphaTexture(value:Boolean):void{
+			
+			if( m_alphaTexture != value)
+			{
+				m_alphaTexture = value;
+				
+				if( value )
+				{
+					m_ambientShader.alphaTexture = m_decalShader.texture as TextureMap;
+				}else{
+					m_ambientShader.alphaTexture = null;
+				}
+				
+				onAlphaTextureChanged.dispatch();
+			}
 		}
 		
-		public function set color(_val:uint):void{
-			m_decalShader.color = _val;
+		public function get texture():TextureMap{
+			return m_decalShader.texture as TextureMap;
 		}
+		public function set texture(_value:TextureMap):void{
+			m_decalShader.texture = _value;
+			if( m_alphaTexture )
+			{
+				m_ambientShader.alphaTexture = m_decalShader.texture as TextureMap;
+			}
+		}
+		
 		public override function set opacity(value:Number):void{
 			super.opacity = value;
-			m_decalShader.opacity = value;
 			m_ambientShader.opacity = value;
-		}
-		
-		public function get shininess():Number{
-			return m_lightShader.shininess;
-		}
-		
-		public function set shininess(_value:Number):void{
-			m_lightShader.shininess = _value;
-		}
-		
-		public function get specularMap():TextureMap
-		{
-			return m_lightShader.specularMap;
-		}
-		
-		public function set specularMap(value:TextureMap):void
-		{
-			m_lightShader.specularMap = value;
 		}
 	}
 }
