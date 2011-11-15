@@ -360,7 +360,7 @@ package com.yogurt3d.presets.renderers.helper
 						break;	
 					
 					case EShaderConstantsType.LIGHT_SHADOW_COLOR:
-						setProgramConstantsFromVector( 	Context3DProgramType.FRAGMENT, _shaderConstants.firstRegister, _light.shadowColor.getColorVector(), 1);
+						setProgramConstantsFromVector( 	Context3DProgramType.FRAGMENT, _shaderConstants.firstRegister, _light.shadowColor.getColorVectorRaw(), 1);
 						break;	
 					
 					case EShaderConstantsType.MVP:
