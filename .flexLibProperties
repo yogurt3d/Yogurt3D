@@ -9,7 +9,6 @@
     <classEntry path="com.yogurt3d.core.animation.controllers.SkinController"/>
     <classEntry path="com.yogurt3d.core.cameras.Camera"/>
     <classEntry path="com.yogurt3d.core.cameras.interfaces.ICamera"/>
-    <classEntry path="com.yogurt3d.core.culling.FrustrumPlaneAABB"/>
     <classEntry path="com.yogurt3d.core.enums.EngineDefaults"/>
     <classEntry path="com.yogurt3d.core.events.AnimationEvent"/>
     <classEntry path="com.yogurt3d.core.events.MouseEvent3D"/>
@@ -134,10 +133,27 @@
     <classEntry path="com.yogurt3d.core.sound.SoundObserver"/>
     <classEntry path="com.yogurt3d.core.sound.Sound3D"/>
     <classEntry path="com.yogurt3d.core.utils.MathUtils"/>
-    <classEntry path="com.yogurt3d.core.materials.posteffects.FilterBloom"/>
+    <classEntry path="com.yogurt3d.core.effects.filters.FilterBloom"/>
     <classEntry path="com.yogurt3d.core.sound.EnvironmentSound"/>
     <classEntry path="com.yogurt3d.core.lights.ELightType"/>
     <classEntry path="com.yogurt3d.core.managers.rttmanager.RenderTargetManager"/>
+    <classEntry path="com.yogurt3d.core.effects.Effect"/>
+    <classEntry path="com.yogurt3d.core.effects.EffectDream"/>
+    <classEntry path="com.yogurt3d.core.effects.EffectColorGrading"/>
+    <classEntry path="com.yogurt3d.core.effects.EffectGammaCorrection"/>
+    <classEntry path="com.yogurt3d.core.effects.EffectGammaCorChannel"/>
+    <classEntry path="com.yogurt3d.core.effects.EffectGaussianBlur"/>
+    <classEntry path="com.yogurt3d.core.effects.EffectLensCircle"/>
+    <classEntry path="com.yogurt3d.core.effects.EffectNegative"/>
+    <classEntry path="com.yogurt3d.core.effects.EffectNightVision"/>
+    <classEntry path="com.yogurt3d.core.effects.EffectPixelation"/>
+    <classEntry path="com.yogurt3d.core.effects.EffectPosterization"/>
+    <classEntry path="com.yogurt3d.core.effects.EffectRadialBlur"/>
+    <classEntry path="com.yogurt3d.core.effects.EffectScrathedFilm"/>
+    <classEntry path="com.yogurt3d.core.effects.EffectSwirl"/>
+    <classEntry path="com.yogurt3d.core.effects.EffectThermalVision"/>
+    <classEntry path="com.yogurt3d.core.setup.SetupBase"/>
+    <classEntry path="com.yogurt3d.presets.setup.BasicSetup"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
