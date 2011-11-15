@@ -53,8 +53,11 @@ package com.yogurt3d.core.viewports {
 		
 		private var m_viewportID				: uint;
 		
-		private var m_width 					: Number;
-		private var m_height 					: Number;
+		private var m_x 						: Number	= 0;
+		private var m_y 						: Number	= 0;
+		private var m_width 					: Number	= 800;
+		private var m_height 					: Number	= 600;
+		
 		private var m_matrix 					: Matrix3D;
 		
 		private var m_viewportLayers 			: Vector.<ViewportLayer>;
@@ -163,12 +166,25 @@ package com.yogurt3d.core.viewports {
 		 * 
 		 */
 		public function setViewport( _x : int, _y : int, _width : int, _height : int, hide:Boolean = false) : void {	
-			super.x = _x;
-			super.y = _y;
+			if( !hide )
+			{
+				m_x = _x;
+				m_y = _y;
+				super.x = m_x;
+				super.y = m_y;
+				m_width = _width;
+				m_height = _height;
+				super.width = m_width;
+				super.height = m_height;
+			}
 			
 			var point:Point = new Point( _x, _y );
-			point = localToGlobal( point );
-			
+			if( parent )
+			{
+				point = parent.localToGlobal( point );
+			}else{
+				point = localToGlobal( point );
+			}
 			if( _width > 2048 )
 			{
 				_width = 2048;
@@ -177,11 +193,7 @@ package com.yogurt3d.core.viewports {
 			{ 
 				_height = 2048;
 			}
-			if( !hide )
-			{
-				m_width = _width;
-				m_height = _height;
-			}
+			
 			
 			graphics.clear();
 			if( m_viewportID == 0 )
@@ -196,7 +208,7 @@ package com.yogurt3d.core.viewports {
 			
 			Y3DCONFIG::TRACE
 			{
-				trace("[Viewport "+m_viewportID+"] x: ", point.x, "y: ", point.y, "width: ", _width, "height: ", _height);
+				trace("[Viewport "+m_viewportID+"] x: ",  point.x, "y: ",  point.y, "width: ", _width, "height: ", _height);
 			}
 			
 			if( m_context )
@@ -237,9 +249,31 @@ package com.yogurt3d.core.viewports {
 		 * @param _value
 		 * 
 		 */
+		override public function get x() : Number {
+			
+			return m_x;
+			
+		}
+		
+		/**
+		 * 
+		 * @param _value
+		 * 
+		 */
 		override public function set x(_value : Number) : void {
 			
 			setViewport(_value, y, m_width, m_height);
+			
+		}
+		
+		/**
+		 * 
+		 * @param _value
+		 * 
+		 */
+		override public function get y() : Number {
+			
+			return m_y;
 			
 		}
 		
@@ -326,7 +360,7 @@ package com.yogurt3d.core.viewports {
 				trace("Y3D Driver:", m_context.driverInfo);
 			}
 			
-			setViewport(super.x, super.y, super.width, super.height, !super.visible);
+			setViewport(m_x, m_y, m_width, m_height, !super.visible);
 			
 		}
 		
