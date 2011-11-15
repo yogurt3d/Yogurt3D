@@ -367,7 +367,6 @@ package com.yogurt3d.core.lights
 			
 			m_frustum = new Frustum();
 			
-			m_frustum.setProjectionPerspective( 45.0, 4.0/3.0, 1.0, 500.0 );
 			
 			m_attenuation 			= new Vector.<Number>(4,true);
 			m_attenuation[0] 		= 1;
@@ -385,7 +384,7 @@ package com.yogurt3d.core.lights
 			innerConeAngle 			= 40;
 			outerConeAngle 			= 60;
 			range 					= 150;
-			
+
 			m_shadowColor 			= new Color(0,0,0,1);
 			
 			m_direction 			= new Vector3D();
