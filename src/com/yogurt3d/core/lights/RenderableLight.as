@@ -38,6 +38,10 @@ package com.yogurt3d.core.lights
 		public function RenderableLight(_type:ELightType = null, _color:uint = 0xFFFFFF, _radius:Number = 0.2, _initInternals:Boolean=true)
 		{
 			super( _type, _color, 1 );
+			if( _type == null )
+			{
+				_type = ELightType.POINT;
+			}
 			if( _type == ELightType.POINT )
 			{
 				sceneObject = new SphereSceneObject( _radius );
