@@ -28,6 +28,7 @@ package com.yogurt3d.core.materials.base
 	public class Color
 	{
 		private var m_colorVector:Vector.<Number>;
+		private var m_colorVectorRaw:Vector.<Number>;
 		private var m_color:Vector.<Number>;
 		
 		
@@ -140,11 +141,17 @@ package com.yogurt3d.core.materials.base
 		}
 		
 		private function generateVector():void{
-			m_colorVector = Vector.<Number>([m_color[0] * m_color[3], m_color[1] * m_color[3], m_color[2] * m_color[3], m_color[3]])
+			m_colorVector = Vector.<Number>([m_color[0] * m_color[3], m_color[1] * m_color[3], m_color[2] * m_color[3], m_color[3]]);
+			m_colorVectorRaw = Vector.<Number>([m_color[0] , m_color[1] , m_color[2] , m_color[3]]);
 		}
+		
 		
 		public function getColorVector():Vector.<Number>{
 			return m_colorVector;
+		}
+		
+		public function getColorVectorRaw():Vector.<Number>{
+			return m_colorVectorRaw;
 		}
 	}
 }
