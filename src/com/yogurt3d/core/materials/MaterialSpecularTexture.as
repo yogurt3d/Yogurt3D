@@ -47,8 +47,7 @@ package com.yogurt3d.core.materials
 		private var m_lightShader:ShaderSpecular;
 		private var m_ambientShader:ShaderAmbient;
 		private var m_decalShader:ShaderTexture;
-		private var m_normalMap:TextureMap;
-		private var m_specularMap:TextureMap;
+
 		private var m_alphaTexture:Boolean = false;
 		
 		public var onAlphaTextureChanged						:Signal;
@@ -89,24 +88,22 @@ package com.yogurt3d.core.materials
 		
 		public function get normalMap():TextureMap
 		{
-			return m_normalMap;
+			return m_lightShader.normalMap;
 		}
 		
 		public function set normalMap(value:TextureMap):void
 		{
-			m_normalMap = value;
-			m_lightShader.normalMap = m_normalMap;
+			m_lightShader.normalMap = value;
 		}
 		
 		public function get specularMap():TextureMap
 		{
-			return m_specularMap;
+			return m_lightShader.specularMap;
 		}
 		
 		public function set specularMap(value:TextureMap):void
 		{
-			m_specularMap = value;
-			m_lightShader.specularMap = m_specularMap;
+			m_lightShader.specularMap = value;
 		}
 		
 		[Bindable(event="alphaTextureChange")]
