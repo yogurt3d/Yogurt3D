@@ -1,5 +1,7 @@
 package com.yogurt3d.core.utils
 {
+	import com.yogurt3d.core.texture.TextureMap;
+	
 	import flash.display.*;
 	import flash.display3D.textures.CubeTexture;
 	import flash.display3D.textures.Texture;
@@ -11,7 +13,7 @@ package com.yogurt3d.core.utils
 		private static var _matrix : Matrix = new Matrix();
 		private static var _rect : Rectangle = new Rectangle();
 
-		public static function generateMipMaps(source : BitmapData, target : CubeTexture, mipmap : BitmapData = null, alpha : Boolean = false) : void
+		public static function generateMipMaps(source : BitmapData, target : Texture, mipmap : BitmapData = null, alpha : Boolean = false) : void
 		{
 			var w : uint = source.width,
 				h : uint = source.height;
@@ -26,7 +28,7 @@ package com.yogurt3d.core.utils
 			_rect.height = h;
 			
 			while (w >= 1 && h >= 1) {
-				if (alpha) mipmap.fillRect(_rect, 0);
+				if (source.transparent) mipmap.fillRect(_rect, 0);
 				mipmap.draw(source, _matrix, null, null, null, true);
 				target.uploadFromBitmapData(mipmap, i++);
 				w >>= 1;

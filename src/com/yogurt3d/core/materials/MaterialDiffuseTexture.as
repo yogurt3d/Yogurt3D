@@ -1,5 +1,5 @@
 /*
- * MaterialDiffuseBitmap.as
+ * MaterialDiffuseTexture.as
  * This file is part of Yogurt3D Flash Rendering Engine 
  *
  * Copyright (C) 2011 - Yogurt3D Corp.
