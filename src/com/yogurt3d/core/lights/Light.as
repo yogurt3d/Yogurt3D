@@ -22,12 +22,15 @@ package com.yogurt3d.core.lights
 	import com.yogurt3d.core.cameras.interfaces.ICamera;
 	import com.yogurt3d.core.frustum.Frustum;
 	import com.yogurt3d.core.helpers.ProjectionUtils;
+	import com.yogurt3d.core.helpers.boundingvolumes.BoundingSphere;
 	import com.yogurt3d.core.materials.base.Color;
 	import com.yogurt3d.core.materials.shaders.ShaderDepthMap;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.sceneobjects.Scene;
 	import com.yogurt3d.core.sceneobjects.SceneObject;
 	import com.yogurt3d.core.sceneobjects.SceneObjectContainer;
+	import com.yogurt3d.core.sceneobjects.interfaces.IScene;
+	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObject;
 	import com.yogurt3d.core.texture.RenderTextureTarget;
 	import com.yogurt3d.core.transformations.Transformation;
 	import com.yogurt3d.core.utils.MatrixUtils;
@@ -354,7 +357,15 @@ package com.yogurt3d.core.lights
 					
 				}
 				frustum.setProjectionOrthoAsymmetric(_min.x, _max.x, _min.y, _max.y, -_max.z, -_min.z );
+			}else if( m_type == ELightType.POINT )
+			{
+				frustum.m_bSCenterOrginal = this.transformation.position;
+				frustum.boundingSphere = new BoundingSphere(m_range, frustum.m_bSCenterOrginal);
 			}
+		}
+		
+		private function onAddedToSceneEvent( obj:ISceneObject, scene:IScene ):void{
+			setProjection();
 		}
 		
 		/**
@@ -367,6 +378,7 @@ package com.yogurt3d.core.lights
 			
 			m_frustum = new Frustum();
 			
+			onAddedToScene.add( onAddedToSceneEvent );
 			
 			m_attenuation 			= new Vector.<Number>(4,true);
 			m_attenuation[0] 		= 1;
