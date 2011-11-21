@@ -38,10 +38,6 @@ package com.yogurt3d.core.cameras {
 	 **/	
 	public class Camera extends SceneObject implements ICamera
 	{
-		YOGURT3D_INTERNAL var m_projectionMatrix		:Matrix3D;
-		
-		//YOGURT3D_INTERNAL var m_frustrumPlanes			:Vector.<Vector3D>;
-		
 		private var m_frustum :Frustum;
 		
 		use namespace YOGURT3D_INTERNAL;
@@ -64,8 +60,6 @@ package com.yogurt3d.core.cameras {
 		override protected function initInternals():void
 		{
 			super.initInternals();
-			
-			m_projectionMatrix			= new Matrix3D();
 			
 			m_frustum = new Frustum();
 			
