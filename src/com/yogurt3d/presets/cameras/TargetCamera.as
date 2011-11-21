@@ -4,6 +4,7 @@ package com.yogurt3d.presets.cameras
 	import com.yogurt3d.core.managers.tickmanager.TickManager;
 	import com.yogurt3d.core.managers.tickmanager.TimeInfo;
 	import com.yogurt3d.core.objects.interfaces.ITickedObject;
+	import com.yogurt3d.core.sceneobjects.SceneObject;
 	
 	import flash.display.DisplayObject;
 	import flash.events.MouseEvent;
@@ -39,6 +40,8 @@ package com.yogurt3d.presets.cameras
 		private static var m_mouseLastX:Number;
 		private static var m_mouseLastY:Number;
 		
+		private var m_target:SceneObject;
+		
 		public function TargetCamera(_viewport:DisplayObject, _initInternals:Boolean=true)
 		{
 			super(_initInternals);
@@ -46,6 +49,16 @@ package com.yogurt3d.presets.cameras
 			
 			_viewport.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMoveEvent );
 			_viewport.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheelEvent );
+			
+			m_target = new SceneObject;
+		}
+		
+		public function get target():SceneObject{
+			return m_target;
+		}
+		
+		public function set target(value:SceneObject):void{
+			m_target = value;
 		}
 		
 		private function onMouseWheelEvent( event:MouseEvent ):void{
@@ -219,9 +232,10 @@ package com.yogurt3d.presets.cameras
 			m_matrix3d.appendRotation( m_rotX, Vector3D.X_AXIS );
 			m_matrix3d.appendRotation( m_rotY, Vector3D.Y_AXIS );
 			m_matrix3d.appendRotation( m_rotZ, Vector3D.Z_AXIS );
+			m_matrix3d.appendTranslation( m_target.transformation.x, m_target.transformation.y, m_target.transformation.z );
 			
 			transformation.position = m_matrix3d.position;
-			transformation.lookAt( new Vector3D );
+			transformation.lookAt( m_target.transformation.position );
 			
 		}
 		
