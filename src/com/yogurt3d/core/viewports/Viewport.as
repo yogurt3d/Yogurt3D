@@ -488,7 +488,15 @@ package com.yogurt3d.core.viewports {
 					{
 						drawWireFrame(renderable[i], matrix );
 					}
-					
+				}
+				if( _scene.YOGURT3D_INTERNAL::m_rootObject.aabbWireframe )
+				{
+					var matrix:Matrix3D = new Matrix3D();
+					matrix.copyFrom( _camera.transformation.matrixGlobal );
+					matrix.invert();
+					matrix.append( _camera.frustum.projectionMatrix );
+					matrix.append( this.matrix );
+					drawWireFrame(_scene.YOGURT3D_INTERNAL::m_rootObject as ISceneObject, matrix);
 				}
 			}
 			if( m_pickManager )
