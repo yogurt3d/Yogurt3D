@@ -22,11 +22,7 @@ package com.yogurt3d.presets.renderers.molehill
 	import com.yogurt3d.Yogurt3D;
 	import com.yogurt3d.core.cameras.interfaces.ICamera;
 	import com.yogurt3d.core.effects.Effect;
-	import com.yogurt3d.core.effects.filters.Filter;
 	import com.yogurt3d.core.effects.filters.FilterBoxBlur;
-	import com.yogurt3d.core.geoms.SkeletalAnimatedMesh;
-	import com.yogurt3d.core.geoms.SkinnedSubMesh;
-	import com.yogurt3d.core.geoms.SubMesh;
 	import com.yogurt3d.core.geoms.interfaces.IMesh;
 	import com.yogurt3d.core.lights.ELightType;
 	import com.yogurt3d.core.lights.Light;
@@ -35,7 +31,6 @@ package com.yogurt3d.presets.renderers.molehill
 	import com.yogurt3d.core.materials.base.Material;
 	import com.yogurt3d.core.materials.shaders.ShaderDepthMap;
 	import com.yogurt3d.core.materials.shaders.ShaderShadow;
-	import com.yogurt3d.core.materials.shaders.base.EVertexAttribute;
 	import com.yogurt3d.core.materials.shaders.base.Shader;
 	import com.yogurt3d.core.materials.shaders.renderstate.ShaderParameters;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
@@ -47,10 +42,7 @@ package com.yogurt3d.presets.renderers.molehill
 	import com.yogurt3d.core.texture.BackBuffer;
 	import com.yogurt3d.core.texture.RenderTextureTarget;
 	import com.yogurt3d.core.texture.base.ETextureType;
-	import com.yogurt3d.core.utils.Enum;
-	import com.yogurt3d.core.utils.MatrixUtils;
 	import com.yogurt3d.core.viewports.Viewport;
-	import com.yogurt3d.presets.renderers.helper.IRendererHelper;
 	import com.yogurt3d.presets.renderers.helper.Yogurt3DRendererHelper;
 	
 	import flash.display3D.Context3D;
@@ -58,13 +50,9 @@ package com.yogurt3d.presets.renderers.molehill
 	import flash.display3D.Context3DCompareMode;
 	import flash.display3D.Context3DProgramType;
 	import flash.display3D.Context3DTriangleFace;
-	import flash.display3D.Context3DVertexBufferFormat;
 	import flash.display3D.Program3D;
-	import flash.display3D.VertexBuffer3D;
 	import flash.geom.Matrix3D;
 	import flash.geom.Rectangle;
-	import flash.geom.Vector3D;
-	import flash.utils.getQualifiedClassName;
 	import flash.utils.getTimer;
 	
 	use namespace YOGURT3D_INTERNAL;
