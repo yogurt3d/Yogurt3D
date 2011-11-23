@@ -22,6 +22,7 @@ package com.yogurt3d.core.frustum{
 	import com.yogurt3d.core.helpers.boundingvolumes.*;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.transformations.Transformation;
+	import com.yogurt3d.core.utils.MathUtils;
 	import com.yogurt3d.core.utils.MatrixUtils;
 	
 	import flash.geom.Matrix3D;
@@ -199,9 +200,9 @@ package com.yogurt3d.core.frustum{
 			var Wfar:Number;
 			
 			
-			Hnear = 2 * Math.tan(_fovy*Transformation.DEG_TO_RAD / 2) * -_near;
+			Hnear = 2 * Math.tan(_fovy*MathUtils.DEG_TO_RAD / 2) * -_near;
 			Wnear = Hnear * _aspect;
-			Hfar = 2 * Math.tan(_fovy*Transformation.DEG_TO_RAD / 2) * -_far;
+			Hfar = 2 * Math.tan(_fovy*MathUtils.DEG_TO_RAD / 2) * -_far;
 			Wfar = Hfar * _aspect;
 			
 			var points:Vector.<Vector3D> = m_vCornerPoints;

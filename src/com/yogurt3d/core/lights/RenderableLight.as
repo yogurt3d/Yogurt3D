@@ -20,11 +20,11 @@
 package com.yogurt3d.core.lights
 {
 	import com.yogurt3d.core.materials.MaterialFill;
-	import com.yogurt3d.core.sceneobjects.SceneObjectContainer;
 	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObjectRenderable;
-	import com.yogurt3d.core.transformations.Transformation;
+	import com.yogurt3d.core.utils.MathUtils;
 	import com.yogurt3d.presets.primitives.sceneobjects.ConeSceneObject;
 	import com.yogurt3d.presets.primitives.sceneobjects.SphereSceneObject;
+
 	/**
 	 * 
 	 * 
@@ -50,7 +50,7 @@ package com.yogurt3d.core.lights
 				sceneObject.transformation.rotationX = 90;
 			}else if( _type == ELightType.SPOT )
 			{
-				sceneObject = new ConeSceneObject( Math.sin( innerConeAngle * Transformation.DEG_TO_RAD) * 20 * 0.2 , 20 * 0.2 );
+				sceneObject = new ConeSceneObject( Math.sin( innerConeAngle * MathUtils.DEG_TO_RAD) * 20 * 0.2 , 20 * 0.2 );
 				sceneObject.transformation.rotationX = 90;
 			}
 			sceneObject.material = new MaterialFill( _color, .7);

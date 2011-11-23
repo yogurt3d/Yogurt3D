@@ -19,6 +19,7 @@
  
 package com.yogurt3d.core.transformations
 {
+	import com.yogurt3d.core.utils.MathUtils;
 	import com.yogurt3d.core.utils.MatrixUtils;
 	
 	import flash.geom.Matrix3D;
@@ -150,9 +151,9 @@ package com.yogurt3d.core.transformations
 		 * @see http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/index.htm
 		 */
 		public function fromEuler( _vec:Vector3D ):void{
-			var heading:Number = _vec.y* Transformation.DEG_TO_RAD;
-			var attitude:Number = _vec.z* Transformation.DEG_TO_RAD;
-			var bank:Number = _vec.x* Transformation.DEG_TO_RAD;
+			var heading:Number = _vec.y* MathUtils.DEG_TO_RAD;
+			var attitude:Number = _vec.z* MathUtils.DEG_TO_RAD;
+			var bank:Number = _vec.x* MathUtils.DEG_TO_RAD;
 			
 			var c1:Number = Math.cos( heading / 2 );
 			var s1:Number = Math.sin( heading / 2 );
@@ -183,20 +184,20 @@ package com.yogurt3d.core.transformations
 				target.y = 2 * Math.atan2(m_x,m_w);
 				target.z = Math.PI/2;
 				target.x = 0;
-				target.scaleBy( Transformation.RAD_TO_DEG );
+				target.scaleBy( MathUtils.RAD_TO_DEG );
 				return target;
 			}
 			if (test < -0.499*unit) { // singularity at south pole
 				target.y = -2 * Math.atan2(m_x,m_w);
 				target.z = -Math.PI/2;
 				target.x = 0;
-				target.scaleBy( Transformation.RAD_TO_DEG );
+				target.scaleBy( MathUtils.RAD_TO_DEG );
 				return target;
 			}
 			target.y = Math.atan2(2*m_y*m_w-2*m_x*m_z , sqx - sqy - sqz + sqw);
 			target.z = Math.asin(2*test/unit);
 			target.x = Math.atan2(2*m_x*m_w-2*m_y*m_z , -sqx + sqy - sqz + sqw);
-			target.scaleBy( Transformation.RAD_TO_DEG );
+			target.scaleBy( MathUtils.RAD_TO_DEG );
 			return target;
 		}
 		

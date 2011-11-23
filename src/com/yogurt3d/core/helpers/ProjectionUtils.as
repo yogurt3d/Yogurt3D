@@ -1,6 +1,7 @@
 package com.yogurt3d.core.helpers
 {
 	import com.yogurt3d.core.transformations.Transformation;
+	import com.yogurt3d.core.utils.MathUtils;
 	import com.yogurt3d.core.utils.MatrixUtils;
 	
 	import flash.geom.Matrix3D;
@@ -49,7 +50,7 @@ package com.yogurt3d.core.helpers
 		
 		public static function setProjectionPerspective(_matrix:Matrix3D,_fovy:Number, _aspect:Number, _near:Number, _far:Number):Matrix3D
 		{	
-			var _yScale:Number = 1.0/Math.tan(_fovy/2.0*Transformation.DEG_TO_RAD);
+			var _yScale:Number = 1.0/Math.tan(_fovy/2.0*MathUtils.DEG_TO_RAD);
 			var _xScale:Number = _yScale / _aspect; 
 			var _deltaZ:Number = _near-_far;//right handed
 			

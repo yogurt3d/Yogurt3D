@@ -25,6 +25,7 @@ package com.yogurt3d.presets.renderers.molehill
 	import com.yogurt3d.core.effects.filters.FilterBoxBlur;
 	import com.yogurt3d.core.geoms.interfaces.IMesh;
 	import com.yogurt3d.core.lights.ELightType;
+	import com.yogurt3d.core.lights.EShadowType;
 	import com.yogurt3d.core.lights.Light;
 	import com.yogurt3d.core.managers.rttmanager.RenderTargetManager;
 	import com.yogurt3d.core.managers.vbstream.VertexStreamManager;
@@ -226,7 +227,7 @@ package com.yogurt3d.presets.renderers.molehill
 			{
 				for ( k = 0; k < _lights.length; k++) {
 					var _light:Light = _lights[k];	
-					if( _light.castShadows )
+					if( _light.shadows != EShadowType.NONE )
 					{
 						var _lightRenderables:Vector.<ISceneObjectRenderable> = _scene.getRenderableSet( _camera );
 						renderShadow(_lightRenderables, _light, _camera);
@@ -255,7 +256,7 @@ package com.yogurt3d.presets.renderers.molehill
 			{				
 				for ( k = 0; k < _lights.length; k++) {
 					var _light:Light = _lights[k];	
-					if( _light.castShadows )
+					if( _light.shadows != EShadowType.NONE )
 					{
 					    rtManager.setRenderTo( _context3d, _light.shadowMap, true );
 						
@@ -288,7 +289,7 @@ package com.yogurt3d.presets.renderers.molehill
 						}
 						
 						
-						if(_light.isFilteringOn)
+						if(_light.shadows == EShadowType.SOFT)
 						{
 							vsManager.cleanVertexBuffers( _context3d );
 							
