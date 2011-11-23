@@ -32,7 +32,7 @@
 			<arg line="-load-config+=y3d_config_debug.xml"   /> 
 			<source-path path-element="${basedir}/src"/>
 			<include-sources dir="${basedir}/src" includes="**/*.as **/*.mxml"/>
-			<arg line="-external-library-path+=${basedir}/libs" />
+			<arg line="-library-path+=${basedir}/libs" />
 		</compc>
 		
 		<echo message="Compiling ${ant.project.name}_${YOGURT3D_VERSION}_release.swc"/>
@@ -41,7 +41,7 @@
 			<arg line="-load-config+=y3d_config_release.xml"   /> 
 			<source-path path-element="${basedir}/src"/>
 			<include-sources dir="${basedir}/src" includes="**/*.as **/*.mxml"/>
-			<arg line="-external-library-path+=${basedir}/libs" />
+			<arg line="-library-path+=${basedir}/libs" />
 		</compc>
 		
 	</target>
