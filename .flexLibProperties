@@ -87,7 +87,6 @@
     <classEntry path="com.yogurt3d.core.utils.Memory"/>
     <classEntry path="com.yogurt3d.core.utils.ShaderUtils"/>
     <classEntry path="com.yogurt3d.core.utils.TransformationUtils"/>
-    <classEntry path="com.yogurt3d.core.utils.Vector3DUtils"/>
     <classEntry path="com.yogurt3d.core.viewports.Viewport"/>
     <classEntry path="com.yogurt3d.core.viewports.ViewportLayer"/>
     <classEntry path="com.yogurt3d.io.cache.GlobalCache"/>
@@ -154,6 +153,8 @@
     <classEntry path="com.yogurt3d.core.effects.EffectThermalVision"/>
     <classEntry path="com.yogurt3d.core.setup.SetupBase"/>
     <classEntry path="com.yogurt3d.presets.setup.BasicSetup"/>
+    <classEntry path="com.yogurt3d.core.lights.EShadowType"/>
+    <classEntry path="com.yogurt3d.core.utils.Random"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
