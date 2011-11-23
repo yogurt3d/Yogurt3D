@@ -33,6 +33,8 @@ package com.yogurt3d.core.lights
 	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObject;
 	import com.yogurt3d.core.texture.RenderTextureTarget;
 	import com.yogurt3d.core.transformations.Transformation;
+	import com.yogurt3d.core.utils.Enum;
+	import com.yogurt3d.core.utils.MathUtils;
 	import com.yogurt3d.core.utils.MatrixUtils;
 	
 	import flash.geom.Matrix3D;
@@ -59,12 +61,10 @@ package com.yogurt3d.core.lights
 
 		private var m_range             :Number;
 		
-		private var m_castShadows		:Boolean					= false;
+		private var m_shadows			:EShadowType					= EShadowType.NONE;
 		private var m_shadowMap			:RenderTextureTarget;
 		private var m_shadowMap2		:RenderTextureTarget;
 		private var m_shadowColor		:Color;
-		
-		private var m_isFilteringOn      :Boolean                  = false;
 		
 		private var m_frustum :Frustum;
 		
@@ -95,6 +95,16 @@ package com.yogurt3d.core.lights
 			super( true );
 		}
 		
+		public function get shadows():EShadowType
+		{
+			return m_shadows;
+		}
+
+		public function set shadows(value:EShadowType):void
+		{
+			m_shadows = value;
+		}
+
 		public function get frustum():Frustum
 		{
 			return m_frustum;
@@ -133,16 +143,6 @@ package com.yogurt3d.core.lights
 			}
 		}
 		
-		public function get isFilteringOn():Boolean
-		{
-			return m_isFilteringOn;
-		}
-		
-		public function set isFilteringOn(_value:Boolean):void
-		{
-			m_isFilteringOn = _value;
-		}
-		
 		public function get range():Number{
 			return m_range;
 		}
@@ -153,23 +153,6 @@ package com.yogurt3d.core.lights
 			m_coneAngles[3] = m_range;
 		}
 		
-		/**
-		 * @inheritDoc
-		 * 
-		 */		
-		public function get castShadows():Boolean
-		{
-			return m_castShadows;
-		}
-		/**
-		 * @private 
-		 * @param value
-		 * 
-		 */		
-		public function set castShadows(value:Boolean):void
-		{
-			m_castShadows = value;
-		}
 		/**
 		 * @inheritDoc
 		 */
@@ -217,14 +200,13 @@ package com.yogurt3d.core.lights
 		 * @default 0.8 (36 degrees)
 		 */		
 		public function get innerConeAngle():Number{
-			
 			return m_innerConeAngle * 2;
 		}
 		
 		public function set innerConeAngle( _val:Number):void{
 			m_innerConeAngle = _val / 2;
-			m_coneAngles[0] = Math.cos(m_innerConeAngle*Transformation.DEG_TO_RAD);
-			m_coneAngles[2] = 1 /  m_coneAngles[0] - m_coneAngles[1];
+			m_coneAngles[0] = Math.cos(m_innerConeAngle*MathUtils.DEG_TO_RAD);
+			m_coneAngles[2] = 1 / m_coneAngles[0] - m_coneAngles[1];
 		}
 		/**
 		 * @inheritDoc
@@ -237,7 +219,7 @@ package com.yogurt3d.core.lights
 		
 		public function set outerConeAngle( _val:Number):void{
 			m_outerConeAngle = _val / 2;
-			m_coneAngles[1] = Math.cos(m_outerConeAngle*Transformation.DEG_TO_RAD);
+			m_coneAngles[1] = Math.cos(m_outerConeAngle*MathUtils.DEG_TO_RAD);
 			m_coneAngles[2] = 1 / (m_coneAngles[0] - m_coneAngles[1]);
 			
 			setProjection();
