@@ -36,13 +36,13 @@ package com.yogurt3d.core.materials
 	 */
 	public class MaterialTextureColorFresnel extends Material
 	{
-		private var m_colorMap:TextureMap;
-		private var m_normalMap:TextureMap;
-		private var m_fresnelReflectance:Number;
-		private var m_fresnelPower:uint;
-		private var m_reflectivityMap:TextureMap;
-		private var m_color:uint;
-		private var m_gain:Number;
+//		private var m_colorMap:TextureMap;
+//		private var m_normalMap:TextureMap;
+//		private var m_fresnelReflectance:Number;
+//		private var m_fresnelPower:uint;
+//		private var m_reflectivityMap:TextureMap;
+//		private var m_color:uint;
+//		private var m_gain:Number;
 		
 		private var m_freShader:ShaderTextureColorFresnel;
 		
@@ -59,44 +59,42 @@ package com.yogurt3d.core.materials
 			super(_initInternals);
 			
 			super.opacity = _opacity;
-			
-			m_colorMap = _colorMap;
-			m_normalMap = _normalMap;
-			
-			m_reflectivityMap = _reflectivityMap;
-			m_fresnelReflectance = _fresnelReflectance;
-			m_fresnelPower = _fresnelPower;
-			
-			m_color = _color;
-			m_gain = _gain;
+//			
+//			m_colorMap = _colorMap;
+//			m_normalMap = _normalMap;
+//			
+//			m_reflectivityMap = _reflectivityMap;
+//			m_fresnelReflectance = _fresnelReflectance;
+//			m_fresnelPower = _fresnelPower;
+//			
+//			m_color = _color;
+//			m_gain = _gain;
 			
 			m_freShader = new ShaderTextureColorFresnel(
-				m_normalMap, 
-				m_reflectivityMap, _opacity,
-				m_fresnelReflectance, m_fresnelPower, 
-				m_color, m_colorMap, _gain);
+				_normalMap, 
+				_reflectivityMap, _opacity,
+				_fresnelReflectance, _fresnelPower, 
+				_color, _colorMap, _gain);
 			
 			shaders.push(m_freShader);
 		}
 		
 		public function get texture():TextureMap
 		{
-			return m_colorMap;
+			return m_freShader.texture;
 		}
 		public function set texture(value:TextureMap):void
 		{
-			m_colorMap = value;
 			m_freShader.texture = value;
 			
 		}
 		
 		public function get normalMap():TextureMap
 		{
-			return m_normalMap;
+			return m_freShader.normalMap;
 		}
 		public function set normalMap(value:TextureMap):void
 		{
-			m_normalMap = value;
 			m_freShader.normalMap = value;
 		}
 		
@@ -108,45 +106,40 @@ package com.yogurt3d.core.materials
 		}
 		
 		public function get fresnelReflectance():Number{
-			return m_fresnelReflectance;
+			return m_freShader.fresnelReflectance;
 		}
 		public function set fresnelReflectance(value:Number):void{
-			m_fresnelReflectance = value;
 			m_freShader.fresnelReflectance = value;
 		}
 		
 		public function get fresnelPower():uint{
-			return m_fresnelPower;
+			return m_freShader.fresnelPower;
 		} 
 		public function set fresnelPower(value:uint):void{
-			m_fresnelPower = value;
 			m_freShader.fresnelPower = value;
 		}
 		
 		public function get reflectivityMap():TextureMap
 		{
-			return m_reflectivityMap;
+			return m_freShader.reflectivityMap;
 		}
 		
 		public function set reflectivityMap(value:TextureMap):void
 		{
-			m_reflectivityMap = value;
 			m_freShader.reflectivityMap = value;
 		}
 		
 		public function get color():uint{
-			return m_color;
+			return m_freShader.color1;
 		}
 		public function set color(_value:uint):void{
-			m_color = _value;
 			m_freShader.color1 = _value;
 		}
 		
 		public function get gain():Number{
-			return m_gain;
+			return m_freShader.gain;
 		}
 		public function set gain(_value:Number):void{
-			m_gain = _value;
 			m_freShader.gain = _value;
 		}
 		

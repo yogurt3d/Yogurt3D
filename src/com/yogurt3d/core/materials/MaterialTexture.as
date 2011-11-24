@@ -38,9 +38,9 @@ package com.yogurt3d.core.materials
  	 **/
 	public class MaterialTexture extends Material
 	{
-		private var decalShader:ShaderTexture;
+		private var decalShader				:ShaderTexture;
 		
-		public var onAlphaTextureChanged						:Signal;
+		public var onAlphaTextureChanged	:Signal;
 		
 		/**
 		 *  Constructor
@@ -49,13 +49,15 @@ package com.yogurt3d.core.materials
 		 * @param _initInternals
 		 * 
 		 */
-		public function MaterialTexture(_texture:TextureMap = null, _miplevel:uint=0, _initInternals:Boolean=true)
+		public function MaterialTexture(_texture:TextureMap = null, _initInternals:Boolean=true)
 		{
 			super(_initInternals);
 			onAlphaTextureChanged = new Signal();
-			shaders.push(decalShader = new ShaderTexture(_texture, _miplevel) );
-		}
+					
+			shaders.push(decalShader = new ShaderTexture(_texture) );
 		
+		}
+	
 		public function get alphaTexture():Boolean{
 			return decalShader.alphaTexture;
 		}
@@ -68,7 +70,6 @@ package com.yogurt3d.core.materials
 			}
 		}
 			
-		
 		public function get texture():TextureMap{
 			return decalShader.texture as TextureMap;
 		}

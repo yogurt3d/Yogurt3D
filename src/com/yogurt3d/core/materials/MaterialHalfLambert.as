@@ -10,7 +10,7 @@ package com.yogurt3d.core.materials
 		
 		private var m_shader:ShaderHalfLambert;
 		
-		public function MaterialHalfLambert(_texture:TextureMap,
+		public function MaterialHalfLambert(_texture:TextureMap=null,
 											_alpha:Number=0.5,
 											_beta:Number=0.5,
 											_gamma:Number=1.0,

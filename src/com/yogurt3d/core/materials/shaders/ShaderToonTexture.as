@@ -54,7 +54,7 @@ package com.yogurt3d.core.materials.shaders
 		{
 			super();
 			
-			key = "Yogurt3DOriginalsShaderToonTexture";
+			key = "Yogurt3DOriginalsShaderToonTexture" + (_texture.mipmap?"withMip":"");
 			
 			requiresLight				= true;
 
@@ -247,7 +247,7 @@ package com.yogurt3d.core.materials.shaders
 				
 				// else diff = 0.5;
 				"add ft3 ft2 fc4.y",
-				"tex ft7 v2 fs0<2d,wrap,linear>",//get texture map
+				((!texture.mipmap)?"tex ft7 v2 fs0<2d,wrap,linear>":"tex ft7 v2 fs0<2d,wrap,linear,miplinear>"),//get texture map
 				"mul ft3 ft3 ft7", // color * diff;
 				
 				// contour

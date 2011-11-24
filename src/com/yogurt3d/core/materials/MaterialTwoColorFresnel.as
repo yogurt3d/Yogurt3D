@@ -39,13 +39,6 @@ package com.yogurt3d.core.materials
 	 */
 	public class MaterialTwoColorFresnel extends Material
 	{
-		private var m_normalMap:TextureMap;
-		private var m_fresnelReflectance:Number;
-		private var m_fresnelPower:uint;
-		private var m_reflectivityMap:TextureMap;
-		private var m_color1:uint;
-		private var m_color2:uint;
-		private var m_gain:Number;
 		
 		private var m_freShader:ShaderTwoColorFresnel;
 		
@@ -62,33 +55,21 @@ package com.yogurt3d.core.materials
 			super(_initInternals);
 			
 			super.opacity = _opacity;
-	
-			m_normalMap = _normalMap;
-			
-			m_reflectivityMap = _reflectivityMap;
-			m_fresnelReflectance = _fresnelReflectance;
-			m_fresnelPower = _fresnelPower;
-			
-			m_color1 = _color1;
-			m_color2 = _color2;
-			
-			m_gain = _gain;
-						
-			m_freShader = new ShaderTwoColorFresnel(m_normalMap, 
-													m_reflectivityMap, _opacity,
-													m_fresnelReflectance, m_fresnelPower, 
-													m_color1, m_color2);
+					
+			m_freShader = new ShaderTwoColorFresnel(_normalMap, 
+													_reflectivityMap, _opacity,
+													_fresnelReflectance, _fresnelPower, 
+													_color1, _color2);
 
 			shaders.push(m_freShader);
 		}
 			
 		public function get normalMap():TextureMap
 		{
-			return m_normalMap;
+			return m_freShader.normalMap;
 		}
 		public function set normalMap(value:TextureMap):void
 		{
-			m_normalMap = value;
 			m_freShader.normalMap = value;
 		}
 		
@@ -100,53 +81,47 @@ package com.yogurt3d.core.materials
 		}
 		
 		public function get fresnelReflectance():Number{
-			return m_fresnelReflectance;
+			return m_freShader.fresnelReflectance;
 		}
 		public function set fresnelReflectance(value:Number):void{
-			m_fresnelReflectance = value;
 			m_freShader.fresnelReflectance = value;
 		}
 		
 		public function get fresnelPower():uint{
-			return m_fresnelPower;
+			return m_freShader.fresnelPower;
 		} 
 		public function set fresnelPower(value:uint):void{
-			m_fresnelPower = value;
 			m_freShader.fresnelPower = value;
 		}
 		
 		public function get reflectivityMap():TextureMap
 		{
-			return m_reflectivityMap;
+			return m_freShader.reflectivityMap;
 		}
 		
 		public function set reflectivityMap(value:TextureMap):void
 		{
-			m_reflectivityMap = value;
 			m_freShader.reflectivityMap = value;
 		}
 		
 		public function get color1():uint{
-			return m_color1;
+			return m_freShader.color1;
 		}
 		public function set color1(_value:uint):void{
-			m_color1 = _value;
 			m_freShader.color1 = _value;
 		}
 		
 		public function get color2():uint{
-			return m_color2;
+			return m_freShader.color2;
 		}
 		public function set color2(_value:uint):void{
-			m_color2 = _value;
 			m_freShader.color2 = _value;
 		}
 		
 		public function get gain():Number{
-			return m_gain;
+			return m_freShader.gain;
 		}
 		public function set gain(_value:Number):void{
-			m_gain = _value;
 			m_freShader.gain = _value;
 		}
 		

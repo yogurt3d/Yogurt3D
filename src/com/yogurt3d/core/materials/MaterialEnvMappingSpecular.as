@@ -20,18 +20,10 @@ package com.yogurt3d.core.materials
 	 */
 	public class MaterialEnvMappingSpecular extends Material
 	{
-		private var m_envMap:CubeTextureMap;
-		private var m_colorMap:TextureMap;
-		private var m_normalMap:TextureMap;
-		private var m_specularMap:TextureMap;
-		private var m_reflectivityMap:TextureMap;
-		private var m_alpha:Number;
-
 		private var m_lightShader:ShaderSpecular;
 		private var m_envShader:ShaderEnvMapping;
 		private var m_ambShader:ShaderAmbient;
 		public  var m_decalShader:ShaderTexture;
-		
 		
 		public function MaterialEnvMappingSpecular( _envMap:CubeTextureMap, 
 															  _colorMap:TextureMap=null,
@@ -44,13 +36,8 @@ package com.yogurt3d.core.materials
 			super(_initInternals);
 			
 			super.opacity = _opacity;
-			m_envMap = _envMap;		
-			m_colorMap = _colorMap;
-			m_alpha = _alpha;
 			
-			m_reflectivityMap = _reflectivityMap;
-			
-			m_envShader = new ShaderEnvMapping(_envMap, _normalMap, null, m_alpha);
+			m_envShader = new ShaderEnvMapping(_envMap, _normalMap, _reflectivityMap, _alpha);
 			m_ambShader = new ShaderAmbient(_opacity);
 			
 			shaders = new Vector.<com.yogurt3d.core.materials.shaders.base.Shader>;
@@ -59,8 +46,8 @@ package com.yogurt3d.core.materials
 			shaders.push(m_lightShader = new ShaderSpecular());
 			
 			
-			if(m_colorMap != null){
-				m_decalShader = new ShaderTexture(m_colorMap);
+			if(_colorMap != null){
+				m_decalShader = new ShaderTexture(_colorMap);
 				m_decalShader.params.blendEnabled = true;
 				m_decalShader.params.blendSource = Context3DBlendFactor.DESTINATION_COLOR;
 				m_decalShader.params.blendDestination = Context3DBlendFactor.ZERO;
@@ -72,39 +59,42 @@ package com.yogurt3d.core.materials
 			
 			normalMap = _normalMap;
 			specularMap = _specularMap;
+			reflectivityMap = _reflectivityMap;
 		}
 		
+	
 		public function get envMap():CubeTextureMap
 		{
-			return m_envMap;
+			return m_envShader.envMap;
 		}
 		public function set envMap(value:CubeTextureMap):void
 		{
-			m_envMap = value;
 			m_envShader.envMap = value;
 		}
 		
 		public function get texture():TextureMap
 		{
-			return m_colorMap;
+			if(m_decalShader)
+				return m_decalShader.texture;
+			return null;
 		}
 		public function set texture(value:TextureMap):void
 		{
-			
-			m_colorMap = value;
 			if( value )
 			{
 				if( m_decalShader )
 				{
-					m_decalShader.texture = m_colorMap;
+					m_decalShader.texture = value;
 				}else{
-					if(m_colorMap != null){
-						m_decalShader = new ShaderTexture(m_colorMap);
+					if(value != null){
+						m_decalShader = new ShaderTexture(value);
+						shaders.splice(shaders.indexOf(m_envShader), 1);
 						m_decalShader.params.blendEnabled = true;
 						m_decalShader.params.blendSource = Context3DBlendFactor.DESTINATION_COLOR;
 						m_decalShader.params.blendDestination = Context3DBlendFactor.ZERO;
 						m_decalShader.params.depthFunction = Context3DCompareMode.EQUAL;
-						shaders.splice(2,0,m_decalShader);
+						shaders.push(m_decalShader);
+						shaders.push(m_envShader);
 					}
 				}
 			}else{
@@ -119,42 +109,38 @@ package com.yogurt3d.core.materials
 		
 		public function get normalMap():TextureMap
 		{
-			return m_normalMap;
+			return m_envShader.normalMap;
 		}
 		public function set normalMap(value:TextureMap):void
 		{
-			m_normalMap = value;
 			m_envShader.normalMap = value;
 			m_lightShader.normalMap = value;
 		}
 		
 		public function get specularMap():TextureMap
 		{
-			return m_normalMap;
+			return m_lightShader.specularMap;
 		}
 		public function set specularMap(value:TextureMap):void
 		{
-			m_specularMap = value;
 			m_lightShader.specularMap = value;
 		}
 		
 		public function get reflectivityMap():TextureMap
 		{
-			return m_reflectivityMap;
+			return m_envShader.reflectivityMap;
 		}
 		public function set reflectivityMap(value:TextureMap):void
 		{
-			m_reflectivityMap = value;
 			m_envShader.reflectivityMap = value;
 		}
 		
 		public function get alpha():Number
 		{
-			return m_alpha;
+			return m_envShader.alpha;
 		}
 		public function set alpha(_alpha:Number):void{
 			m_envShader.alpha = _alpha;	
-			m_alpha = _alpha;
 		}
 		
 		public function get shininess():Number{

@@ -18,9 +18,7 @@
  
 package com.yogurt3d.core.materials.shaders
 {
-	import com.adobe.utils.AGALMiniAssembler;
 	import com.yogurt3d.core.lights.ELightType;
-	import com.yogurt3d.core.lights.Light;
 	import com.yogurt3d.core.materials.shaders.base.EVertexAttribute;
 	import com.yogurt3d.core.materials.shaders.base.Shader;
 	import com.yogurt3d.core.materials.shaders.renderstate.EShaderConstantsType;
@@ -28,16 +26,13 @@ package com.yogurt3d.core.materials.shaders
 	import com.yogurt3d.core.texture.TextureMap;
 	import com.yogurt3d.core.utils.ShaderUtils;
 	
-	import flash.display.BitmapData;
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DBlendFactor;
 	import flash.display3D.Context3DCompareMode;
 	import flash.display3D.Context3DProgramType;
-	import flash.display3D.Context3DTextureFormat;
 	import flash.display3D.Context3DTriangleFace;
 	import flash.display3D.Program3D;
 	import flash.utils.ByteArray;
-	import flash.utils.Dictionary;
 
 	/**
 	 * 
@@ -268,7 +263,7 @@ package com.yogurt3d.core.materials.shaders
 				m_specularDirty = false;
 				
 				disposeShaders();
-				key = "Yogurt3DOriginalsShaderSpecular" + (m_normalMap?"WithNormalMap":"") + (m_specularMap?"WithSpecularMap":"");
+				//key = "Yogurt3DOriginalsShaderSpecular" + (m_normalMap?"WithNormalMap":"") + (m_specularMap?"WithSpecularMap":"");
 			}
 			
 			if( m_normalMapDirty )
@@ -298,8 +293,14 @@ package com.yogurt3d.core.materials.shaders
 				m_normalMapDirty = false;
 				
 				disposeShaders();
-			    key = "Yogurt3DOriginalsShaderSpecular" + (m_normalMap?"WithNormalMap":"") + (m_specularMap?"WithSpecularMap":"");
 			}
+			
+			key = "Yogurt3DOriginalsShaderSpecular" + 
+				(m_normalMap?"WithNormalMap":"") + 
+				((m_normalMap && m_normalMap.mipmap)?"WithNormalMapMip":"") + 
+				(m_specularMap?"WithSpecularMap":"")+
+				((m_specularMap && m_specularMap.mipmap)?"WithSpecularMapMip":"");
+			
 			return super.getProgram( _context3D, _lightType, _meshType );
 		}
 		
@@ -428,14 +429,31 @@ package com.yogurt3d.core.materials.shaders
 				"sat ft0.x, ft0.x\n" + // temp = saturate( temp )
 				"mul ft3.y, ft3.y, ft0.x\n"  // specularAmount *= temp;
 			
+			var specularMapMip:String;
+			if(m_specularMap){
+				if(m_specularMap.mipmap){
+					specularMapMip = "tex ft1.xyz, v" + varyingUV + ".xyyy, fs" + fsSpecularMap + "<2d, wrap,linear,miplinear>\n";
+				}else{
+					specularMapMip = "tex ft1.xyz, v" + varyingUV + ".xyyy, fs" + fsSpecularMap + "<2d, wrap,linear>\n";
+				}
+			}
 			var specularMap:String = (m_specularMap ? 
-				"tex ft1.xyz, v" + varyingUV + ".xyyy, fs" + fsSpecularMap + "<2d, wrap,linear>\n" + 
+				specularMapMip + 
 				"mul ft5.xyz, ft5.xyz, ft1.xyz\n" // float4 specular = specularColor * specularAlpha;
 				: "");	
 			
+			var normalMapMip:String;
+			if(m_normalMap){
+				if(m_normalMap.mipmap){
+					normalMapMip = "tex ft2, v"+varyingUV+".xy, fs"+fsNormalMap+"<2d,wrap,linear,miplinear>\n"
+				}else{
+					normalMapMip = "tex ft2, v"+varyingUV+".xy, fs"+fsNormalMap+"<2d,wrap,linear>\n";
+				}
+			}
+			
 			var agal:String =  
 				(m_normalMap? 
-					"tex ft2, v"+varyingUV+".xy, fs"+fsNormalMap+"<2d,wrap,linear>\n"+ 
+					normalMapMip + 
 					"mul ft2.xyz, ft2.xyz, fc"+fcZeroVec+".www\n" + 
 					"sub ft2.xyz, ft2.xyz, fc"+fcZeroVec+".yyy\n" 
 					: "")+

@@ -34,7 +34,8 @@ package com.yogurt3d.core.materials.shaders
 		{
 			
 			super();
-			key = "Yogurt3DOriginalsShaderLambert";
+			key = "Yogurt3DOriginalsShaderLambert"+
+				(_texture && _texture.mipmap)?"withMipmap":"";
 			
 			m_opacity = _opacity;
 			m_alpha = _alpha;
@@ -169,7 +170,7 @@ package com.yogurt3d.core.materials.shaders
 				"add ft2.x ft2.x fc3.y",// alpha * dot(n.l) + beta
 				"pow ft2.x ft2.x fc3.z",// lambert = pow((alpha * dot(n.l) + beta) , gamma)
 				
-				"tex ft3 v2 fs0<2d,clamp,linear>",// get color texture
+				((!texture.mipmap)?"tex ft3 v2 fs0<2d,clamp,linear>":"tex ft3 v2 fs0<2d,wrap,linear,miplinear>"),// get color texture
 				"mul ft2 ft2.xxx ft3",
 					
 				"mov ft0 ft2",

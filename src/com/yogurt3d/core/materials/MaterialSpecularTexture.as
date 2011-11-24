@@ -59,7 +59,7 @@ package com.yogurt3d.core.materials
 			
 			onAlphaTextureChanged = new Signal();
 			
-			m_decalShader = new ShaderTexture(_texture, 0);
+			m_decalShader = new ShaderTexture(_texture);
 			m_decalShader.params.blendEnabled = true;
 			m_decalShader.params.blendSource = Context3DBlendFactor.DESTINATION_COLOR;
 			m_decalShader.params.blendDestination = Context3DBlendFactor.ZERO;

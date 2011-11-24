@@ -312,7 +312,7 @@ package com.yogurt3d.core.materials.shaders
 				
 				_normalAGAL = [   
 					(m_normalMapUVOffset)?"add ft1 v2 fc4":"mov ft1 v2",
-					"tex ft1 ft1 fs1<2d,wrap,linear>",
+					((!m_normalMap.mipmap)?"tex ft1 ft1 fs1<2d,wrap,linear>":"tex ft1 ft1 fs1<2d,wrap,linear,miplinear>"),
 					// lookup normal from normal map, move from [0,1] to  [-1, 1] range, normalize
 					// texNormal = texNormal * 2 - 1;
 					"mul ft1 ft1 fc1.y",
@@ -335,7 +335,7 @@ package com.yogurt3d.core.materials.shaders
 			if(m_reflectivityMap != null){
 				_reflectivityAGAL = [   
 					
-					"tex ft2 v2 fs2<2d,wrap,linear>",     // get reflection map
+					((!m_reflectivityMap.mipmap)?"tex ft2 v2 fs2<2d,wrap,linear>":"tex ft2 v2 fs2<2d,wrap,linear,miplinear>"),     // get reflection map
 					"mul ft0.w ft2.xyz ft0.w",
 					"mul ft0.w fc1.x ft0.w"
 					
@@ -385,21 +385,7 @@ package com.yogurt3d.core.materials.shaders
 				"mul ft5 ft5 fc4",
 				"sub ft6.xyz ft6.xyz fc2.y",
 				"mul ft6 ft6 fc5",
-		
-	// TODO : TOON SHADER			
-//				"sge ft2 ft6 fc2.y", // if 1-fresnel >= threshold 1
-//				"sge ft3 ft5 fc2.y", // if fresnel >= threshold 1
-//				
-//				
-//				"mul ft5 ft5 fc4",// ft7 : color1 * fresnel
-//				//"add ft3.xyz ft3.xyz fc2.y",
-//				//"mul ft5.xyz ft5.xyz ft3",
-//				
-//			//	"mul ft6 ft6 fc2.y",// 1 - fresnel - gain
-//				"mul ft6 ft6 fc5",// ft6 : color2 * (1 - fresnel)
-//				"add ft6.xyz ft6.xyz fc2.y",
-//				"mul ft6.xyz ft6.xyz ft2",
-				
+						
 				"add ft7 ft5 ft6",
 				"mov ft0 ft7",
 		

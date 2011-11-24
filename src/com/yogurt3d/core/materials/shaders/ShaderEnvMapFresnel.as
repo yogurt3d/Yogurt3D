@@ -81,16 +81,7 @@ package com.yogurt3d.core.materials.shaders
 											_fresnelPower:Number=5)
 		{
 			key = "Yogurt3DOriginalsShaderEnvMappingFresnel";
-			
-			m_cubeMap					= _cubeMap;
-			texture						= _colorMap;
-			normalMap 					= _normalMap;
-			reflectivityMap			    = _reflectivityMap;
-			m_alpha 					= _alpha;
-			
-			m_fresnelReflectance = _fresnelReflectance;
-			m_fresnelPower = _fresnelPower;
-						
+									
 			params.blendEnabled 	= true;
 			params.blendSource 		= Context3DBlendFactor.SOURCE_ALPHA;
 			params.blendDestination = Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA;
@@ -106,7 +97,7 @@ package com.yogurt3d.core.materials.shaders
 			
 			// environmental map // FS0
 			m_envMapTexture 							= new ShaderConstants(0,EShaderConstantsType.TEXTURE);
-			m_envMapTexture.texture 					= m_cubeMap;
+			m_envMapTexture.texture 					= _cubeMap;
 			params.fragmentShaderConstants.push(m_envMapTexture);
 			
 			
@@ -117,7 +108,7 @@ package com.yogurt3d.core.materials.shaders
 			
 			// fc1 : alpha
 			m_alphaConsts   							= new ShaderConstants(1, EShaderConstantsType.CUSTOM_VECTOR);
-			m_alphaConsts.vector						= Vector.<Number>([ m_alpha, 2.0, 0.5, -1.0 ]);
+			m_alphaConsts.vector						= Vector.<Number>([ _alpha, 2.0, 0.5, -1.0 ]);
 			params.fragmentShaderConstants.push(m_alphaConsts);
 			
 			// fc2 : custom vector for normal map based vertex normal calculation
@@ -127,9 +118,18 @@ package com.yogurt3d.core.materials.shaders
 			
 			// fc3 : fresnel custom vector
 			m_fresnelConsts   							= new ShaderConstants(3, EShaderConstantsType.CUSTOM_VECTOR);
-			m_fresnelConsts.vector						= Vector.<Number>([ m_fresnelReflectance, m_fresnelPower, 1.0, 1 - m_fresnelReflectance ]);
+			m_fresnelConsts.vector						= Vector.<Number>([ _fresnelReflectance, _fresnelPower, 1.0, 1 - _fresnelReflectance ]);
 			params.fragmentShaderConstants.push(m_fresnelConsts);
 		
+			envMap						= _cubeMap;
+			texture						= _colorMap;
+			normalMap 					= _normalMap;
+			reflectivityMap			    = _reflectivityMap;
+			alpha 						= _alpha;
+			
+			fresnelReflectance = _fresnelReflectance;
+			fresnelPower = _fresnelPower;
+			
 		}
 		public function get envMap():CubeTextureMap{
 			return m_cubeMap;
@@ -272,7 +272,7 @@ package com.yogurt3d.core.materials.shaders
 				
 				_normalAGAL = [   
 					(m_normalMapUVOffset)?"add ft1 v2 fc4":"mov ft1 v2",
-					"tex ft1 ft1 fs1<2d,wrap,linear>",
+					((!m_normalMap.mipmap)?"tex ft1 ft1 fs1<2d,wrap,linear>":"tex ft1 ft1 fs1<2d,wrap,linear,miplinear>"),
 					// lookup normal from normal map, move from [0,1] to  [-1, 1] range, normalize
 					// texNormal = texNormal * 2 - 1;
 					"mul ft1 ft1 fc1.y",
@@ -295,7 +295,7 @@ package com.yogurt3d.core.materials.shaders
 			if(m_reflectivityMap != null){
 				_reflectivityAGAL = [   
 					
-					"tex ft2 v2 fs2<2d,wrap,linear>",     // get reflection map
+					((!m_reflectivityMap.mipmap)?"tex ft2 v2 fs2<2d,wrap,linear>":"tex ft2 v2 fs2<2d,wrap,linear,miplinear>"),     // get reflection map
 					"mul ft0.w ft2.xyz ft0.w",
 					"mul ft0.w fc1.x ft0.w"
 					
@@ -310,7 +310,7 @@ package com.yogurt3d.core.materials.shaders
 			
 			if(m_colorMap != null){
 				_colorMapAGAL = [
-					"tex ft5 v2 fs3<wrap,linear>", 
+					((!m_colorMap.mipmap)?"tex ft5 v2 fs3<2d,wrap,linear>":"tex ft5 v2 fs3<2d,wrap,linear,miplinear>"), 
 					"add ft0 ft5 ft0",
 					
 				].join("\n");
@@ -383,10 +383,6 @@ package com.yogurt3d.core.materials.shaders
 				}
 				disposeShaders();
 				m_colorMapDirty = false;
-				key = "Yogurt3DOriginalsShaderEnvFresnel" + ((m_normalMap)?"WithNormal":"") + 
-					((m_reflectivityMap)?"WithReflectivity":"") + 
-					((m_normalMapUVOffset)?"WithNormalUVOffset":"")+
-					((m_colorMap)?"WithTexture":"");
 			}
 			
 			if(m_normalMapDirty )
@@ -408,10 +404,6 @@ package com.yogurt3d.core.materials.shaders
 				}
 				disposeShaders();
 				m_normalMapDirty = false;
-				key = "Yogurt3DOriginalsShaderEnvFresnel" + ((m_normalMap)?"WithNormal":"") + 
-					((m_reflectivityMap)?"WithReflectivity":"") + 
-					((m_normalMapUVOffset)?"WithNormalUVOffset":"")+
-					((m_colorMap)?"WithTexture":"");
 			}
 			
 			if(m_reflectivityMapDirty )
@@ -434,10 +426,6 @@ package com.yogurt3d.core.materials.shaders
 				}
 				disposeShaders();
 				m_reflectivityMapDirty = false;
-				key = "Yogurt3DOriginalsShaderEnvFresnel" + ((m_normalMap)?"WithNormal":"") + 
-					((m_reflectivityMap)?"WithReflectivity":"") + 
-					((m_normalMapUVOffset)?"WithNormalUVOffset":"")+
-					((m_colorMap)?"WithTexture":"");
 			}
 			if( m_normalMapUVOffsetDirty )
 			{
@@ -456,10 +444,7 @@ package com.yogurt3d.core.materials.shaders
 				}
 				disposeShaders();
 				m_normalMapUVOffsetDirty = false;
-				key = "Yogurt3DOriginalsShaderEnvFresnel" + ((m_normalMap)?"WithNormal":"") + 
-					((m_reflectivityMap)?"WithReflectivity":"") + 
-					((m_normalMapUVOffset)?"WithNormalUVOffset":"")+
-					((m_colorMap)?"WithTexture":"");
+	
 			}
 			
 			if(m_normalMapUVOffset)
@@ -469,6 +454,12 @@ package com.yogurt3d.core.materials.shaders
 				m_normalMapUVOffsetConst.vector = m_normalMapUVOffsetVector;
 			}
 			
+			key = "Yogurt3DOriginalsShaderEnvFresnel" + ((m_normalMap)?"WithNormal":"") +
+				((m_normalMap && m_normalMap.mipmap)?"WithNormalMip":"")+
+				((m_reflectivityMap)?"WithReflectivity":"") + 
+				((m_reflectivityMap && m_reflectivityMap.mipmap)?"WithRefMip":"")+
+				((m_normalMapUVOffset)?"WithNormalUVOffset":"")+
+				((m_colorMap)?"WithTexture":"");
 			
 			return super.getProgram( _context3D, _lightType, _meshType );
 		}

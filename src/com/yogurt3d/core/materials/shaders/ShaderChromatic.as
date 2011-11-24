@@ -39,9 +39,9 @@ package com.yogurt3d.core.materials.shaders
 	
 	public class ShaderChromatic extends Shader
 	{
-		private var m_texture				:TextureMap;
+		private var m_texture				:TextureMap = null;
 		private var m_envMap				:CubeTextureMap;
-		private var m_glossMap				:TextureMap;
+		private var m_glossMap				:TextureMap = null;
 		private var m_Io					:Vector3D;
 		private var m_fresnel				:Vector3D;
 		private var m_opacity				:Number;
@@ -79,7 +79,6 @@ package com.yogurt3d.core.materials.shaders
 				m_Io = new Vector3D(1.14,1.12,1.10);
 			if(m_fresnel == null)
 				m_fresnel = new Vector3D(0.15,2.0, 0.0 )
-			
 			
 			texture = _baseMap;
 			glossMap = _glossMap;
@@ -168,7 +167,7 @@ package com.yogurt3d.core.materials.shaders
 			
 			m_texture = _value;
 			m_baseDirty = true;
-			//m_baseTexture.texture = m_texture;
+			
 		}
 		
 		public function get opacity():Number{
@@ -226,58 +225,63 @@ package com.yogurt3d.core.materials.shaders
 			//fc1: [ m_fresnel.x, m_fresnel.y, m_fresnel.z, 0.0 ]
 			//fc2: camera pos
 			//fc3: Vector.<Number>([ 1.0, 0.0, 2.0, 3.0 ]);
-			var _fragmentShaderWithGloss:String = [
-				"sub ft0 v0 fc2" , 		// E = WorldPos.xyz - CameraPos.xyz;	
-				"nrm ft0.xyz ft0.xyz", 	// normalize(E);
-				"mov ft1 v1",
-				"nrm ft1.xyz ft1.xyz",	// normalize(N);
-				
-				//------ Find the reflection
-				ShaderUtils.reflect("ft2", "ft0", "ft1"),
-				"nrm ft2.xyz ft2.xyz",
-				"tex ft2 ft2 fs0<3d,cube,linear> ",// ft2 = reflectColor
-		
-				//------ Find the refraction
-				//
-				ShaderUtils.refract("ft3", "ft0", "ft1", "fc0.x","fc3.x", "fc3.y","ft4", "ft5"),
-				"tex ft3 ft3 fs0<3d,cube,linear> ",
-				ShaderUtils.refract("ft4", "ft0", "ft1", "fc0.y","fc3.x", "fc3.y","ft5", "ft6"),
-				"tex ft4 ft4 fs0<3d,cube,linear> ",
-				ShaderUtils.refract("ft5", "ft0", "ft1", "fc0.z","fc3.x", "fc3.y","ft6", "ft7"),
-				"tex ft5 ft5 fs0<3d,cube,linear> ",
-				
-				"mov ft3.y ft4.y",
-				"mov ft3.z ft5.z",
-				"mov ft3.w fc3.x", // ft3 = refractColor
-				
-				//------ Do a gloss map look up and compute the reflectivity
-				"mul ft4 v2 fc3.z", 
-				"tex ft4 ft4 fs1<2d,wrap,linear>",//glossmap
-				"add ft5.x ft4.x ft4.y",
-				"add ft5.x ft5.x ft4.z",
-				"div ft5.x ft5.x fc3.w",// ft5 = reflectivity = (gloss_color.r + gloss_color.g + gloss_color.b)/3.0;
-				
-				//------ Find the Fresnel term
-				// ft4 = fast_fresnel(-incident, normal, fresnelValues);
-				
-				"neg ft0 ft0.xyz", 
-				ShaderUtils.fastFresnel("ft4", "ft1", "ft0", "fc1", "fc3.x", "ft6"),
-					
-				//------ Write the final pixel.
-				
-				"sub ft1 fc3.x ft4",
-	
-				ShaderUtils.mix("ft6", "ft7", "ft3", "ft2", "ft4", "ft1"),//color = mix(refractColor, reflectColor, fresnelTerm);
-				// get basemap
-				"tex ft4 v2 fs2<2d,wrap,linear>",//ft4
-				"sub ft1.x fc3.x ft5.x",
-				
-				ShaderUtils.mix("ft0", "ft7", "ft4", "ft6", "ft5.x", "ft1.x"),//mix(base_color, color, reflectivity)
-				"mov ft0.w fc0.w",
-				"mov oc ft0"
-				
-			].join("\n");
 			
+			if(m_glossMap != null && m_texture != null){
+			
+				var _fragmentShaderWithGloss:String = [
+					"sub ft0 v0 fc2" , 		// E = WorldPos.xyz - CameraPos.xyz;	
+					"nrm ft0.xyz ft0.xyz", 	// normalize(E);
+					"mov ft1 v1",
+					"nrm ft1.xyz ft1.xyz",	// normalize(N);
+					
+					//------ Find the reflection
+					ShaderUtils.reflect("ft2", "ft0", "ft1"),
+					"nrm ft2.xyz ft2.xyz",
+					"tex ft2 ft2 fs0<3d,cube,linear> ",// ft2 = reflectColor
+					
+					//------ Find the refraction
+					//
+					ShaderUtils.refract("ft3", "ft0", "ft1", "fc0.x","fc3.x", "fc3.y","ft4", "ft5"),
+					"tex ft3 ft3 fs0<3d,cube,linear> ",
+					ShaderUtils.refract("ft4", "ft0", "ft1", "fc0.y","fc3.x", "fc3.y","ft5", "ft6"),
+					"tex ft4 ft4 fs0<3d,cube,linear> ",
+					ShaderUtils.refract("ft5", "ft0", "ft1", "fc0.z","fc3.x", "fc3.y","ft6", "ft7"),
+					"tex ft5 ft5 fs0<3d,cube,linear> ",
+					
+					"mov ft3.y ft4.y",
+					"mov ft3.z ft5.z",
+					"mov ft3.w fc3.x", // ft3 = refractColor
+					
+					//------ Do a gloss map look up and compute the reflectivity
+					"mul ft4 v2 fc3.z", 
+					((!glossMap.mipmap)?"tex ft4 ft4 fs1<2d,wrap,linear>":"tex ft4 ft4 fs1<2d,wrap,linear,miplinear>"),//glossmap
+					"add ft5.x ft4.x ft4.y",
+					"add ft5.x ft5.x ft4.z",
+					"div ft5.x ft5.x fc3.w",// ft5 = reflectivity = (gloss_color.r + gloss_color.g + gloss_color.b)/3.0;
+					
+					//------ Find the Fresnel term
+					// ft4 = fast_fresnel(-incident, normal, fresnelValues);
+					
+					"neg ft0 ft0.xyz", 
+					ShaderUtils.fastFresnel("ft4", "ft1", "ft0", "fc1", "fc3.x", "ft6"),
+					
+					//------ Write the final pixel.
+					
+					"sub ft1 fc3.x ft4",
+					
+					ShaderUtils.mix("ft6", "ft7", "ft3", "ft2", "ft4", "ft1"),//color = mix(refractColor, reflectColor, fresnelTerm);
+					// get basemap
+					((!texture.mipmap)?"tex ft4 v2 fs2<2d,wrap,linear>":"tex ft4 v2 fs2<2d,wrap,linear,miplinear>"),//ft4
+					"sub ft1.x fc3.x ft5.x",
+					
+					ShaderUtils.mix("ft0", "ft7", "ft4", "ft6", "ft5.x", "ft1.x"),//mix(base_color, color, reflectivity)
+					"mov ft0.w fc0.w",
+					"mov oc ft0"
+					
+				].join("\n");
+				return new AGALMiniAssembler().assemble(AGALMiniAssembler.FRAGMENT, _fragmentShaderWithGloss);
+			}
+				
 			var _fragmentShader:String = [
 				"sub ft0 v0 fc2" , 		// E = WorldPos.xyz - CameraPos.xyz;	
 				"nrm ft0.xyz ft0.xyz", 	// normalize(E);
@@ -317,10 +321,7 @@ package com.yogurt3d.core.materials.shaders
 				"mov oc ft6"
 			
 			].join("\n");
-			
-			if(m_glossMap != null && m_texture != null)
-				return new AGALMiniAssembler().assemble(AGALMiniAssembler.FRAGMENT, _fragmentShaderWithGloss);
-			
+		
 			return new AGALMiniAssembler().assemble(AGALMiniAssembler.FRAGMENT, _fragmentShader);
 		}
 		
@@ -373,7 +374,10 @@ package com.yogurt3d.core.materials.shaders
 				
 			}
 			
-			key = "Yogurt3DOriginalsShaderChromatic" + ((m_texture)?"WithBase":"") + ((m_glossMap)?"WithGloss":"");
+			key = "Yogurt3DOriginalsShaderChromatic" + ((m_texture)?"WithBase":"") + 
+				((m_glossMap)?"WithGloss":"") + 
+				((m_glossMap && m_glossMap.mipmap)?"WithGlossMip":"")+
+				((m_texture && m_texture.mipmap)?"WithTexMip":"");
 			return super.getProgram( _context3D, _lightType, _meshType );
 		}
 		

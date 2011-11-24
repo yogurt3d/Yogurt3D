@@ -41,7 +41,7 @@ package com.yogurt3d.core.materials.shaders
 		public function ShaderShadow(_overDarkeningFactor:Number = 200,
 									 _shadowAlpha:Number = 0.3,
 									 _shadowColor:Color = null,
-									 _bias:Number = -0.003 )
+									 _bias:Number = -0.001 )
 		{
 			super();
 			

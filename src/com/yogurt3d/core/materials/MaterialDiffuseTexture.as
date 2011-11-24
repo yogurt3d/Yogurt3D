@@ -49,12 +49,12 @@ package com.yogurt3d.core.materials
 		
 		public var onAlphaTextureChanged						:Signal;
 		
-		public function MaterialDiffuseTexture( _texture:TextureMap = null, _opacity:Number = 1, _initInternals:Boolean=true)
+		public function MaterialDiffuseTexture( _texture:TextureMap = null, _opacity:Number = 1, _mipLevel:Boolean=false,_initInternals:Boolean=true)
 		{
 			super(_initInternals);
 			onAlphaTextureChanged = new Signal();
 			
-			m_decalShader = new ShaderTexture(_texture, 0);
+			m_decalShader = new ShaderTexture(_texture);
 			m_decalShader.params.blendEnabled = true;
 			m_decalShader.params.blendSource = Context3DBlendFactor.DESTINATION_COLOR;
 			m_decalShader.params.blendDestination = Context3DBlendFactor.ZERO;
@@ -68,6 +68,7 @@ package com.yogurt3d.core.materials
 			
 			super.opacity = _opacity;
 		}
+	
 		public function get alphaTexture():Boolean{
 			return m_alphaTexture;
 		}

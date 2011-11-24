@@ -36,13 +36,6 @@ package com.yogurt3d.core.materials
 	public class MaterialChromatic extends Material
 	{
 		private var m_chroShader:ShaderChromatic;
-		private var m_texture:TextureMap;
-		private var m_envMap:CubeTextureMap;
-		private var m_glossMap:TextureMap;
-		private var m_Io:Vector3D;
-		private var m_fresnel:Vector3D;
-		private var m_opacity:Number;
-	
 		
 		public function MaterialChromatic( _envMap:CubeTextureMap,
 										   _glossMap:TextureMap=null,
@@ -53,66 +46,62 @@ package com.yogurt3d.core.materials
 		{
 			super(_initInternals);
 			
-			m_envMap = _envMap;
-			m_texture = _baseMap;
-			m_glossMap = _glossMap;
-		
-			if( (m_texture != null && m_glossMap == null)||
-				(m_texture == null && m_glossMap != null)){
+			if( (_baseMap != null && _glossMap == null)||
+				(_baseMap == null && _glossMap != null)){
 				throw new Error( "MaterialChromatic: You should give base texture and gloss map!" );
 			}
 				
-			m_Io = _IoValues;
-			m_fresnel = _fresnelVal;
-			
 			m_chroShader = new ShaderChromatic(_envMap, _glossMap, _baseMap, _IoValues, _fresnelVal);
 			shaders.push(m_chroShader);
 			
+			envMap = _envMap;
+			texture = _baseMap;
+			glossMap = _glossMap;
+			Io = _IoValues;
+			fresnel = _fresnelVal;
+		
 			super.opacity = _opacity;
 		}
 		
+
 		public function get envMap():CubeTextureMap{
-			return m_envMap; 
+			return m_chroShader.envMap; 
 		}
 		public function set envMap(_value:CubeTextureMap):void{
-			
-			m_envMap = _value;
 			m_chroShader.envMap = _value;
 		}
 		
 		public function get glossMap():TextureMap{
-			return m_glossMap; 
+			return m_chroShader.glossMap; 
 		}
 		
 		public function set glossMap(_value:TextureMap):void{
 			
-			m_glossMap = _value;
 			m_chroShader.glossMap = _value;
 		}
 		
 		public function get Io():Vector3D{
-			return m_Io; 
-		}
-		public function get fresnel():Vector3D{
-			return m_fresnel; 
+			return m_chroShader.Io; 
 		}
 		
 		public function set Io(_val:Vector3D):void{
-			m_Io = _val; 
 			m_chroShader.Io = _val;
 		}
+		
+		public function get fresnel():Vector3D{
+			return m_chroShader.fresnel; 
+		}
+	
 		public function set fresnel(_val:Vector3D):void{
-			m_fresnel = _val; 
 			m_chroShader.fresnel = _val;
 		}
 		
 		public function get texture():TextureMap{
-			return m_texture; 
+			return m_chroShader.texture; 
 		}
 		
 		public function set texture(_value:TextureMap):void{
 			
-			m_texture = _value;
 			m_chroShader.texture = _value;
 		}
 		

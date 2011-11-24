@@ -76,7 +76,9 @@ package com.yogurt3d.core.materials.shaders
 											   _fresnelPower:Number=5, 
 											   _texture1:TextureMap=null, _texture2:TextureMap=null, _gain:Number=0.0)
 		{
-			key = "Yogurt3DOriginalsShader2TextureFresnel";
+			key = "Yogurt3DOriginalsShader2TextureFresnel"+
+				(_texture1.mipmap?"withTex1Mip":"")+
+				(_texture2.mipmap?"withTex2Mip":"");
 			
 			normalMap 					= _normalMap;
 			reflectivityMap			    = _reflectivityMap;
@@ -291,7 +293,7 @@ package com.yogurt3d.core.materials.shaders
 				
 				_normalAGAL = [   
 					(m_normalMapUVOffset)?"add ft1 v2 fc4":"mov ft1 v2",
-					"tex ft1 ft1 fs1<2d,wrap,linear>",
+					((!m_normalMap.mipmap)?"tex ft1 ft1 fs1<2d,wrap,linear>":"tex ft1 ft1 fs1<2d,wrap,linear,miplinear>"),
 					// lookup normal from normal map, move from [0,1] to  [-1, 1] range, normalize
 					// texNormal = texNormal * 2 - 1;
 					"mul ft1 ft1 fc1.y",
@@ -314,7 +316,7 @@ package com.yogurt3d.core.materials.shaders
 			if(m_reflectivityMap != null){
 				_reflectivityAGAL = [   
 					
-					"tex ft2 v2 fs2<2d,wrap,linear>",     // get reflection map
+					((!m_reflectivityMap.mipmap)?"tex ft2 v2 fs2<2d,wrap,linear>":"tex ft2 v2 fs2<2d,wrap,linear,miplinear>"),     // get reflection map
 					"mul ft0.w ft2.xyz ft0.w",
 					"mul ft0.w fc1.x ft0.w"
 					
@@ -361,11 +363,11 @@ package com.yogurt3d.core.materials.shaders
 				"sub ft6 fc3.z ft5",					// 1 - fresnel
 				//	"tex ft0 ft4 fs0<3d,cube,linear>",   	// get envMap
 				
-				"tex ft7 v2 fs0<wrap,linear>", 			// get texture 1
+				((!texture1.mipmap)?"tex ft7 v2 fs0<wrap,linear>":"tex ft7 v2 fs0<wrap,linear,miplinear>"), 			// get texture 1
 				"mul ft5 ft5 ft7",
 				
 				"sub ft6.xyz ft6.xyz fc2.y",
-				"tex ft7 v2 fs3<wrap,linear>", 			// get texture 2
+				((!texture2.mipmap)?"tex ft7 v2 fs3<wrap,linear>":"tex ft7 v2 fs3<wrap,linear,miplinear>"), 			// get texture 2
 				"mul ft6 ft6 ft7",
 				
 				"add ft0 ft5 ft6",
@@ -447,7 +449,12 @@ package com.yogurt3d.core.materials.shaders
 				m_normalMapUVOffsetConst.vector = Vector.<Number>([m_normalMapUVOffset.x,m_normalMapUVOffset.y,0,0]);
 			}
 			
-			key = "Yogurt3DOriginalsShader2TextureFresnel" + ((m_normalMap)?"WithNormal":"") + ((m_reflectivityMap)?"WithReflectivity":"") + ((m_normalMapUVOffset)?"WithNormalUVOffset":"") ;
+			key = "Yogurt3DOriginalsShader2TextureFresnel" + 
+				(texture1.mipmap?"withTex1Mip":"")+
+				(texture2.mipmap?"withTex2Mip":"")+
+				((m_normalMap)?"WithNormal":"") + 
+				((m_reflectivityMap)?"WithReflectivity":"") + 
+				((m_normalMapUVOffset)?"WithNormalUVOffset":"") ;
 			return super.getProgram( _context3D, _lightType, _meshType );
 		}
 	}

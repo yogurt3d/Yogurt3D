@@ -37,18 +37,18 @@ package com.yogurt3d.core.materials
 	{
 		
 		private var m_refShader:ShaderRefraction;
-		private var m_fresnelShader:ShaderEnvMapFresnel;
+		private var m_fresnelShader:ShaderEnvMapFresnel = null;
 		
-		private var m_envMap:CubeTextureMap;
-		private var m_normalMap:TextureMap;
-		private var m_refractivityMap:TextureMap;
-	
-		private var m_refIndex:Number;
-		private var m_fresnelReflectance:Number;
-		
-		private var m_color:uint;
-		private var m_fresnelPower:uint;
-		private var m_hasReflection:Boolean;
+//		private var m_envMap:CubeTextureMap;
+//		private var m_normalMap:TextureMap;
+//		private var m_refractivityMap:TextureMap;
+//	
+//		private var m_refIndex:Number;
+//		private var m_fresnelReflectance:Number;
+//		
+//		private var m_color:uint;
+//		private var m_fresnelPower:uint;
+//		private var m_hasReflection:Boolean;
 		private var m_hasFresnel:Boolean;
 		
 	
@@ -64,44 +64,41 @@ package com.yogurt3d.core.materials
 											_initInternals:Boolean=true)
 		{
 			super(_initInternals);
-			
-			m_envMap = _envMap;		
-			m_normalMap = _normalMap;
-			m_refractivityMap = _refractivityMap;
-			m_refIndex = _refIndex;
-			m_color = _color;
+	
 			super.opacity = _alpha;
 			
 			m_hasFresnel = _hasFresnel;
 						
 			shaders.push( 
-				m_refShader = new ShaderRefraction(m_envMap, m_color ,
-												   m_refIndex,  m_normalMap, 
-												   m_refractivityMap, _alpha));
-			
-			m_fresnelReflectance = _fresnelReflectance;
-			m_fresnelPower = _fresnelPower;
+				m_refShader = new ShaderRefraction(_envMap, _color ,
+												   _refIndex,  _normalMap, 
+												   _refractivityMap, _alpha));
+		
 				
 			if(m_hasFresnel)
-				shaders.push(m_fresnelShader = new ShaderEnvMapFresnel(m_envMap, null, m_normalMap, m_refractivityMap, _alpha, _fresnelReflectance, _fresnelPower));
+				shaders.push(m_fresnelShader = new ShaderEnvMapFresnel(_envMap, null, _normalMap, _refractivityMap, _alpha, _fresnelReflectance, _fresnelPower));
 			
 		}
 		
 		public function get fresnelReflectance():Number{
-			return m_fresnelReflectance;
+			if(hasFresnel)
+				return m_fresnelShader.fresnelReflectance;
+			return -1;
 		}
 		public function set fresnelReflectance(_value:Number):void{
 		
-			m_fresnelShader.fresnelReflectance = _value;
-			m_fresnelReflectance = _value;
+			if(hasFresnel)
+				m_fresnelShader.fresnelReflectance = _value;
 		}
 		
 		public function get fresnelPower():uint{
-			return m_fresnelPower;
+			if(hasFresnel)
+				return m_fresnelShader.fresnelPower;
+			return 0;
 		}
 		public function set fresnelPower(_value:uint):void{
-			m_fresnelShader.fresnelPower = _value;
-			m_fresnelPower = _value;
+			if(hasFresnel)
+				m_fresnelShader.fresnelPower = _value;
 		}
 		
 		public function get fresnelShader():ShaderEnvMapFresnel{
@@ -130,30 +127,29 @@ package com.yogurt3d.core.materials
 		}
 		
 		public function get color():uint{
-			return m_color;
+			return m_refShader.color;
 		}
 		public function set color(_value:uint):void{
-			m_color = _value;
 			m_refShader.color = _value;
 		}
 		
 		public function get refIndex():Number{
-			return m_refIndex;
+			return m_refShader.refIndex;
 		}
 		public function set refIndex(_value:Number):void{
 			m_refShader.refIndex = _value;
-			m_refIndex = _value;
 		}
 		
 		public function get refractivityMap():TextureMap
 		{
-			return m_refractivityMap;
+			return m_refShader.refractivityMap;
 		}
 		public function set refractivityMap(value:TextureMap):void
 		{
-			m_refractivityMap = value;
+
 			m_refShader.refractivityMap = value;
-			m_fresnelShader.reflectivityMap = value;
+			if(hasFresnel)
+				m_fresnelShader.reflectivityMap = value;
 		}
 	
 		public override function set opacity(_alpha:Number):void{
@@ -165,23 +161,23 @@ package com.yogurt3d.core.materials
 		
 		public function get normalMap():TextureMap
 		{
-			return m_normalMap;
+			return m_refShader.normalMap;
 		}
 		public function set normalMap(value:TextureMap):void
 		{
-			m_normalMap = value;
 			m_refShader.normalMap = value;
-			m_fresnelShader.normalMap = value;
+			if(hasFresnel)
+				m_fresnelShader.normalMap = value;
 		}
 		
 		public function get envMap():CubeTextureMap
 		{
-			return m_envMap;
+			return m_fresnelShader.envMap;
 		}
 		public function set envMap(value:CubeTextureMap):void
 		{
-			m_envMap = value;
-			m_fresnelShader.envMap = value;
+			if(hasFresnel)
+				m_fresnelShader.envMap = value;
 			m_refShader.envMap = value;
 		}
 	}

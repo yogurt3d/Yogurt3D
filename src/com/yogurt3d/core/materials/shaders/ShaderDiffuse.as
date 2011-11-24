@@ -185,7 +185,8 @@ package com.yogurt3d.core.materials.shaders
 					{
 						attributes.push( EVertexAttribute.TANGENT );
 					}
-					key = "Yogurt3DOriginalsShaderDiffuseWithNormalMap";
+					key = "Yogurt3DOriginalsShaderDiffuseWithNormalMap"+
+						((m_normalMap.mipmap)?"withMipmap":"");
 				}else{
 					key = "Yogurt3DOriginalsShaderDiffuse";
 					
@@ -329,7 +330,7 @@ package com.yogurt3d.core.materials.shaders
 			
 			var agal:String =  
 				(m_normalMap? 
-					"tex ft2, v"+varyingUV+".xy, fs"+fsNormalMap+"<2d,wrap,linear>\n"+ 
+					((!m_normalMap.mipmap)?"tex ft2, v"+varyingUV+".xy, fs"+fsNormalMap+"<2d,wrap,linear>\n":"tex ft2, v"+varyingUV+".xy, fs"+fsNormalMap+"<2d,wrap,linear,miplinear>\n")+ 
 					"mul ft2.xyz, ft2.xyz, fc"+fcZeroVec+".www\n" + 
 					"sub ft2.xyz, ft2.xyz, fc"+fcZeroVec+".yyy\n" 
 					: "")+

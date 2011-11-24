@@ -62,11 +62,6 @@ package com.yogurt3d.core.materials.shaders
 										 _alpha:Number=1.0 ){
 			key = "Yogurt3DOriginalsShaderEnvMapping";
 			
-			m_cubeMap					= _cubeMap;
-			m_alpha 					= _alpha;
-			normalMap 					= _normalMap;
-			reflectivityMap			    = _reflectivityMap;
-			
 			params.writeDepth 		= true;
 			params.depthFunction 	= Context3DCompareMode.LESS_EQUAL;
 			params.blendEnabled 	= true;
@@ -84,7 +79,7 @@ package com.yogurt3d.core.materials.shaders
 			
 			// environmental map // FS0
 			m_envMapTexture 							= new ShaderConstants(0, EShaderConstantsType.TEXTURE);
-			m_envMapTexture.texture 					= m_cubeMap;
+			m_envMapTexture.texture 					= _cubeMap;
 			params.fragmentShaderConstants.push(m_envMapTexture);
 			
 
@@ -95,10 +90,14 @@ package com.yogurt3d.core.materials.shaders
 				
 			// fc1 : alpha
 			m_alphaConsts   							= new ShaderConstants(1,EShaderConstantsType.CUSTOM_VECTOR );
-			m_alphaConsts.vector						= Vector.<Number>([ m_alpha, 1.0, 0.5, -1.0 ]);
+			m_alphaConsts.vector						= Vector.<Number>([ _alpha, 1.0, 0.5, -1.0 ]);
 			params.fragmentShaderConstants.push(m_alphaConsts);
 			
-			
+			envMap					= _cubeMap;
+			alpha 					= _alpha;
+			normalMap 				= _normalMap;
+			reflectivityMap			= _reflectivityMap;
+
 		}
 		
 		public function get envMap():CubeTextureMap{
@@ -200,7 +199,7 @@ package com.yogurt3d.core.materials.shaders
 				
 				_normalAGAL = [   
 					
-					"tex ft1 v2 fs1<2d,wrap,miplinear,linear>",
+					((!normalMap.mipmap)?"tex ft1 v2 fs1<2d,wrap,linear>":"tex ft1 v2 fs1<2d,wrap,linear,miplinear>"),
 					// lookup normal from normal map, move from [0,1] to  [-1, 1] range, normalize
 					// texNormal = texNormal * 2 - 1;
 					"add ft1 ft1 ft1",
@@ -223,7 +222,7 @@ package com.yogurt3d.core.materials.shaders
 			if(m_reflectivityMap != null){
 				_reflectivityAGAL = [   
 				
-					"tex ft2 v2 fs2<2d,wrap,linear>",     // get reflection map
+					((!reflectivityMap.mipmap)?"tex ft2 v2 fs2<2d,wrap,linear>":"tex ft2 v2 fs2<2d,wrap,linear,miplinear>"),     // get reflection map
 					"mul ft0.w ft2.xyz fc1.x"
 				
 				].join("\n");
@@ -306,7 +305,10 @@ package com.yogurt3d.core.materials.shaders
 				
 			}
 			
-			key = "Yogurt3DOriginalsShaderEnvMapping" + ((m_normalMap)?"WithNormal":"") + ((m_reflectivityMap)?"WithReflectivity":"");
+			key = "Yogurt3DOriginalsShaderEnvMapping" + ((m_normalMap)?"WithNormal":"") +
+				((m_normalMap && m_normalMap.mipmap)?"WithNormalMipmap":"") + 
+				((m_reflectivityMap && m_reflectivityMap.mipmap)?"WithRefMipmap":"") + 
+				((m_reflectivityMap)?"WithReflectivity":"");
 			return super.getProgram( _context3D, _lightType, _meshType );
 		}
 	}
