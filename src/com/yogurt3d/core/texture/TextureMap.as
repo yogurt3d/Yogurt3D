@@ -45,25 +45,34 @@ package com.yogurt3d.core.texture
 	 **/
 	public class TextureMap implements ITexture
 	{
+		public static const ATF_COMP:String			= "ATF_COMPRESSED";
+		public static const ATF:String				= "ATF";
+		public static const BITMAP:String			= "BITMAP";
+		public static const DISPLAY:String			= "DISPLAY";
+		public static const UNKNOWN:String 			= "UNKNOWN";
+		
+		
 		YOGURT3D_INTERNAL var m_bitmapData		:BitmapData;
 		YOGURT3D_INTERNAL var m_displayObject	:DisplayObject;
 		YOGURT3D_INTERNAL var m_byteArray		:ByteArray;
 		
 		private var m_context3DMap				:Dictionary;
 		
-		YOGURT3D_INTERNAL var m_compressed		:Boolean = false;
+		YOGURT3D_INTERNAL var m_compressed		:Boolean          = false;
 		YOGURT3D_INTERNAL var m_width			:uint;
 		YOGURT3D_INTERNAL var m_height			:uint;
 		
-		YOGURT3D_INTERNAL var m_dirty			:Boolean = true;
-		
+		YOGURT3D_INTERNAL var m_dirty			:Boolean          = true;
+
 		private var m_tempBitmap				:BitmapData;
 		
 		private var m_animated					:Boolean 		  = false;
 		
-		private var m_readyToUpload				:Boolean = false;
+		private var m_readyToUpload				:Boolean 		  = false;
 		
-	private var m_mipmap						: Boolean = false;
+	    private var m_mipmap					:Boolean          = false;
+		private var m_mipLevel					:uint             =	1;
+		private var m_type						:String;
 		
 		/**
 		 *  
@@ -72,7 +81,7 @@ package com.yogurt3d.core.texture
 		 * @param _byte
 		 * 
 		 */
-		public function TextureMap( _bitmapData:BitmapData = null, _displayObject:DisplayObject = null, _byte:ByteArray = null, _mipmap:Boolean = true)
+		public function TextureMap( _bitmapData:BitmapData = null, _displayObject:DisplayObject = null, _byte:ByteArray = null, _mipmap:Boolean = false)
 		{
 			m_context3DMap = new Dictionary();
 			
@@ -80,8 +89,50 @@ package com.yogurt3d.core.texture
 			bitmapData = _bitmapData;
 			displayObject = _displayObject;
 			m_mipmap = _mipmap;
+			
+			if(bitmapData){
+				m_type = BITMAP;
+			}else if(m_byteArray && m_compressed){
+				m_type = ATF_COMP;
+			}else if(m_byteArray && !m_compressed){
+				m_type = ATF;
+			}else if(m_displayObject){
+				m_type = DISPLAY;
+			}else{
+				m_type = UNKNOWN
+			}
 		}
 		
+		public function get type():String
+		{
+			return m_type;
+		}
+
+		public function set type(value:String):void
+		{
+			m_type = value;
+		}
+
+		public function get mipLevel():uint
+		{
+			return m_mipLevel;
+		}
+
+		public function set mipLevel(value:uint):void
+		{
+			m_mipLevel = value;
+		}
+
+		public function get mipmap():Boolean
+		{
+			return m_mipmap;
+		}
+
+		public function set mipmap(value:Boolean):void
+		{
+			m_mipmap = value;
+		}
+
 		/**
 		 * This flag is used to make the texture be updated on every frame if is it a displayobject texture. 
 		 * @return 
@@ -100,6 +151,10 @@ package com.yogurt3d.core.texture
 		public function set animated(value:Boolean):void
 		{
 			m_animated = value;
+			
+			if(m_displayObject && m_animated){
+				m_type = DISPLAY;
+			}
 		}
 
 		/**
@@ -132,9 +187,15 @@ package com.yogurt3d.core.texture
 					cubeMap =  cubeMap & 0x80;
 					var Log2Width:uint = byte.readUnsignedByte();
 					var Log2Height:uint = byte.readUnsignedByte();
+					var count:uint = byte.readUnsignedByte();
+					//trace("TextureMap: "+count);
+					m_mipLevel = count;
+					m_byteArray = temp;
+					if(m_mipLevel > 1)
+						m_mipmap = true;
 					if( cubeMap == 0x80 )
 					{
-						throw new Error("File is not a CubeMap.");
+						throw new Error("File is a CubeMap.");
 					}else{
 						m_width = Math.pow(2, Log2Width);
 						m_height = Math.pow(2, Log2Height);
@@ -152,6 +213,7 @@ package com.yogurt3d.core.texture
 				m_bitmapData = null;
 				m_displayObject = null;
 				m_dirty = true;
+				type = ATF;
 			}
 		}
 
@@ -181,6 +243,7 @@ package com.yogurt3d.core.texture
 				m_byteArray = null;
 				m_dirty = true;
 				m_readyToUpload = true;
+				type = DISPLAY;
 			}
 		}
 
@@ -214,8 +277,24 @@ package com.yogurt3d.core.texture
 				m_displayObject = null;
 				m_readyToUpload = true;
 				m_dirty = true;
+				type = BITMAP;
 			}
 		}
+		
+//		public function fixMipmap(_mipmap:Boolean):Boolean{
+//		
+//			if(_mipmap != m_mipmap){
+//			
+//				if(type == BITMAP){
+//					m_mipmap = _mipmap;
+//				}else if(type == DISPLAY){
+//					m_mipmap = _mipmap;
+//				}else if(type == ATF || type == ATF_COMP){
+//					_mipmap = m_mipmap;
+//				}
+//			}
+//			return m_mipmap;
+//		}
 
 		/**
 		 * @private
@@ -232,9 +311,18 @@ package com.yogurt3d.core.texture
 				m_tempBitmap = new BitmapData( m_width, m_height, true, 0x00FFFFFF );
 			}
 			// draw the displayObject onto a bitmapData
-			m_tempBitmap.draw( m_displayObject, null,null,null,m_tempBitmap.rect, false );			
-			_texture.uploadFromBitmapData( m_tempBitmap, 0 );
+			m_tempBitmap.draw( m_displayObject, null,null,null,m_tempBitmap.rect, false );	
+			
+			if( !m_mipmap )
+			{
+				_texture.uploadFromBitmapData( m_tempBitmap, 0 );
+				
+			}else{
+				MipmapGenerator.generateMipMaps( m_tempBitmap, _texture, null, true );
+			}
+			
 		}
+		
 		
 		/**
 		 * @inheritDoc 
@@ -258,23 +346,33 @@ package com.yogurt3d.core.texture
 				m_width = MathUtils.getClosestPowerOfTwo( m_width );
 				m_height = MathUtils.getClosestPowerOfTwo( m_height );
 				// create a new texture
-				var _texture:Texture = _context3D.createTexture(m_width,m_height, Context3DTextureFormat.BGRA, false );
+				var _texture:Texture = _context3D.createTexture(m_width, m_height, Context3DTextureFormat.BGRA, false );
 				
 				// According to the texture type upload if to the GPU
 				if( m_byteArray && m_compressed )
 				{
+					//trace("byte + compressed load");
+				
 					_texture.uploadCompressedTextureFromByteArray(m_byteArray,0);
+			
+					
 				}else if( m_byteArray && !m_compressed )
 				{
-					_texture.uploadFromByteArray( m_byteArray, 0, 0 );
+					//trace("byte + NON compressed load");
+				
+					_texture.uploadFromByteArray( m_byteArray, 0, m_mipLevel );
+					
 				}else if( m_bitmapData )
 				{
+				
 					if( !m_mipmap )
 					{
 						_texture.uploadFromBitmapData( m_bitmapData, 0 );
+					
 					}else{
 						MipmapGenerator.generateMipMaps( m_bitmapData, _texture, null, true );
 					}
+					
 				}else if( m_displayObject ){
 					uploadFromDisplayObject( _texture );
 				}

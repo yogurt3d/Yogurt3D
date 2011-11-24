@@ -9,53 +9,36 @@ package com.yogurt3d.core.effects.filters
 	import flash.geom.Rectangle;
 	import flash.utils.ByteArray;
 	
-	public class FilterGammaCorrection extends Filter
+	public class FilterGreyScale extends Filter
 	{		
-		private var m_gamma:Number;
 		
-		public function FilterGammaCorrection(_gamma:Number=2.2)
+		public function FilterGreyScale()
 		{
 			
-			m_gamma = _gamma;
-			
-
 			super();
 		}
 		
 		public override function getFragmentProgram(_lightType:ELightType=null):ByteArray
-		{			
-			
-			//if (color[0].r < 0.50)
-			//	outColor.rgb = pow(color, 1.0 / gammaRGB);
-			//else
-			//	outColor.rgb = color;
-			//outColor.a = 1.0;
-			
+		{				
 			return ShaderUtils.fragmentAssambler.assemble( AGALMiniAssembler.FRAGMENT,
 				
 				[
-					"tex ft0 v0 fs0<2d,wrap,linear>", // get render to texture
-					"pow ft0 ft0 fc0.xxx", //pow(color, 1.0 / gammaRGB)
-					"mov ft0.w fc0.w",
 					
-					"mov oc ft0"
+					"tex ft0 v0 fs0<2d,wrap,linear>", // get render to texture
+					
+					"dp3 ft1.x ft0.xyz fc0.xyz",
+					"mov ft1.y fc0.w",
+					
+					"mov oc ft1.xxxy"
 					
 				].join("\n")
 				
 			);
 		}
 		
-		
-		public function get gamma():Number{
-			return m_gamma;
-		}
-		public function set gamma(_value:Number):void{
-			m_gamma = _value;
-		}
-		
 		public override function setShaderConstants(_context3D:Context3D,_veiwport:Rectangle):void{
 			
-			_context3D.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0,  Vector.<Number>([1/m_gamma, 0.5, 0.0, 1.0]));
+			_context3D.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0,  Vector.<Number>([0.299, 0.587, 0.114, 1.0]));
 			
 		}
 	}

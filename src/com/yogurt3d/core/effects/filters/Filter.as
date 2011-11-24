@@ -8,17 +8,14 @@ package com.yogurt3d.core.effects.filters
 	import com.yogurt3d.core.texture.RenderTextureTarget;
 	import com.yogurt3d.core.utils.MathUtils;
 	import com.yogurt3d.core.utils.ShaderUtils;
-	import com.yogurt3d.core.viewports.Viewport;
 	
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DBlendFactor;
 	import flash.display3D.Context3DCompareMode;
-	import flash.display3D.Context3DTextureFormat;
 	import flash.display3D.Context3DTriangleFace;
 	import flash.display3D.Context3DVertexBufferFormat;
 	import flash.display3D.IndexBuffer3D;
 	import flash.display3D.VertexBuffer3D;
-	import flash.display3D.textures.Texture;
 	import flash.geom.Rectangle;
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;

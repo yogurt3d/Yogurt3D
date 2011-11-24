@@ -1,6 +1,7 @@
-package com.yogurt3d.core.effects.filters
+package com.yogurt3d.core.materials.posteffects
 {
 	import com.adobe.utils.AGALMiniAssembler;
+	import com.yogurt3d.core.effects.filters.Filter;
 	import com.yogurt3d.core.lights.ELightType;
 	import com.yogurt3d.core.utils.ShaderUtils;
 	
@@ -8,7 +9,7 @@ package com.yogurt3d.core.effects.filters
 	import flash.display3D.Context3DProgramType;
 	import flash.geom.Rectangle;
 	import flash.utils.ByteArray;
-
+		
 	public class FilterRadialBlur extends Filter
 	{
 		

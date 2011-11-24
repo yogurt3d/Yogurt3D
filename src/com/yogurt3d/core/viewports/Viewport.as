@@ -1,22 +1,22 @@
 /*
- * Viewport.as
- * This file is part of Yogurt3D Flash Rendering Engine 
- *
- * Copyright (C) 2011 - Yogurt3D Corp.
- *
- * Yogurt3D Flash Rendering Engine is free software; you can redistribute it and/or
- * modify it under the terms of the YOGURT3D CLICK-THROUGH AGREEMENT
- * License.
- * 
- * Yogurt3D Flash Rendering Engine is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- * 
- * You should have received a copy of the YOGURT3D CLICK-THROUGH AGREEMENT
- * License along with this library. If not, see <http://www.yogurt3d.com/yogurt3d/downloads/yogurt3d-click-through-agreement.html>. 
- */
- 
- 
+* Viewport.as
+* This file is part of Yogurt3D Flash Rendering Engine 
+*
+* Copyright (C) 2011 - Yogurt3D Corp.
+*
+* Yogurt3D Flash Rendering Engine is free software; you can redistribute it and/or
+* modify it under the terms of the YOGURT3D CLICK-THROUGH AGREEMENT
+* License.
+* 
+* Yogurt3D Flash Rendering Engine is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+* 
+* You should have received a copy of the YOGURT3D CLICK-THROUGH AGREEMENT
+* License along with this library. If not, see <http://www.yogurt3d.com/yogurt3d/downloads/yogurt3d-click-through-agreement.html>. 
+*/
+
+
 package com.yogurt3d.core.viewports {
 	import com.yogurt3d.Yogurt3D;
 	import com.yogurt3d.core.cameras.interfaces.ICamera;
@@ -38,13 +38,13 @@ package com.yogurt3d.core.viewports {
 	import flash.utils.Dictionary;
 	
 	import org.osflash.signals.natives.NativeSignal;
-
+	
 	/**
 	 * 
 	 * 
- 	 * @author Yogurt3D Engine Core Team
- 	 * @company Yogurt3D Corp.
- 	 **/
+	 * @author Yogurt3D Engine Core Team
+	 * @company Yogurt3D Corp.
+	 **/
 	public class Viewport extends Sprite implements IEngineObject{	
 		
 		use namespace YOGURT3D_INTERNAL;
@@ -79,12 +79,12 @@ package com.yogurt3d.core.viewports {
 			
 			trackObject();
 		}
-
+		
 		public function get antiAliasing():uint
 		{
 			return m_antiAliasing;
 		}
-
+		
 		public function set antiAliasing(value:uint):void
 		{
 			if( value != m_antiAliasing )
@@ -104,7 +104,7 @@ package com.yogurt3d.core.viewports {
 		public function get systemID() : String {
 			return IDManager.getSystemIDByObject(this);
 		}
-
+		
 		/**
 		 * 
 		 * @return 
@@ -113,7 +113,7 @@ package com.yogurt3d.core.viewports {
 		public function get userID() : String {
 			return IDManager.getUserIDByObject(this);
 		}
-
+		
 		/**
 		 * @private 
 		 * @param _value
@@ -122,7 +122,7 @@ package com.yogurt3d.core.viewports {
 		public function set userID(_value : String) : void {
 			IDManager.setUserIDByObject(_value, this);
 		}
-
+		
 		/**
 		 * 
 		 * @return 
@@ -131,9 +131,9 @@ package com.yogurt3d.core.viewports {
 		public function get matrix() : Matrix3D {
 			return m_matrix;
 		}
-
-
-
+		
+		
+		
 		/**
 		 * 
 		 * 
@@ -141,7 +141,7 @@ package com.yogurt3d.core.viewports {
 		public function dispose() : void {
 			removeEventListener( Event.ADDED_TO_STAGE, onAddedToStage );
 			removeEventListener( Event.REMOVED_FROM_STAGE, onRemovedFromStage );
-
+			
 			IDManager.removeObject(this);
 			
 			Yogurt3D.CONTEXT3D[m_viewportID].dispose();
@@ -162,7 +162,7 @@ package com.yogurt3d.core.viewports {
 		 * @param _height
 		 * 
 		 */
-		public function setViewport( _x : int, _y : int, _width : int, _height : int ) : void {	
+		public function setViewport( _x : int, _y : int, _width : int, _height : int, hide:Boolean = false) : void {	
 			super.x = _x;
 			super.y = _y;
 			
@@ -174,13 +174,14 @@ package com.yogurt3d.core.viewports {
 				_width = 2048;
 			}
 			if( _height > 2048 )
-			{
+			{ 
 				_height = 2048;
 			}
-			
-			m_width = _width;
-			m_height = _height;
-			
+			if( !hide )
+			{
+				m_width = _width;
+				m_height = _height;
+			}
 			
 			graphics.clear();
 			if( m_viewportID == 0 )
@@ -200,12 +201,23 @@ package com.yogurt3d.core.viewports {
 			
 			if( m_context )
 			{
+				if(!hide)
+				{
+					stage.stage3Ds[m_viewportID].x = point.x;
+					stage.stage3Ds[m_viewportID].y = point.y;
+				}else{
+					stage.stage3Ds[m_viewportID].x = -50;
+					stage.stage3Ds[m_viewportID].y = -50;
+				}
 				
-				stage.stage3Ds[m_viewportID].x = point.x;
-				stage.stage3Ds[m_viewportID].y = point.y;
-	
-				if( !(_width == 0 || _height == 0) )
-					m_context.configureBackBuffer(_width, _height, m_antiAliasing,true);
+				if( !hide )
+				{
+					if( !(_width == 0 || _height == 0) )
+						m_context.configureBackBuffer(_width, _height, m_antiAliasing,true);
+					
+				}else{
+					m_context.configureBackBuffer(50, 50, 0,true);
+				}
 				
 			}
 			m_matrix = new Matrix3D(Vector.<Number>([
@@ -220,22 +232,17 @@ package com.yogurt3d.core.viewports {
 				m_context.configureBackBuffer(_width, _height, m_antiAliasing,true);
 		}
 		
-		/*public override function set visible(value:Boolean):void{
-			super.visible = value;
-			Yogurt3D.STAGE.stage3Ds[m_viewportID].visible = value;
-		}*/
-
 		/**
 		 * 
 		 * @param _value
 		 * 
 		 */
 		override public function set x(_value : Number) : void {
-
+			
 			setViewport(_value, y, m_width, m_height);
-
+			
 		}
-
+		
 		/**
 		 * 
 		 * @param _value
@@ -243,9 +250,9 @@ package com.yogurt3d.core.viewports {
 		 */
 		override public function set y(_value : Number) : void {
 			setViewport(x, _value, m_width, m_height);
-
+			
 		}
-
+		
 		/**
 		 * 
 		 * @return 
@@ -270,7 +277,7 @@ package com.yogurt3d.core.viewports {
 		override public function get height() : Number {
 			return m_height;
 		}
-
+		
 		/**
 		 * @private  
 		 * @param value
@@ -279,7 +286,7 @@ package com.yogurt3d.core.viewports {
 		override public function set height(value : Number) : void {
 			setViewport(x, y, m_width, value);
 		}
-
+		
 		private function onAddedToStage( _e:Event ):void
 		{
 			removeEventListener( Event.ADDED_TO_STAGE, onAddedToStage );
@@ -319,7 +326,7 @@ package com.yogurt3d.core.viewports {
 				trace("Y3D Driver:", m_context.driverInfo);
 			}
 			
-			setViewport(super.x, super.y, super.width, super.height);
+			setViewport(super.x, super.y, super.width, super.height, !super.visible);
 			
 		}
 		
@@ -346,7 +353,7 @@ package com.yogurt3d.core.viewports {
 			addEventListener( Event.REMOVED_FROM_STAGE, onRemovedFromStage );
 			
 		}
-
+		
 		protected function trackObject() : void {
 			IDManager.trackObject(this, Viewport);
 		}
@@ -354,10 +361,10 @@ package com.yogurt3d.core.viewports {
 		override public function toString():String{
 			return "[Viewport "+ m_viewportID +"]{x:"+ x +",y:"+ y +",width:"+ width +",height:"+ height +"}";
 		}
-
+		
 		public function renew() : void {
 		}
-
+		
 		/**
 		 * Not Implemented 
 		 * @return 
@@ -371,22 +378,22 @@ package com.yogurt3d.core.viewports {
 		public function clone() : IEngineObject {
 			throw new Error("Cloning of this object is not supported");
 		}
-
+		
 		public function get context3d():Context3D
 		{
 			return m_context;
 		}
-
+		
 		public function set context3d(value:Context3D):void
 		{
 			m_context = value;
 		}
-
+		
 		public function get pickingEnabled():Boolean
 		{
 			return m_pickingEnabled;
 		}
-
+		
 		public function set pickingEnabled(value:Boolean):void
 		{
 			
@@ -447,7 +454,7 @@ package com.yogurt3d.core.viewports {
 					{
 						drawWireFrame(renderable[i], matrix );
 					}
-				
+					
 				}
 			}
 			if( m_pickManager )
@@ -456,6 +463,14 @@ package com.yogurt3d.core.viewports {
 			}
 		}
 		
-
+		
+		public override function set visible(value:Boolean):void{
+			super.visible = value;
+			trace("[Viewport "+m_viewportID+"] visible:" + value);
+			
+			setViewport(x, y, m_width, m_height, !value);
+			
+		}
+		
 	}
 }

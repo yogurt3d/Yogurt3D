@@ -2,9 +2,7 @@ package com.yogurt3d.core.effects.filters
 {
 	import com.adobe.utils.AGALMiniAssembler;
 	import com.yogurt3d.core.lights.ELightType;
-	import com.yogurt3d.core.utils.MathUtils;
 	import com.yogurt3d.core.utils.ShaderUtils;
-	import com.yogurt3d.core.viewports.Viewport;
 	
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DProgramType;

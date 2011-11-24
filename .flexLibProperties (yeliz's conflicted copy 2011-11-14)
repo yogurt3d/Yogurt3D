@@ -222,19 +222,9 @@
     <classEntry path="com.yogurt3d.presets.primitives.test.TestTriangleObject"/>
     <classEntry path="com.yogurt3d.presets.renderers.helper.IRendererHelper"/>
     <classEntry path="com.yogurt3d.presets.renderers.helper.Yogurt3DRendererHelper"/>
+    <classEntry path="com.yogurt3d.presets.renderers.molehill.MolehillRenderer"/>
     <classEntry path="com.yogurt3d.presets.renderers.molehill.PickRenderer"/>
     <classEntry path="net.hires.debug.Stats"/>
-    <classEntry path="com.yogurt3d.core.effects.EffectSimple"/>
-    <classEntry path="com.yogurt3d.core.effects.EffectGreyScale"/>
-    <classEntry path="com.yogurt3d.core.effects.filters.FilterSephia"/>
-    <classEntry path="com.yogurt3d.core.effects.EffectSephia"/>
-    <classEntry path="com.yogurt3d.core.effects.EffectMean"/>
-    <classEntry path="com.yogurt3d.core.effects.filters.FilterMean"/>
-    <classEntry path="com.yogurt3d.core.effects.EffectSharpen"/>
-    <classEntry path="com.yogurt3d.core.effects.filters.FilterSharpen"/>
-    <classEntry path="com.yogurt3d.core.effects.filters.FilterDilate"/>
-    <classEntry path="com.yogurt3d.core.effects.EffectDilate"/>
-    <classEntry path="com.yogurt3d.core.materials.shaders.ShaderSpecularVertex"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
