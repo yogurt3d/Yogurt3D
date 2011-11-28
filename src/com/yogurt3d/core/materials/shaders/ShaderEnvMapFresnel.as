@@ -458,7 +458,8 @@ package com.yogurt3d.core.materials.shaders
 				((m_reflectivityMap)?"WithReflectivity":"") + 
 				((m_reflectivityMap && m_reflectivityMap.mipmap)?"WithRefMip":"")+
 				((m_normalMapUVOffset)?"WithNormalUVOffset":"")+
-				((m_colorMap)?"WithTexture":"");
+				((m_colorMap)?"WithTexture":"")+
+				((m_colorMap && m_colorMap.transparent)?"WithTextureAlpha":"");
 			
 			return super.getProgram( _context3D, _lightType, _meshType );
 		}
