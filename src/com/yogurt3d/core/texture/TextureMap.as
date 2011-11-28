@@ -73,6 +73,7 @@ package com.yogurt3d.core.texture
 	    private var m_mipmap					:Boolean          = false;
 		private var m_mipLevel					:uint             =	1;
 		private var m_type						:String;
+		private var m_transparent				:Boolean		  = false;
 		
 		/**
 		 *  
@@ -92,6 +93,7 @@ package com.yogurt3d.core.texture
 			
 			if(bitmapData){
 				m_type = BITMAP;
+				m_transparent = bitmapData.transparent;
 			}else if(m_byteArray && m_compressed){
 				m_type = ATF_COMP;
 			}else if(m_byteArray && !m_compressed){
@@ -103,6 +105,16 @@ package com.yogurt3d.core.texture
 			}
 		}
 		
+		public function get transparent():Boolean
+		{
+			return m_transparent;
+		}
+
+		public function set transparent(value:Boolean):void
+		{
+			m_transparent = value;
+		}
+
 		public function get type():String
 		{
 			return m_type;
@@ -213,6 +225,7 @@ package com.yogurt3d.core.texture
 				m_bitmapData = null;
 				m_displayObject = null;
 				m_dirty = true;
+				m_transparent = false;
 				type = ATF;
 			}
 		}
@@ -243,6 +256,7 @@ package com.yogurt3d.core.texture
 				m_byteArray = null;
 				m_dirty = true;
 				m_readyToUpload = true;
+				m_transparent = false;
 				type = DISPLAY;
 			}
 		}
@@ -277,6 +291,7 @@ package com.yogurt3d.core.texture
 				m_displayObject = null;
 				m_readyToUpload = true;
 				m_dirty = true;
+				m_transparent = value.transparent;
 				type = BITMAP;
 			}
 		}
