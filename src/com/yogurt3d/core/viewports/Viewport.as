@@ -432,15 +432,9 @@ package com.yogurt3d.core.viewports {
 		{
 			
 			m_pickingEnabled = value;
-			if( value )
+			if( value && !m_pickManager )
 			{
 				m_pickManager = new PickManager( this );
-			}else{
-				if( m_pickManager )
-				{
-					m_pickManager.dispose();
-				}
-				m_pickManager = null;
 			}
 			
 		}
@@ -499,7 +493,7 @@ package com.yogurt3d.core.viewports {
 					drawWireFrame(_scene.YOGURT3D_INTERNAL::m_rootObject as ISceneObject, matrix);
 				}
 			}
-			if( m_pickManager )
+			if( m_pickingEnabled )
 			{
 				m_pickManager.update( _scene, _camera );
 			}

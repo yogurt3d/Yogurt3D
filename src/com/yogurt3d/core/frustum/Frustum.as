@@ -339,13 +339,13 @@ package com.yogurt3d.core.frustum{
 			
 			for(var i:int = 0; i < 6; i++) 
 			{
-				switch( vPlanes[i].octantSideTest( center, halfSize ) )
+				var test:uint = vPlanes[i].octantSideTest( center, halfSize );
+				if( test == 0 /*Plane.BEHIND*/ )
 				{
-					case (Plane.BEHIND):
-						return OUT;
-					case (Plane.BOTH_SIDE):
-						all_inside = false;
-						break;
+					return OUT;
+				}
+				else if( test == 3 /*Plane.BOTH_SIDE*/ ){
+					all_inside = false;
 				}
 				
 			} 

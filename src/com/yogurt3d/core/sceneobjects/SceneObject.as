@@ -422,7 +422,7 @@ package com.yogurt3d.core.sceneobjects {
 					var child:ISceneObject = children[i];
 					if( child is ISceneObjectRenderable )
 					{
-						var aarr:AxisAlignedBoundingBox = ISceneObjectRenderable(child).axisAlignedBoundingBox.update( ISceneObjectRenderable(child).transformation.matrixLocal );
+						var aarr:AxisAlignedBoundingBox = ISceneObjectRenderable(child).axisAlignedBoundingBox.update( ISceneObjectRenderable(child).transformation.matrixGlobal );
 						m_aabb.merge( aarr );
 						
 					}

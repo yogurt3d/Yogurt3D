@@ -19,8 +19,8 @@ package com.yogurt3d.core.scenetree.octree
 {
 	
 	import com.yogurt3d.core.cameras.Camera;
-	import com.yogurt3d.core.frustum.Frustum;
 	import com.yogurt3d.core.cameras.interfaces.ICamera;
+	import com.yogurt3d.core.frustum.Frustum;
 	import com.yogurt3d.core.helpers.boundingvolumes.AxisAlignedBoundingBox;
 	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObjectRenderable;
 	
@@ -38,7 +38,7 @@ package com.yogurt3d.core.scenetree.octree
 		
 		public var sceneObjectToOctant:Dictionary;
 		
-		public function OctTree( _bound:AxisAlignedBoundingBox, _maxDepth:int = 4 )
+		public function OctTree( _bound:AxisAlignedBoundingBox, _maxDepth:int = 2 )
 		{
 			m_root = new OctNode(null);
 			
@@ -123,7 +123,7 @@ package com.yogurt3d.core.scenetree.octree
 			{
 				node.children.push( octant );
 				// TODO Yagmur: parent Node??
-				//octant.m_parentNode = node;
+				octant.m_parentNode = node;
 				node.m_sumChildren++;
 			}
 		}
@@ -161,7 +161,6 @@ package com.yogurt3d.core.scenetree.octree
 		{		
 			var i:int;
 			
-			
 			if(bTestChildren) 
 			{
 				switch( camera.frustum.containmentTestOctant(node.m_box.size, node.m_box.center) ) 
@@ -188,12 +187,13 @@ package com.yogurt3d.core.scenetree.octree
 						{
 							for(i = 0; i < len; i++)
 							{
-								if( camera.frustum.containmentTestOctant(node.children[i].m_box.halfSize, 
-									node.children[i].m_box.center) == Frustum.OUT )
+								var oct:Octant = node.children[i];
+								var axis:AxisAlignedBoundingBox = oct.m_box;
+								if( camera.frustum.containmentTestOctant(axis.halfSize, axis.center) == 0 /*Frustum.OUT */)
 								{
 									continue;
 								}
-								list[listlength] = node.children[i].sceneObject;
+								list[listlength] = oct.sceneObject;
 								listlength++;
 							}
 							
@@ -219,30 +219,34 @@ package com.yogurt3d.core.scenetree.octree
 			if(node.m_numNodes)
 			{
 				var tmpN1:Array = node.nodes[ 0 ];
+				var tmpN11:Array =tmpN1[ 0 ];
+				var tmpN12:Array =tmpN1[ 1 ];
 				var tmpN2:Array = node.nodes[ 1 ];
+				var tmpN21:Array =tmpN2[ 0 ];
+				var tmpN22:Array =tmpN2[ 1 ];
 				
-				if ( (childNode = tmpN1[ 0 ][ 0 ]) != null && childNode.m_sumChildren)
+				if ( (childNode = tmpN11[ 0 ]) != null && childNode.m_sumChildren)
 					_visibilityProcess( camera, childNode, bTestChildren);
 				
-				if ( (childNode = tmpN2[ 0 ][ 0 ]) != null && childNode.m_sumChildren)
+				if ( (childNode = tmpN21[ 0 ]) != null && childNode.m_sumChildren)
 					_visibilityProcess( camera, childNode, bTestChildren);
 				
-				if ( (childNode = tmpN1[ 1 ][ 0 ]) != null && childNode.m_sumChildren)
+				if ( (childNode = tmpN12[ 0 ]) != null && childNode.m_sumChildren)
 					_visibilityProcess( camera, childNode, bTestChildren);
 				
-				if ( (childNode = tmpN2[ 1 ][ 0 ]) != null && childNode.m_sumChildren)
+				if ( (childNode = tmpN22[ 0 ]) != null && childNode.m_sumChildren)
 					_visibilityProcess( camera, childNode, bTestChildren);
 				
-				if ( (childNode = tmpN1[ 0 ][ 1 ]) != null && childNode.m_sumChildren)
+				if ( (childNode = tmpN11[ 1 ]) != null && childNode.m_sumChildren)
 					_visibilityProcess( camera, childNode, bTestChildren);
 				
-				if ( (childNode = tmpN2[ 0 ][ 1 ]) != null && childNode.m_sumChildren)
+				if ( (childNode = tmpN21[ 1 ]) != null && childNode.m_sumChildren)
 					_visibilityProcess( camera, childNode, bTestChildren);
 				
-				if ( (childNode = tmpN1[ 1 ][ 1 ]) != null && childNode.m_sumChildren)
+				if ( (childNode = tmpN12[ 1 ]) != null && childNode.m_sumChildren)
 					_visibilityProcess( camera, childNode, bTestChildren);
 				
-				if ( (childNode = tmpN2[ 1 ][ 1 ]) != null && childNode.m_sumChildren)
+				if ( (childNode = tmpN22[ 1 ]) != null && childNode.m_sumChildren)
 					_visibilityProcess( camera, childNode, bTestChildren);
 			}
 		}

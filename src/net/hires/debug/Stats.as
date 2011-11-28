@@ -98,9 +98,9 @@ package net.hires.debug {
 			removeEventListener(Event.ENTER_FRAME, update);
 
 		}
-
+		private var frameCount:uint;
 		private function update(e : Event) : void {
-
+			
 			timer = getTimer();
 
 			if( timer - 1000 > ms_prev ) {
@@ -133,8 +133,11 @@ package net.hires.debug {
 
 			xml.ms = "MS: " + (timer - ms);
 			ms = timer;
-
-			text.htmlText = xml;
+			if( frameCount % 2 == 0 )
+			{
+				text.htmlText = xml;
+			}
+			frameCount++;
 		}
 
 		private function onClick(e : MouseEvent) : void {

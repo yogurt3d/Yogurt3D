@@ -1,7 +1,7 @@
 package com.yogurt3d.core.scenetree.octree
 {
-	import com.yogurt3d.core.frustum.Frustum;
 	import com.yogurt3d.core.cameras.interfaces.ICamera;
+	import com.yogurt3d.core.frustum.Frustum;
 	import com.yogurt3d.core.helpers.boundingvolumes.AxisAlignedBoundingBox;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.sceneobjects.Scene;
@@ -15,6 +15,7 @@ package com.yogurt3d.core.scenetree.octree
 	import flash.events.Event;
 	import flash.geom.Vector3D;
 	import flash.utils.Dictionary;
+	import flash.utils.getTimer;
 	
 	use namespace YOGURT3D_INTERNAL;
 	
@@ -153,9 +154,7 @@ package com.yogurt3d.core.scenetree.octree
 			{
 				camera.frustum.extractPlanes(camera.transformation);
 				
-				temp = camera.transformation.matrixGlobal.transformVector(camera.frustum.m_bSCenterOrginal);
-				
-				camera.frustum.boundingSphere.YOGURT3D_INTERNAL::m_center = temp;
+				camera.frustum.boundingSphere.YOGURT3D_INTERNAL::m_center = camera.transformation.matrixGlobal.transformVector(camera.frustum.m_bSCenterOrginal);
 				
 				s_octantByScene[_scene].visibilityProcess( _camera );
 				
@@ -163,11 +162,7 @@ package com.yogurt3d.core.scenetree.octree
 				for( var i:int = 0; i < s_octantByScene[_scene].listlength; i++ )
 				{
 					var item:ISceneObjectRenderable = s_octantByScene[_scene].list[i];
-					/*if( camera.frustum.containmentTestSphere( item.geometry.boundingSphere ) == Frustum.OUT )
-					{
-					remove.push( i );
-					continue;
-					}*/
+
 					if( camera.frustum.containmentTestAABB( item.axisAlignedBoundingBox ) == Frustum.OUT )
 					{
 						remove.push( i );
@@ -183,13 +178,11 @@ package com.yogurt3d.core.scenetree.octree
 			}else if( s_octantByScene[_scene] )
 			{
 				camera.frustum.extractPlanes(camera.transformation);
-				
-				temp = camera.transformation.matrixGlobal.transformVector(camera.frustum.m_bSCenterOrginal);
-				
-				camera.frustum.boundingSphere.YOGURT3D_INTERNAL::m_center = temp;
+
+				camera.frustum.boundingSphere.YOGURT3D_INTERNAL::m_center = camera.transformation.matrixGlobal.transformVector(camera.frustum.m_bSCenterOrginal);
 				
 				s_octantByScene[_scene].visibilityProcess( _camera );
-				
+			
 				return s_octantByScene[_scene].list;
 			}else if( s_dynamicChildrenByScene[_scene] ){
 				return s_dynamicChildrenByScene[_scene];

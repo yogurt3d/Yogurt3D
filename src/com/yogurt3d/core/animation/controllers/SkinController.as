@@ -348,7 +348,8 @@ package com.yogurt3d.core.animation.controllers
 				// Data of the current frame
 				var _currentFrameData:Dictionary = animation.frameData[ currentFrame ];
 				var boneName:String;
-				
+				var meshBoneLength:uint = m_mesh.bones.length;
+				var bone:Bone;
 				if( m_blendMode == BLEND_ANIMATED )
 				{
 					var blendWeight:Number = _time / (m_blendDuration * 1000);
@@ -361,17 +362,18 @@ package com.yogurt3d.core.animation.controllers
 						var currentFrame2:uint = ( Math.floor(_time2 * ( animation2.frameRate/1000 ) ) + m_startFrameOld ) % animation2.frameData.length;
 							
 						// set the bone transformations
-						for( i = 0; i < m_mesh.bones.length;i++ )
+						for( i = 0; i < meshBoneLength;i++ )
 						{
-							boneName = m_mesh.bones[i].name;
+							bone = m_mesh.bones[i];
+							boneName = bone.name;
 							
 							obj = _currentFrameData[ boneName ];
 							
 							var obj2:Object = animation2.frameData[ currentFrame2 ][ boneName ];
 							
-							m_mesh.bones[i].translation 	= MathUtils.lerp( 	blendWeight,  	obj2.translation,  	obj.translation );
-							m_mesh.bones[i].rotation 		= Quaternion.slerp( 	blendWeight, 	obj2.rotation, 		obj.rotation );
-							m_mesh.bones[i].scale 			= MathUtils.lerp( 	blendWeight, 	obj2.scale, 		obj.scale );
+							bone.translation 	= MathUtils.lerp( 	blendWeight,  	obj2.translation,  	obj.translation );
+							bone.rotation 		= Quaternion.slerp( 	blendWeight, 	obj2.rotation, 		obj.rotation );
+							bone.scale 			= MathUtils.lerp( 	blendWeight, 	obj2.scale, 		obj.scale );
 						}
 					}else{
 						m_blendMode = BLEND_SWITCH;
@@ -380,23 +382,29 @@ package com.yogurt3d.core.animation.controllers
 				if( m_blendMode == BLEND_SWITCH )
 				{
 					// set the bone transformations
-					for( i = 0; i < m_mesh.bones.length;i++ )
+					for( i = 0; i < meshBoneLength;i++ )
 					{
-						boneName = m_mesh.bones[i].name;
+						bone = m_mesh.bones[i];
+						boneName = bone.name;
 						
 						obj = _currentFrameData[ boneName ];
 						
-						m_mesh.bones[i].rotation 		= obj.rotation;
-						m_mesh.bones[i].scale 			= obj.scale;
-						m_mesh.bones[i].translation 	= obj.translation;
+						if( !obj.matrix )
+						{
+							var rot:Quaternion = obj.rotation;
+							bone.rotation.setTo( rot.w, rot.x, rot.y, rot.z );
+							bone.scale.setTo( obj.scale.x, obj.scale.y, obj.scale.z );
+							bone.translation.setTo(obj.translation.x,obj.translation.y,obj.translation.z );
+							bone.invalidate();
+						}
 					}
 					
 				}
 				
 				// update the transformation matrices
-				for( i = 0; i < m_mesh.bones.length;i++ )
+				for( i = 0; i < meshBoneLength;i++ )
 				{	
-					var bone:Bone = m_mesh.bones[i];
+					bone = m_mesh.bones[i];
 					boneName = bone.name;
 					
 					// if matrix is arhived
