@@ -61,13 +61,6 @@ package com.yogurt3d.core.materials
 			super(_initInternals);
 			
 			super.opacity = _opacity;
-			
-//			m_envMap = _envMap;		
-//			m_color  = _color;
-//			m_normalMap = _normalMap;
-//			m_reflectivityMap = _reflectivityMap;
-//			m_alpha = _alpha;
-			
 			shaders = new Vector.<com.yogurt3d.core.materials.shaders.base.Shader>;
 			
 			m_envShader = new ShaderEnvMapping(_envMap, _normalMap,_reflectivityMap, _alpha);

@@ -58,8 +58,9 @@ package com.yogurt3d.core.materials.shaders
 		private var fcMaterialAmbient:uint			= 6;
 		
 		private var _alphaShaderConsts:ShaderConstants;
-		
 		private var _alphaTextureConst:ShaderConstants;
+		private var _alphaDirty:Boolean = false;
+		private var m_texture:TextureMap;
 		
 		public function ShaderAmbient( _alpha:Number = 1)
 		{
@@ -92,32 +93,26 @@ package com.yogurt3d.core.materials.shaders
 			
 			params.vertexShaderConstants.push(new ShaderConstants(vcBoneMatrices, EShaderConstantsType.BONE_MATRICES));
 			
-			_alphaShaderConsts = new ShaderConstants(fcMaterialOpacity, EShaderConstantsType.CUSTOM_VECTOR);
-			_alphaShaderConsts.vector				= Vector.<Number>([_alpha,0.0001,1,1]);
+			_alphaShaderConsts 				= new ShaderConstants(fcMaterialOpacity, EShaderConstantsType.CUSTOM_VECTOR);
+			_alphaShaderConsts.vector		= Vector.<Number>([_alpha,0.0001,1,0.5]);
 			
 			params.fragmentShaderConstants.push(_alphaShaderConsts);
-			
-
+		
 			// Fragment Shader Constants
 			params.fragmentShaderConstants.push(new ShaderConstants(fcMaterialEmissive, EShaderConstantsType.MATERIAL_EMISSIVE_COLOR));
 			
 			params.fragmentShaderConstants.push(new ShaderConstants(fcMaterialAmbient, EShaderConstantsType.MATERIAL_AMBIENT_COLOR));
 		}
 		
-		public function set alphaTexture(_texture:TextureMap):void{
-			if( _texture == null && _alphaTextureConst != null )
-			{
-				params.fragmentShaderConstants.splice( params.fragmentShaderConstants.indexOf( _alphaTextureConst ), 1 );
-				_alphaTextureConst = null;
-			}
-			if( _alphaTextureConst == null )
-			{
-				_alphaTextureConst = new ShaderConstants();
-				_alphaTextureConst.type = EShaderConstantsType.TEXTURE;
-				_alphaTextureConst.firstRegister = 0;
-			}
-			_alphaTextureConst.texture = _texture;
-			params.fragmentShaderConstants.push( _alphaTextureConst );
+		public function get texture():TextureMap
+		{
+			return m_texture;
+		}
+
+		public function set texture(value:TextureMap):void
+		{
+			m_texture = value;
+			_alphaDirty = true;
 		}
 		
 		public function set opacity(_alpha:Number):void{
@@ -126,12 +121,32 @@ package com.yogurt3d.core.materials.shaders
 			params.fragmentShaderConstants[params.fragmentShaderConstants.indexOf(_alphaShaderConsts)] = _alphaShaderConsts;
 		}
 		public override function getProgram(_context3D:Context3D, _lightType:ELightType=null, _meshKey:String=""):Program3D{
-			if( _alphaTextureConst  )
+			if(_alphaDirty )
 			{
-				key = "Yogurt3DOriginalsShaderAmbientWithAlphaTexture";
-			}else {
-				key = "Yogurt3DOriginalsShaderAmbient";
+				
+				if(texture != null ){
+					
+					if( _alphaTextureConst == null )
+					{
+						_alphaTextureConst 	= new ShaderConstants(0, EShaderConstantsType.TEXTURE);
+						params.fragmentShaderConstants.push(_alphaTextureConst);	
+					}
+					_alphaTextureConst.texture = texture;
+				}else{
+					
+					if(_alphaTextureConst != null){
+						params.fragmentShaderConstants.splice( params.fragmentShaderConstants.indexOf( _alphaTextureConst ), 1 );
+						_alphaTextureConst = null;
+					}
+				}
+				disposeShaders();
+				_alphaDirty = false;
+				
 			}
+			
+			key = "Yogurt3DOriginalsShaderAmbient"+
+				((texture && texture.transparent)?"WithAlphaTexture":"");
+		
 			return super.getProgram( _context3D, _lightType, _meshKey );
 		}
 		
@@ -162,7 +177,9 @@ package com.yogurt3d.core.materials.shaders
 				"add ft0, ft0, ft1\n" + // float4 color = emissive + ambient;
 				
 				"mov ft0.w, fc" + fcMaterialOpacity + ".x\n" + // color.w = opacity;
-				(( _alphaTextureConst)?"tex ft1, v0.xy, fs0<wrap,nearest>\nsub ft1.w, ft1.w, fc"+fcMaterialOpacity+".y\nkil ft1.w\n":"" )+ 
+				((texture && texture.transparent)?"tex ft1, v0.xy, fs0<2d,wrap,linear>\n" +
+					"sub ft1.w, ft1.w, fc"+fcMaterialOpacity+".w\n" +
+					"kil ft1.w\n":"" )+ 
 				"mov oc, ft0\n" // outputColor = color;
 			);
 		}

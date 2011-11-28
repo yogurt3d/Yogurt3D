@@ -22,14 +22,19 @@ package com.yogurt3d.core.lights
 	import com.yogurt3d.core.cameras.interfaces.ICamera;
 	import com.yogurt3d.core.frustum.Frustum;
 	import com.yogurt3d.core.helpers.ProjectionUtils;
+	import com.yogurt3d.core.helpers.boundingvolumes.BoundingSphere;
 	import com.yogurt3d.core.materials.base.Color;
 	import com.yogurt3d.core.materials.shaders.ShaderDepthMap;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.sceneobjects.Scene;
 	import com.yogurt3d.core.sceneobjects.SceneObject;
 	import com.yogurt3d.core.sceneobjects.SceneObjectContainer;
+	import com.yogurt3d.core.sceneobjects.interfaces.IScene;
+	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObject;
 	import com.yogurt3d.core.texture.RenderTextureTarget;
 	import com.yogurt3d.core.transformations.Transformation;
+	import com.yogurt3d.core.utils.Enum;
+	import com.yogurt3d.core.utils.MathUtils;
 	import com.yogurt3d.core.utils.MatrixUtils;
 	
 	import flash.geom.Matrix3D;
@@ -56,12 +61,10 @@ package com.yogurt3d.core.lights
 
 		private var m_range             :Number;
 		
-		private var m_castShadows		:Boolean					= false;
+		private var m_shadows			:EShadowType					= EShadowType.NONE;
 		private var m_shadowMap			:RenderTextureTarget;
 		private var m_shadowMap2		:RenderTextureTarget;
 		private var m_shadowColor		:Color;
-		
-		private var m_isFilteringOn      :Boolean                  = false;
 		
 		private var m_frustum :Frustum;
 		
@@ -92,6 +95,16 @@ package com.yogurt3d.core.lights
 			super( true );
 		}
 		
+		public function get shadows():EShadowType
+		{
+			return m_shadows;
+		}
+
+		public function set shadows(value:EShadowType):void
+		{
+			m_shadows = value;
+		}
+
 		public function get frustum():Frustum
 		{
 			return m_frustum;
@@ -130,16 +143,6 @@ package com.yogurt3d.core.lights
 			}
 		}
 		
-		public function get isFilteringOn():Boolean
-		{
-			return m_isFilteringOn;
-		}
-		
-		public function set isFilteringOn(_value:Boolean):void
-		{
-			m_isFilteringOn = _value;
-		}
-		
 		public function get range():Number{
 			return m_range;
 		}
@@ -150,23 +153,6 @@ package com.yogurt3d.core.lights
 			m_coneAngles[3] = m_range;
 		}
 		
-		/**
-		 * @inheritDoc
-		 * 
-		 */		
-		public function get castShadows():Boolean
-		{
-			return m_castShadows;
-		}
-		/**
-		 * @private 
-		 * @param value
-		 * 
-		 */		
-		public function set castShadows(value:Boolean):void
-		{
-			m_castShadows = value;
-		}
 		/**
 		 * @inheritDoc
 		 */
@@ -214,14 +200,13 @@ package com.yogurt3d.core.lights
 		 * @default 0.8 (36 degrees)
 		 */		
 		public function get innerConeAngle():Number{
-			
 			return m_innerConeAngle * 2;
 		}
 		
 		public function set innerConeAngle( _val:Number):void{
 			m_innerConeAngle = _val / 2;
-			m_coneAngles[0] = Math.cos(m_innerConeAngle*Transformation.DEG_TO_RAD);
-			m_coneAngles[2] = 1 /  m_coneAngles[0] - m_coneAngles[1];
+			m_coneAngles[0] = Math.cos(m_innerConeAngle*MathUtils.DEG_TO_RAD);
+			m_coneAngles[2] = 1 / m_coneAngles[0] - m_coneAngles[1];
 		}
 		/**
 		 * @inheritDoc
@@ -234,7 +219,7 @@ package com.yogurt3d.core.lights
 		
 		public function set outerConeAngle( _val:Number):void{
 			m_outerConeAngle = _val / 2;
-			m_coneAngles[1] = Math.cos(m_outerConeAngle*Transformation.DEG_TO_RAD);
+			m_coneAngles[1] = Math.cos(m_outerConeAngle*MathUtils.DEG_TO_RAD);
 			m_coneAngles[2] = 1 / (m_coneAngles[0] - m_coneAngles[1]);
 			
 			setProjection();
@@ -354,7 +339,15 @@ package com.yogurt3d.core.lights
 					
 				}
 				frustum.setProjectionOrthoAsymmetric(_min.x, _max.x, _min.y, _max.y, -_max.z, -_min.z );
+			}else if( m_type == ELightType.POINT )
+			{
+				frustum.m_bSCenterOrginal = this.transformation.position;
+				frustum.boundingSphere = new BoundingSphere(m_range, frustum.m_bSCenterOrginal);
 			}
+		}
+		
+		private function onAddedToSceneEvent( obj:ISceneObject, scene:IScene ):void{
+			setProjection();
 		}
 		
 		/**
@@ -367,7 +360,7 @@ package com.yogurt3d.core.lights
 			
 			m_frustum = new Frustum();
 			
-			m_frustum.setProjectionPerspective( 45.0, 4.0/3.0, 1.0, 500.0 );
+			onAddedToScene.add( onAddedToSceneEvent );
 			
 			m_attenuation 			= new Vector.<Number>(4,true);
 			m_attenuation[0] 		= 1;
@@ -385,7 +378,7 @@ package com.yogurt3d.core.lights
 			innerConeAngle 			= 40;
 			outerConeAngle 			= 60;
 			range 					= 150;
-			
+
 			m_shadowColor 			= new Color(0,0,0,1);
 			
 			m_direction 			= new Vector3D();

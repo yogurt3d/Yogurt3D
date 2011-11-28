@@ -55,7 +55,7 @@ package com.yogurt3d.core.sceneobjects
 		
 		use namespace YOGURT3D_INTERNAL;
 		
-		public function Scene(_sceneTreeManagerDriver:String = "QuadSceneTreeManagerDriver", args:Object = null, _initInternals:Boolean = true)
+		public function Scene(_sceneTreeManagerDriver:String = "SimpleSceneTreeManagerDriver", args:Object = null, _initInternals:Boolean = true)
 		{
 			Yogurt3D.instance;
 			

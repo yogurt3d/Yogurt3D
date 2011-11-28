@@ -57,6 +57,7 @@ package com.yogurt3d.core.materials.shaders
 		private var m_rimMaskConst			:ShaderConstants;
 		private var m_specularMaskConst		:ShaderConstants;
 		private var m_emmisiveMaskConst		:ShaderConstants;
+		private var m_alphaConst			:ShaderConstants = null;
 		
 		private var m_constants				:ShaderConstants;
 		private var m_fresnelConst			:ShaderConstants;
@@ -78,7 +79,6 @@ package com.yogurt3d.core.materials.shaders
 		private var m_KRDirty:Boolean = false;
 		private var m_KSpecDirty:Boolean = false;
 		private var m_EmmisiveDirty:Boolean = false;
-		private var m_mipmap:Boolean;
 		
 		/**
 		 * 
@@ -254,8 +254,16 @@ package com.yogurt3d.core.materials.shaders
 			
 			if(m_ColorDirty )
 			{
-				
 				if(m_colorMap != null ){
+					
+					if(m_colorMap.transparent){
+					
+						if(m_alphaConst == null){
+							m_alphaConst = new ShaderConstants(9, EShaderConstantsType.CUSTOM_VECTOR);
+							m_alphaConst.vector = Vector.<Number>([0.2, 0, 0, 0 ]);
+							params.fragmentShaderConstants.push(m_alphaConst);
+						}
+					}
 					
 					if( m_colorMapConst == null )
 					{
@@ -268,6 +276,11 @@ package com.yogurt3d.core.materials.shaders
 					if(m_colorMapConst != null){
 						params.fragmentShaderConstants.splice( params.fragmentShaderConstants.indexOf( m_colorMapConst ), 1 );
 						m_colorMapConst = null;
+					}
+					
+					if(m_alphaConst != null){
+						params.fragmentShaderConstants.splice( params.fragmentShaderConstants.indexOf( m_alphaConst ), 1 );
+						m_alphaConst = null;
 					}
 				}
 				disposeShaders();
@@ -305,6 +318,7 @@ package com.yogurt3d.core.materials.shaders
 				+ ((m_specularMap && m_specularMap.mipmap)?"SpecMip":"")
 				+ ((m_colorMap)?"WithCMap":"")
 				+ ((m_colorMap && m_colorMap.mipmap)?"ColorMip":"")
+				+ ((m_colorMap && m_colorMap.transparent)?"AlphaTexture":"")
 				+ ((m_emmisiveMask)?"WithEmmisive":"")
 				+ ((m_emmisiveMask && m_emmisiveMask.mipmap)?"EmmMip":"");
 			return super.getProgram( _context3D, _lightType, _meshType );
@@ -521,7 +535,7 @@ package com.yogurt3d.core.materials.shaders
 					((!colorMap.mipmap)?"tex ft4 v2 fs2<2d,wrap,linear>":("tex ft4 v2 fs2<2d,wrap,linear,miplinear>")):
 					("mov ft4.w fc6.w\n" + "mov ft4 fc8")
 				),
-				
+				((m_colorMap != null && m_colorMap.transparent)?"sub ft2.x ft4.w fc9.x\nkil ft2.x":""),
 				"mul ft0.xyz ft0.xyz ft4.xyz",// ft0 = view independent
 				
 				// View Dependent

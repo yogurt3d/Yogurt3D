@@ -1,5 +1,5 @@
 /*
- * MaterialBitmap.as
+ * MaterialTexture.as
  * This file is part of Yogurt3D Flash Rendering Engine 
  *
  * Copyright (C) 2011 - Yogurt3D Corp.
@@ -40,8 +40,6 @@ package com.yogurt3d.core.materials
 	{
 		private var decalShader				:ShaderTexture;
 		
-		public var onAlphaTextureChanged	:Signal;
-		
 		/**
 		 *  Constructor
 		 * @param _bitmapData Texture
@@ -51,23 +49,8 @@ package com.yogurt3d.core.materials
 		 */
 		public function MaterialTexture(_texture:TextureMap = null, _initInternals:Boolean=true)
 		{
-			super(_initInternals);
-			onAlphaTextureChanged = new Signal();
-					
+			super(_initInternals);		
 			shaders.push(decalShader = new ShaderTexture(_texture) );
-		
-		}
-	
-		public function get alphaTexture():Boolean{
-			return decalShader.alphaTexture;
-		}
-		
-		public function set alphaTexture(value:Boolean):void{
-			if( decalShader.alphaTexture != value )
-			{
-				decalShader.alphaTexture = value;
-				onAlphaTextureChanged.dispatch();
-			}
 		}
 			
 		public function get texture():TextureMap{

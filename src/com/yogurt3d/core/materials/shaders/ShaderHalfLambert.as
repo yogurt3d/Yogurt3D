@@ -9,15 +9,19 @@ package com.yogurt3d.core.materials.shaders
 	import com.yogurt3d.core.texture.TextureMap;
 	import com.yogurt3d.core.utils.ShaderUtils;
 	
+	import flash.display3D.Context3D;
 	import flash.display3D.Context3DBlendFactor;
 	import flash.display3D.Context3DProgramType;
 	import flash.display3D.Context3DTriangleFace;
+	import flash.display3D.Program3D;
 	import flash.utils.ByteArray;
 	
 	public class ShaderHalfLambert extends Shader
 	{
 		private var m_lambertConst			:ShaderConstants;
 		private var m_textureConst			:ShaderConstants;
+		private var m_transparencyDirty:Boolean = false;
+		private var m_transparencyConstant:ShaderConstants = null;
 		
 		private var m_opacity				:Number;
 		private var m_alpha					:Number;
@@ -35,13 +39,13 @@ package com.yogurt3d.core.materials.shaders
 			
 			super();
 			key = "Yogurt3DOriginalsShaderLambert"+
-				(_texture && _texture.mipmap)?"withMipmap":"";
+				(_texture && _texture.mipmap)?"withMipmap":""+
+				(_texture && _texture.transparent)?"withAlpha":"";
 			
 			m_opacity = _opacity;
 			m_alpha = _alpha;
 			m_beta = _beta;
 			m_gamma = _gamma;
-			m_texture = _texture;
 			
 			params.writeDepth 		= true;
 			params.blendEnabled 	= true;
@@ -70,6 +74,8 @@ package com.yogurt3d.core.materials.shaders
 			m_textureConst 								= new ShaderConstants(0, EShaderConstantsType.TEXTURE);
 			m_textureConst.texture 						= m_texture;
 			params.fragmentShaderConstants.push(m_textureConst);
+			
+			texture = _texture;
 		}
 		
 		public function get alpha():Number{
@@ -110,6 +116,39 @@ package com.yogurt3d.core.materials.shaders
 		public function set texture(_value:TextureMap):void{
 			m_texture 				= _value;
 			m_textureConst.texture 	= m_texture;
+			m_transparencyDirty = true;
+		}
+		
+		public override function getProgram(_context3D:Context3D, _lightType:ELightType=null, _meshKey:String=""):Program3D{
+			
+			if( m_transparencyDirty )
+			{
+				if(texture.transparent){
+					
+					if (m_transparencyConstant == null){
+						m_transparencyConstant = new ShaderConstants(4, EShaderConstantsType.CUSTOM_VECTOR );
+						m_transparencyConstant.vector = Vector.<Number>([0.2, 0.0, 0, 0]);
+						params.fragmentShaderConstants.push(m_transparencyConstant);
+					}
+					
+				}else{
+					
+					if(m_transparencyConstant != null){
+						params.fragmentShaderConstants.splice( params.fragmentShaderConstants.indexOf( m_transparencyConstant ), 1 );
+						m_transparencyConstant = null;
+					}
+					
+				}
+				disposeShaders();
+				m_transparencyDirty = false;
+				
+			}
+		
+			key = "Yogurt3DOriginalsShaderLambert"+
+				(texture && texture.mipmap)?"withMipmap":""+
+				(texture && texture.transparent)?"withAlpha":"";
+			
+			return super.getProgram( _context3D, _lightType, _meshKey );
 		}
 	
 		public override function getVertexProgram(_meshKey:String, _lightType:ELightType = null):ByteArray{
@@ -170,14 +209,12 @@ package com.yogurt3d.core.materials.shaders
 				"add ft2.x ft2.x fc3.y",// alpha * dot(n.l) + beta
 				"pow ft2.x ft2.x fc3.z",// lambert = pow((alpha * dot(n.l) + beta) , gamma)
 				
-				((!texture.mipmap)?"tex ft3 v2 fs0<2d,clamp,linear>":"tex ft3 v2 fs0<2d,wrap,linear,miplinear>"),// get color texture
-				"mul ft2 ft2.xxx ft3",
-					
-				"mov ft0 ft2",
-				"div ft0.xyz, ft0.xyz, fc3.w",
-				"mul ft3.w ft3.w fc3.w",
-				"mov ft0.w ft3.w",//set opacity
-				"mov oc ft0"
+				((!texture.mipmap)?"tex ft3 v2 fs0<2d,wrap,linear>":"tex ft3 v2 fs0<2d,wrap,linear,miplinear>"),// get color texture
+				"mul ft2.xyz ft2.xxx ft3.xyz",
+				((texture.transparent)?"sub ft1.x ft3.w fc4.x\nkil ft1.x":""),		
+				"mul ft2.w fc3.w ft3.w",
+
+				"mov oc ft2"
 				
 			].join("\n");
 			

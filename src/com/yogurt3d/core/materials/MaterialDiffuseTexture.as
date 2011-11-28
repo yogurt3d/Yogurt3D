@@ -1,5 +1,5 @@
 /*
- * MaterialDiffuseBitmap.as
+ * MaterialDiffuseTexture.as
  * This file is part of Yogurt3D Flash Rendering Engine 
  *
  * Copyright (C) 2011 - Yogurt3D Corp.
@@ -45,14 +45,10 @@ package com.yogurt3d.core.materials
 		private var m_decalShader:ShaderTexture;
 		private var m_ambientShader:ShaderAmbient;
 		private var m_normalMap:TextureMap;
-		private var m_alphaTexture:Boolean = false;
 		
-		public var onAlphaTextureChanged						:Signal;
-		
-		public function MaterialDiffuseTexture( _texture:TextureMap = null, _opacity:Number = 1, _mipLevel:Boolean=false,_initInternals:Boolean=true)
+		public function MaterialDiffuseTexture( _texture:TextureMap = null, _opacity:Number = 1,_initInternals:Boolean=true)
 		{
 			super(_initInternals);
-			onAlphaTextureChanged = new Signal();
 			
 			m_decalShader = new ShaderTexture(_texture);
 			m_decalShader.params.blendEnabled = true;
@@ -66,27 +62,11 @@ package com.yogurt3d.core.materials
 				m_decalShader
 			]);
 			
-			super.opacity = _opacity;
-		}
-	
-		public function get alphaTexture():Boolean{
-			return m_alphaTexture;
-		}
-		public function set alphaTexture(value:Boolean):void{
-			
-			if( m_alphaTexture != value)
-			{
-				m_alphaTexture = value;
-				
-				if( value )
-				{
-					m_ambientShader.alphaTexture = m_decalShader.texture as TextureMap;
-				}else{
-					m_ambientShader.alphaTexture = null;
-				}
-				
-				onAlphaTextureChanged.dispatch();
+			if(_texture && _texture.transparent){
+				m_ambientShader.texture = _texture;
 			}
+			
+			super.opacity = _opacity;
 		}
 		
 		public function get texture():TextureMap{
@@ -94,9 +74,9 @@ package com.yogurt3d.core.materials
 		}
 		public function set texture(_value:TextureMap):void{
 			m_decalShader.texture = _value;
-			if( m_alphaTexture )
+			if( _value )
 			{
-				m_ambientShader.alphaTexture = m_decalShader.texture as TextureMap;
+				m_ambientShader.texture = m_decalShader.texture as TextureMap;
 			}
 		}
 		

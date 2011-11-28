@@ -1,5 +1,7 @@
 package com.yogurt3d.core.utils
 {
+	import com.yogurt3d.core.texture.TextureMap;
+	
 	import flash.display.*;
 	import flash.display3D.textures.CubeTexture;
 	import flash.display3D.textures.Texture;

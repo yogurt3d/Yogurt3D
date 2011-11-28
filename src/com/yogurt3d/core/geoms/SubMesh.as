@@ -23,7 +23,6 @@ package com.yogurt3d.core.geoms
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.objects.EngineObject;
 	import com.yogurt3d.core.objects.interfaces.IEngineObject;
-	import com.yogurt3d.core.utils.Vector3DUtils;
 	
 	import flash.display3D.Context3D;
 	import flash.display3D.IndexBuffer3D;

@@ -1,3 +1,21 @@
+/*
+* MaterialEnvMappingSpecular.as
+* This file is part of Yogurt3D Flash Rendering Engine 
+*
+* Copyright (C) 2011 - Yogurt3D Corp.
+*
+* Yogurt3D Flash Rendering Engine is free software; you can redistribute it and/or
+* modify it under the terms of the YOGURT3D CLICK-THROUGH AGREEMENT
+* License.
+* 
+* Yogurt3D Flash Rendering Engine is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+* 
+* You should have received a copy of the YOGURT3D CLICK-THROUGH AGREEMENT
+* License along with this library. If not, see <http://www.yogurt3d.com/yogurt3d/downloads/yogurt3d-click-through-agreement.html>. 
+*/
+
 package com.yogurt3d.core.materials
 {
 	
@@ -26,12 +44,12 @@ package com.yogurt3d.core.materials
 		public  var m_decalShader:ShaderTexture;
 		
 		public function MaterialEnvMappingSpecular( _envMap:CubeTextureMap, 
-															  _colorMap:TextureMap=null,
-															  _normalMap:TextureMap=null,
-															  _specularMap:TextureMap=null,
-															  _reflectivityMap:TextureMap=null,
-															  _alpha:Number=1.0,_opacity:Number=1.0,
-															  _initInternals:Boolean=true)
+													_colorMap:TextureMap=null,
+													_normalMap:TextureMap=null,
+													_specularMap:TextureMap=null,
+													_reflectivityMap:TextureMap=null,
+													_alpha:Number=1.0,_opacity:Number=1.0,
+													_initInternals:Boolean=true)
 		{
 			super(_initInternals);
 			
@@ -53,6 +71,7 @@ package com.yogurt3d.core.materials
 				m_decalShader.params.blendDestination = Context3DBlendFactor.ZERO;
 				m_decalShader.params.depthFunction = Context3DCompareMode.EQUAL;
 				shaders.push(m_decalShader);
+				this.texture = _colorMap;
 			}
 			
 			shaders.push(m_envShader);
@@ -82,6 +101,10 @@ package com.yogurt3d.core.materials
 		{
 			if( value )
 			{
+				if(value.transparent){
+					m_ambShader.texture = value;
+					m_envShader.texture = value;
+				}
 				if( m_decalShader )
 				{
 					m_decalShader.texture = value;

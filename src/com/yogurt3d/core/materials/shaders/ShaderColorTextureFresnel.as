@@ -118,7 +118,7 @@ package com.yogurt3d.core.materials.shaders
 			
 			// fc2 : custom vector for normal map based vertex normal calculation
 			m_gainConsts   								= new ShaderConstants(2, EShaderConstantsType.CUSTOM_VECTOR);
-			m_gainConsts.vector							= Vector.<Number>([ 1.0, m_gain, 1.0, 1.0 ]);
+			m_gainConsts.vector							= Vector.<Number>([ 1.0, m_gain, 1.0, 0.2 ]);
 			params.fragmentShaderConstants.push(m_gainConsts);
 			
 			// fc3 : fresnel custom vector
@@ -362,9 +362,11 @@ package com.yogurt3d.core.materials.shaders
 				
 				"sub ft6.xyz ft6.xyz fc2.y",			// 1 - fresnel - gain
 				((!texture.mipmap)?"tex ft7 v2 fs0<wrap,linear>":"tex ft7 v2 fs0<wrap,linear,miplinear>"),			// get texture
+				((texture.transparent)?"sub ft1.x ft7.w fc2.w\nkil ft1.x":""),
+				
 				"mul ft6 ft7 ft6",
-					
 				"add ft0 ft5 ft6",
+				"mov ft0.w ft7.w",
 				
 				_reflectivityAGAL,                    // set alpha
 				//"mul ft0.w fc1.x ft0.w",

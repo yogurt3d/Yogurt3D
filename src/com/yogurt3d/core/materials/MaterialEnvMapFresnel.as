@@ -41,8 +41,6 @@ package com.yogurt3d.core.materials
 	{	
 		public  var decal:ShaderTexture = null;
 		private var m_envShader:ShaderEnvMapFresnel = null;
-		private var m_ambShader:ShaderAmbient = null;
-		private var m_diffShader:ShaderDiffuse = null;
 		
 		public function MaterialEnvMapFresnel( _envMap:CubeTextureMap=null, 
 											   _colorMap:TextureMap=null,
@@ -59,20 +57,18 @@ package com.yogurt3d.core.materials
 			
 			super.opacity = _opacity;
 					
-			shaders.push(m_ambShader = new ShaderAmbient());
-			shaders.push(m_diffShader = new ShaderDiffuse());
-			
-			m_envShader = new ShaderEnvMapFresnel(_envMap, null, _normalMap, 
+			m_envShader = new ShaderEnvMapFresnel(_envMap, _normalMap, 
 				_reflectivityMap, _alpha,
 				_fresnelReflectance, _fresnelPower );
 			
 			if(_colorMap != null){
 				decal = new ShaderTexture(_colorMap);
 				decal.params.blendEnabled = true;
-				decal.params.blendSource = Context3DBlendFactor.DESTINATION_COLOR;
+				decal.params.blendSource = Context3DBlendFactor.ONE;
 				decal.params.blendDestination = Context3DBlendFactor.ZERO;
-				decal.params.depthFunction = Context3DCompareMode.EQUAL;
+				decal.params.depthFunction = Context3DCompareMode.LESS_EQUAL;
 				shaders.push(decal);
+				texture = _colorMap;
 			}
 			shaders.push(m_envShader);
 		}
@@ -95,15 +91,19 @@ package com.yogurt3d.core.materials
 		}
 		public function set texture(value:TextureMap):void
 		{
+			if(value && value.transparent){
+				m_envShader.texture = value;
+			}
+			
 			if(decal && value){
 				decal.texture = value;
-			}else if(value){
+			}else if(!decal && value){
 				decal = new ShaderTexture(value);
 				shaders.splice(shaders.indexOf(m_envShader), 1);
 				decal.params.blendEnabled = true;
-				decal.params.blendSource = Context3DBlendFactor.DESTINATION_COLOR;
+				decal.params.blendSource = Context3DBlendFactor.ONE;
 				decal.params.blendDestination = Context3DBlendFactor.ZERO;
-				decal.params.depthFunction = Context3DCompareMode.EQUAL;
+				decal.params.depthFunction = Context3DCompareMode.LESS_EQUAL;
 				shaders.push(decal);
 				shaders.push(m_envShader);
 			}else{
@@ -124,7 +124,6 @@ package com.yogurt3d.core.materials
 		public function set normalMap(value:TextureMap):void
 		{
 			m_envShader.normalMap = value;
-			m_diffShader.normalMap = value;
 		}
 		
 		public function get normalMapUVOffset( ):Point{
@@ -169,7 +168,6 @@ package com.yogurt3d.core.materials
 		public override function set opacity(value:Number):void{
 			super.opacity = value;
 			m_envShader.alpha = value;
-			m_ambShader.opacity = value;
 		}
 		
 	}

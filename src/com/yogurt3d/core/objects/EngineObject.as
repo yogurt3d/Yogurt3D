@@ -97,7 +97,7 @@ package com.yogurt3d.core.objects {
 		 * */
 		public function instance():*
 		{
-			return null;
+			return this;
 		}
 		
 		/**

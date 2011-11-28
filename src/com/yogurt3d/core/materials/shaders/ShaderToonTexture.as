@@ -46,7 +46,6 @@ package com.yogurt3d.core.materials.shaders
 		private var contThickness:ShaderConstants;
 		private var m_texture:TextureMap; 
 		
-		
 		public function ShaderToonTexture(_texture:TextureMap, 
 								   _contourColor:uint = 0x000000,
 								   _contourThickness:Number=0.3,
@@ -54,26 +53,25 @@ package com.yogurt3d.core.materials.shaders
 		{
 			super();
 			
-			key = "Yogurt3DOriginalsShaderToonTexture" + (_texture.mipmap?"withMip":"");
+			key = "Yogurt3DOriginalsShaderToonTexture" + 
+				(_texture.mipmap?"withMip":"")+ (_texture && _texture.transparent)?"withAlpha":"";
+			
+			m_texture = _texture;
 			
 			requiresLight				= true;
 
 			attributes.push( EVertexAttribute.POSITION, EVertexAttribute.UV, EVertexAttribute.NORMAL, EVertexAttribute.BONE_DATA );
 			
 			params.writeDepth 		= true;
-			
 			params.blendEnabled 	= true;
 			params.blendSource 		= Context3DBlendFactor.SOURCE_ALPHA;
 			params.blendDestination = Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA;
 			params.culling			= Context3DTriangleFace.FRONT;
 			
-			m_texture = _texture;
-			
 			// Shader Parameters
 			params.vertexShaderConstants.push(new ShaderConstants(0, EShaderConstantsType.MVP_TRANSPOSED));
 			params.vertexShaderConstants.push(new ShaderConstants(4, EShaderConstantsType.MODEL_TRANSPOSED));
 			params.vertexShaderConstants.push(new ShaderConstants(8, EShaderConstantsType.BONE_MATRICES));
-			
 			
 			params.fragmentShaderConstants.push(new ShaderConstants(0, EShaderConstantsType.CAMERA_POSITION));
 			params.fragmentShaderConstants.push(new ShaderConstants(1, EShaderConstantsType.LIGHT_POSITION));
@@ -108,8 +106,8 @@ package com.yogurt3d.core.materials.shaders
 			contColorConst.vector 						= Vector.<Number>([ _r/255,_g/255,_b/255, _opacity]);
 			params.fragmentShaderConstants.push(contColorConst);
 			
-			
 			params.fragmentShaderConstants.push(new ShaderConstants(7, EShaderConstantsType.LIGHT_DIRECTION));
+			
 			
 		}
 		
@@ -143,12 +141,10 @@ package com.yogurt3d.core.materials.shaders
 		}
 		
 		public function get opacity():Number{
-			//return colorConst.vector[3];
-			return 1;
+			return contColorConst.vector[3];
 		}
 		
 		public function set opacity( _val:Number):void{
-//			colorConst.vector[3] = _val;
 			contColorConst.vector[3] = _val;
 		}
 		
@@ -248,6 +244,7 @@ package com.yogurt3d.core.materials.shaders
 				// else diff = 0.5;
 				"add ft3 ft2 fc4.y",
 				((!texture.mipmap)?"tex ft7 v2 fs0<2d,wrap,linear>":"tex ft7 v2 fs0<2d,wrap,linear,miplinear>"),//get texture map
+				((texture.transparent)?"sub ft5.x ft7.w fc5.w\nkil ft5.x":""),
 				"mul ft3 ft3 ft7", // color * diff;
 				
 				// contour
@@ -255,14 +252,13 @@ package com.yogurt3d.core.materials.shaders
 				// out_color = silhouette_color;
 				"sge ft1 ft4 fc2.z",
 				"slt ft2 ft4 fc5.z",
-				"mul ft7 ft1 ft2",
-				"mul ft4 ft7 fc6", 
-				
-				"sub ft5 fc2.x ft7",
-				"mul ft3 ft5 ft3",
-				
+				"mul ft7.xyz ft1 ft2",
+				"mul ft4 ft7.xyz fc6", 
+				"sub ft5 fc2.x ft7.xyz",
+				"mul ft3 ft5 ft3",			
 				"add ft3 ft3 ft4",
-				"mov ft3.w fc6.w",// TODO
+	
+				"mul ft3.w fc6.w ft7.w",
 				"mov oc ft3",
 				
 			].join("\n");

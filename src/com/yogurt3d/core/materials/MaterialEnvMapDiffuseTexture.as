@@ -57,9 +57,13 @@ package com.yogurt3d.core.materials
 			super.opacity = _opacity;
 					
 			m_envShader = new ShaderEnvMapping(_envMap, _normalMap, _reflectivityMap, _alpha);
-			m_ambShader = new ShaderAmbient();
-			m_ambShader.opacity = _opacity;
+			m_ambShader = new ShaderAmbient(_opacity);
 			m_diffShader = new ShaderDiffuse();
+			
+			if(_colorMap && _colorMap.transparent){
+				m_ambShader.texture = _colorMap;
+				m_envShader.texture = _colorMap;
+			}
 			
 			shaders = new Vector.<com.yogurt3d.core.materials.shaders.base.Shader>;
 			
@@ -98,6 +102,10 @@ package com.yogurt3d.core.materials
 		{
 			if( value )
 			{
+				
+				m_ambShader.texture = value;
+				m_envShader.texture = value;
+				
 				if( m_decalShader )
 				{
 					m_decalShader.texture = value;

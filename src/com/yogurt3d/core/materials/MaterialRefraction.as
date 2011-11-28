@@ -76,7 +76,7 @@ package com.yogurt3d.core.materials
 		
 				
 			if(m_hasFresnel)
-				shaders.push(m_fresnelShader = new ShaderEnvMapFresnel(_envMap, null, _normalMap, _refractivityMap, _alpha, _fresnelReflectance, _fresnelPower));
+				shaders.push(m_fresnelShader = new ShaderEnvMapFresnel(_envMap, _normalMap, _refractivityMap, _alpha, _fresnelReflectance, _fresnelPower));
 			
 		}
 		
@@ -116,7 +116,7 @@ package com.yogurt3d.core.materials
 			
 			if(m_hasFresnel){
 				if(shaders.indexOf(m_fresnelShader) == -1){
-					m_fresnelShader = new ShaderEnvMapFresnel(envMap, null, normalMap, refractivityMap, opacity, fresnelReflectance, fresnelPower);
+					m_fresnelShader = new ShaderEnvMapFresnel(envMap, normalMap, refractivityMap, opacity, fresnelReflectance, fresnelPower);
 					shaders.push(m_fresnelShader);
 				}
 				m_fresnelShader.alpha = this.opacity;

@@ -73,7 +73,6 @@ package com.yogurt3d.core.materials.shaders
 		 * @company Yogurt3D Corp.
 		 **/
 		public function ShaderEnvMapFresnel(_cubeMap:CubeTextureMap, 
-											_colorMap:TextureMap=null,
 											_normalMap:TextureMap=null,  
 											_reflectivityMap:TextureMap=null,
 											_alpha:Number=1.0,
@@ -108,7 +107,7 @@ package com.yogurt3d.core.materials.shaders
 			
 			// fc1 : alpha
 			m_alphaConsts   							= new ShaderConstants(1, EShaderConstantsType.CUSTOM_VECTOR);
-			m_alphaConsts.vector						= Vector.<Number>([ _alpha, 2.0, 0.5, -1.0 ]);
+			m_alphaConsts.vector						= Vector.<Number>([ _alpha, 2.0, 0.2, -1.0 ]);
 			params.fragmentShaderConstants.push(m_alphaConsts);
 			
 			// fc2 : custom vector for normal map based vertex normal calculation
@@ -122,7 +121,6 @@ package com.yogurt3d.core.materials.shaders
 			params.fragmentShaderConstants.push(m_fresnelConsts);
 		
 			envMap						= _cubeMap;
-			texture						= _colorMap;
 			normalMap 					= _normalMap;
 			reflectivityMap			    = _reflectivityMap;
 			alpha 						= _alpha;
@@ -310,8 +308,9 @@ package com.yogurt3d.core.materials.shaders
 			
 			if(m_colorMap != null){
 				_colorMapAGAL = [
-					((!m_colorMap.mipmap)?"tex ft5 v2 fs3<2d,wrap,linear>":"tex ft5 v2 fs3<2d,wrap,linear,miplinear>"), 
-					"add ft0 ft5 ft0",
+					("tex ft5 v2 fs3<2d,wrap,linear>"), 
+					((m_colorMap.transparent)?"sub ft1.w ft5.w fc1.z\nkil ft1.w":""),
+					//"add ft0 ft5 ft0",
 					
 				].join("\n");
 			

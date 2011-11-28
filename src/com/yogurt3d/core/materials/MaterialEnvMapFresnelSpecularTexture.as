@@ -1,3 +1,21 @@
+/*
+* MaterialEnvMapFresnelSpecularTexture.as
+* This file is part of Yogurt3D Flash Rendering Engine 
+*
+* Copyright (C) 2011 - Yogurt3D Corp.
+*
+* Yogurt3D Flash Rendering Engine is free software; you can redistribute it and/or
+* modify it under the terms of the YOGURT3D CLICK-THROUGH AGREEMENT
+* License.
+* 
+* Yogurt3D Flash Rendering Engine is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+* 
+* You should have received a copy of the YOGURT3D CLICK-THROUGH AGREEMENT
+* License along with this library. If not, see <http://www.yogurt3d.com/yogurt3d/downloads/yogurt3d-click-through-agreement.html>. 
+*/
+
 package com.yogurt3d.core.materials
 {
 	
@@ -11,6 +29,7 @@ package com.yogurt3d.core.materials
 	import com.yogurt3d.core.texture.TextureMap;
 	
 	import flash.display3D.Context3DBlendFactor;
+	import flash.display3D.Context3DCompareMode;
 	
 	/**
 	 * 
@@ -21,7 +40,8 @@ package com.yogurt3d.core.materials
 	{		
 		private var lightShader:ShaderSpecular;
 		private var m_envShader:ShaderEnvMapFresnel;
-		private var m_ambShader:ShaderAmbient;
+		public  var decal:ShaderTexture = null;
+		//private var m_ambShader:ShaderAmbient;
 		
 		public function MaterialEnvMapFresnelSpecularTexture( _envMap:CubeTextureMap=null, 
 											   _colorMap:TextureMap=null,
@@ -38,29 +58,32 @@ package com.yogurt3d.core.materials
 			
 			super.opacity = _opacity;
 						
-			m_envShader = new ShaderEnvMapFresnel(_envMap,_colorMap ,  _normalMap, _reflectivityMap, 
+			m_envShader = new ShaderEnvMapFresnel(_envMap, _normalMap, _reflectivityMap, 
 													_alpha, _fresnelReflectance, _fresnelPower);
 			
-			m_envShader.params.blendEnabled = true;
-			m_envShader.params.blendSource = Context3DBlendFactor.DESTINATION_COLOR;
-			m_envShader.params.blendDestination = Context3DBlendFactor.ZERO;
-			
-			m_ambShader = new ShaderAmbient(_opacity);
-			
-			shaders = new Vector.<com.yogurt3d.core.materials.shaders.base.Shader>;
-			
-			shaders.push(m_ambShader);	
-			shaders.push(lightShader = new ShaderSpecular());
-			
+			if(_colorMap != null){
+				decal = new ShaderTexture(_colorMap);
+				decal.params.blendEnabled = true;
+				decal.params.blendSource = Context3DBlendFactor.ONE;
+				decal.params.blendDestination = Context3DBlendFactor.ZERO;
+				decal.params.depthFunction = Context3DCompareMode.LESS_EQUAL;
+				shaders.push(decal);
+				texture = _colorMap;
+			}
+
+			lightShader = new ShaderSpecular(_opacity);
+			shaders.push(lightShader);
 			shaders.push(m_envShader);
 			
 			normalMap = _normalMap;
 			specularMap = _specularMap;
+			texture = _colorMap;
 		}
 		
 		public function get shininess():Number{
 			return lightShader.shininess;
 		}
+		
 		public function set shininess(_value:Number):void{
 			lightShader.shininess = _value;
 		}
@@ -69,6 +92,7 @@ package com.yogurt3d.core.materials
 		{
 			return m_envShader.envMap;
 		}
+		
 		public function set envMap(value:CubeTextureMap):void
 		{
 			m_envShader.envMap = value;
@@ -78,15 +102,40 @@ package com.yogurt3d.core.materials
 		{
 			return m_envShader.texture;
 		}
+		
 		public function set texture(value:TextureMap):void
 		{
-			m_envShader.texture = value;
+			if(value && value.transparent){
+				m_envShader.texture = value;
+			}
+			
+			if(decal && value){
+				decal.texture = value;
+			}else if(!decal && value){
+				decal = new ShaderTexture(value);
+				shaders.splice(shaders.indexOf(m_envShader), 1);
+				decal.params.blendEnabled = true;
+				decal.params.blendSource = Context3DBlendFactor.ONE;
+				decal.params.blendDestination = Context3DBlendFactor.ZERO;
+				decal.params.depthFunction = Context3DCompareMode.LESS_EQUAL;
+				shaders.push(decal);
+				shaders.push(m_envShader);
+			}else{
+				if( decal )
+				{
+					shaders.splice(2,1);
+					decal.dispose();
+					decal = null;
+				}
+			}
+
 		}
 		
 		public function get normalMap():TextureMap
 		{
 			return m_envShader.normalMap;
 		}
+		
 		public function set normalMap(value:TextureMap):void
 		{
 			m_envShader.normalMap = value;
@@ -97,23 +146,24 @@ package com.yogurt3d.core.materials
 		{
 			return lightShader.specularMap;
 		}
+		
 		public function set specularMap(value:TextureMap):void
 		{
-			
 			lightShader.specularMap = value;
 		}
 		
 		public function get alpha():Number{
 			return m_envShader.alpha;
 		}
+		
 		public function set alpha(_value:Number):void{
 			m_envShader.alpha = _value;
 		}
 		
-		
 		public function get fresnelReflectance():Number{
 			return m_envShader.fresnelReflectance;
 		}
+		
 		public function set fresnelReflectance(value:Number):void{
 			m_envShader.fresnelReflectance = value;
 		}
@@ -121,6 +171,7 @@ package com.yogurt3d.core.materials
 		public function get fresnelPower():uint{
 			return m_envShader.fresnelPower;
 		}
+		
 		public function set fresnelPower(value:uint):void{
 			m_envShader.fresnelPower = value;
 		}
@@ -129,6 +180,7 @@ package com.yogurt3d.core.materials
 		{
 			return m_envShader.reflectivityMap;
 		}
+		
 		public function set reflectivityMap(value:TextureMap):void
 		{
 			m_envShader.reflectivityMap = value;
@@ -136,7 +188,6 @@ package com.yogurt3d.core.materials
 		
 		public override function set opacity(value:Number):void{
 			super.opacity = value;
-			m_ambShader.opacity = value;
 			m_envShader.alpha = value;
 		}
 		

@@ -126,7 +126,6 @@ package com.yogurt3d.core.managers.contextmanager
 				m_contexts[m_contexts.length]			= _value;
 				m_contextBySystemID[_value.systemID]	= _value;
 				m_contextCount++;
-				_value.viewport.visible = true;
 				
 				if(m_viewports.indexOf(_value.viewport) == -1)
 				{

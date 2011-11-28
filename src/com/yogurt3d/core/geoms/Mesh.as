@@ -131,5 +131,9 @@ package com.yogurt3d.core.geoms {
 				subMeshList[i].dispose();
 			}
 		}
+		
+		public override function instance():*{
+			return this;
+		}
 	}
 }

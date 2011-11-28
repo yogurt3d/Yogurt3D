@@ -27,7 +27,7 @@ package com.yogurt3d.core.animation.controllers
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.objects.interfaces.ITickedObject;
 	import com.yogurt3d.core.transformations.Quaternion;
-	import com.yogurt3d.core.utils.Vector3DUtils;
+	import com.yogurt3d.core.utils.MathUtils;
 	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -333,7 +333,10 @@ package com.yogurt3d.core.animation.controllers
 					{
 						// stop only if loopCount = 0 else loop infinite
 						m_currentState = STATE_STOPPED;
-						this.dispatchEvent( new AnimationEvent( AnimationEvent.END_OF_ANIMATION ) ); // tsl: this was END_OF_LOOP, which should fire, but continue if loopCount != 0
+						if( this.hasAnimation( AnimationEvent.END_OF_ANIMATION  ) )
+						{
+							this.dispatchEvent( new AnimationEvent( AnimationEvent.END_OF_ANIMATION ) ); // tsl: this was END_OF_LOOP, which should fire, but continue if loopCount != 0
+						}
 						return;
 					}
 				}
@@ -366,9 +369,9 @@ package com.yogurt3d.core.animation.controllers
 							
 							var obj2:Object = animation2.frameData[ currentFrame2 ][ boneName ];
 							
-							m_mesh.bones[i].translation 	= Vector3DUtils.lerp( 	blendWeight,  	obj2.translation,  	obj.translation );
+							m_mesh.bones[i].translation 	= MathUtils.lerp( 	blendWeight,  	obj2.translation,  	obj.translation );
 							m_mesh.bones[i].rotation 		= Quaternion.slerp( 	blendWeight, 	obj2.rotation, 		obj.rotation );
-							m_mesh.bones[i].scale 			= Vector3DUtils.lerp( 	blendWeight, 	obj2.scale, 		obj.scale );
+							m_mesh.bones[i].scale 			= MathUtils.lerp( 	blendWeight, 	obj2.scale, 		obj.scale );
 						}
 					}else{
 						m_blendMode = BLEND_SWITCH;

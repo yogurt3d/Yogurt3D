@@ -42,8 +42,8 @@ package com.yogurt3d.core.materials.shaders
 		private var m_texture				:TextureMap = null;
 		private var m_envMap				:CubeTextureMap;
 		private var m_glossMap				:TextureMap = null;
-		private var m_Io					:Vector3D;
-		private var m_fresnel				:Vector3D;
+		private var m_Io					:Vector3D = null;
+		private var m_fresnel				:Vector3D = null;
 		private var m_opacity				:Number;
 		
 		private var m_envMapTexture			:ShaderConstants;
@@ -71,14 +71,16 @@ package com.yogurt3d.core.materials.shaders
 			key = "Yogurt3DOriginalsShaderChromatic";
 			
 			m_envMap = _envMap;
-			m_Io = _IoValues;
-			m_fresnel = _fresnelVal;
 			m_opacity = _opacity;
 			
 			if(m_Io == null)
 				m_Io = new Vector3D(1.14,1.12,1.10);
+			else
+				m_Io = _IoValues;
 			if(m_fresnel == null)
 				m_fresnel = new Vector3D(0.15,2.0, 0.0 )
+			else
+				m_fresnel = _fresnelVal;
 			
 			texture = _baseMap;
 			glossMap = _glossMap;
@@ -111,7 +113,7 @@ package com.yogurt3d.core.materials.shaders
 			
 			// fc1 : fresnel
 			m_fresnelConst   							= new ShaderConstants(1, EShaderConstantsType.CUSTOM_VECTOR);
-			m_fresnelConst.vector						= Vector.<Number>([ m_fresnel.x, m_fresnel.y, 0.0, 0.0 ]);
+			m_fresnelConst.vector						= Vector.<Number>([ m_fresnel.x, m_fresnel.y, 0.0, 0.2 ]);
 			params.fragmentShaderConstants.push(m_fresnelConst);
 			
 			// fc2: camera pos
@@ -152,12 +154,18 @@ package com.yogurt3d.core.materials.shaders
 		}
 		
 		public function set Io(_val:Vector3D):void{
-			m_Io = _val; 
-			m_ioConst.vector = Vector.<Number>([ m_Io.x, m_Io.y, m_Io.z, m_opacity ]);
+			if(_val){
+				m_Io = _val; 
+				m_ioConst.vector = Vector.<Number>([ m_Io.x, m_Io.y, m_Io.z, m_opacity ]);
+			}
+			
 		}
 		public function set fresnel(_val:Vector3D):void{
-			m_fresnel = _val; 
-			m_fresnelConst.vector = Vector.<Number>([ m_fresnel.x, m_fresnel.y, m_fresnel.z, 0.0 ]);
+			if(_val){
+				m_fresnel = _val; 
+				m_fresnelConst.vector = Vector.<Number>([ m_fresnel.x, m_fresnel.y, m_fresnel.z, 0.2 ]);
+			}
+			
 		}
 		
 		public function get texture():TextureMap{
@@ -272,10 +280,11 @@ package com.yogurt3d.core.materials.shaders
 					ShaderUtils.mix("ft6", "ft7", "ft3", "ft2", "ft4", "ft1"),//color = mix(refractColor, reflectColor, fresnelTerm);
 					// get basemap
 					((!texture.mipmap)?"tex ft4 v2 fs2<2d,wrap,linear>":"tex ft4 v2 fs2<2d,wrap,linear,miplinear>"),//ft4
+					((texture.transparent)?"sub ft2.x ft4.w fc1.w\nkil ft2.x":""),
 					"sub ft1.x fc3.x ft5.x",
 					
 					ShaderUtils.mix("ft0", "ft7", "ft4", "ft6", "ft5.x", "ft1.x"),//mix(base_color, color, reflectivity)
-					"mov ft0.w fc0.w",
+					"mul ft0.w fc0.w ft4.w",
 					"mov oc ft0"
 					
 				].join("\n");

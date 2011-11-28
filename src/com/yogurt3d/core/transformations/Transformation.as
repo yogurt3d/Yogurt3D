@@ -23,6 +23,7 @@ package com.yogurt3d.core.transformations {
 	import com.yogurt3d.core.objects.EngineObject;
 	import com.yogurt3d.core.objects.interfaces.IEngineObject;
 	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObject;
+	import com.yogurt3d.core.utils.MathUtils;
 	import com.yogurt3d.core.utils.MatrixUtils;
 	
 	import flash.geom.Matrix3D;
@@ -40,12 +41,6 @@ package com.yogurt3d.core.transformations {
 	public class Transformation extends EngineObject 
 	{
 		use namespace YOGURT3D_INTERNAL;
-		
-		public static const DEG_TO_RAD								:Number				= Math.PI / 180.0;
-		public static const RAD_TO_DEG								:Number				= 180.0 / Math.PI;
-		
-		public static const UP_VECTOR								:Vector3D			= new Vector3D(0,-1,0);
-		public static const AT_VECTOR								:Vector3D			= new Vector3D(0,0,-1);
 		
 		YOGURT3D_INTERNAL var m_ownerSceneObject					:ISceneObject;
 		YOGURT3D_INTERNAL var m_parentGlobalMatrix					:Matrix3D;
@@ -95,7 +90,7 @@ package com.yogurt3d.core.transformations {
 			m_decomposedMatrix[0].z = m_z;
 			
 			m_temprotation.copyFrom( m_rotation );
-			m_temprotation.scaleBy( DEG_TO_RAD );
+			m_temprotation.scaleBy( MathUtils.DEG_TO_RAD );
 				
 			m_decomposedMatrix[1] = m_temprotation;
 			
@@ -177,7 +172,7 @@ package com.yogurt3d.core.transformations {
 			m_z = m_decomposedMatrix[0].z;
 			
 			m_rotation = m_decomposedMatrix[1];
-			m_rotation.scaleBy( RAD_TO_DEG );
+			m_rotation.scaleBy( MathUtils.RAD_TO_DEG );
 			
 			m_scale = m_decomposedMatrix[2];
 		}
@@ -459,7 +454,7 @@ package com.yogurt3d.core.transformations {
 			var _tempMatrix:Matrix3D = MatrixUtils.TEMP_MATRIX;
 			_tempMatrix.identity();
 			_tempMatrix.position = matrixGlobal.position;
-			_tempMatrix.pointAt( _target, _at || AT_VECTOR, _up || UP_VECTOR );
+			_tempMatrix.pointAt( _target, _at || MathUtils.AT_VECTOR, _up || MathUtils.UP_VECTOR );
 			var _rot : Vector3D = _tempMatrix.decompose(Orientation3D.QUATERNION)[1];
 			
 			var m_quaternion:Quaternion = new Quaternion();
@@ -487,7 +482,7 @@ package com.yogurt3d.core.transformations {
 			var _tempMatrix:Matrix3D = MatrixUtils.TEMP_MATRIX;
 			_tempMatrix.identity();
 			_tempMatrix.position = matrixLocal.position;
-			_tempMatrix.pointAt( _target, _at || AT_VECTOR, _up || UP_VECTOR );
+			_tempMatrix.pointAt( _target, _at || MathUtils.AT_VECTOR, _up || MathUtils.UP_VECTOR );
 			var _rot : Vector3D = _tempMatrix.decompose(Orientation3D.QUATERNION)[1];
 			
 			var m_quaternion:Quaternion = new Quaternion();
