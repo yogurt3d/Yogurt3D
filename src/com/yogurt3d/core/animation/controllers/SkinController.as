@@ -333,7 +333,7 @@ package com.yogurt3d.core.animation.controllers
 					{
 						// stop only if loopCount = 0 else loop infinite
 						m_currentState = STATE_STOPPED;
-						if( this.hasAnimation( AnimationEvent.END_OF_ANIMATION  ) )
+						if( this.hasEventListener( AnimationEvent.END_OF_ANIMATION  ) )
 						{
 							this.dispatchEvent( new AnimationEvent( AnimationEvent.END_OF_ANIMATION ) ); // tsl: this was END_OF_LOOP, which should fire, but continue if loopCount != 0
 						}
