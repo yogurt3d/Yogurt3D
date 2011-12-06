@@ -93,8 +93,8 @@ package com.yogurt3d.presets.primitives.meshs
 
 			for (yi = 0; yi <= _hSegments; ++yi) {
 				for (xi = 0; xi <= _vSegments; ++xi) {
-					_uvt[numUV++] = clamp( xi/_vSegments, 0.1, 0.9 );
-					_uvt[numUV++] = clamp( yi/_hSegments, 0.1, 0.9 );
+					_uvt[numUV++] = clamp( xi/_vSegments, 0.05, 0.95 );
+					_uvt[numUV++] = clamp( yi/_hSegments, 0.05, 0.95 );
 				}
 			}
 			var subMesh:SubMesh = new SubMesh();
@@ -109,7 +109,7 @@ package com.yogurt3d.presets.primitives.meshs
 			
 		}
 		
-		function clamp(val:Number, min:Number = 0, max:Number = 1):Number{
+		private function clamp(val:Number, min:Number = 0, max:Number = 1):Number{
 			return Math.max(min, Math.min(max, val))
 		}
 
