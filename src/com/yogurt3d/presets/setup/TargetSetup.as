@@ -17,7 +17,12 @@ package com.yogurt3d.presets.setup
 			super( _parent );
 			
 			viewport = new Viewport();
-			viewport.setViewport(0,0,_parent.stage.stageWidth,_parent.stage.stageHeight);
+			if( _parent.stage )
+			{
+				viewport.setViewport(0,0,_parent.stage.stageWidth,_parent.stage.stageHeight);
+			}else{
+				viewport.setViewport(0,0,_parent.width,_parent.height);
+			}
 			
 			YOGURT3D_INTERNAL::scene = new Scene();
 			

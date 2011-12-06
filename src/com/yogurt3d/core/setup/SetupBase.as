@@ -102,7 +102,7 @@ package com.yogurt3d.core.setup
 				m_parent.removeChild( m_context.viewport );
 			}
 			m_context.viewport = value;
-			m_parent.addChild( m_context.viewport );
+			m_parent.addChildAt( m_context.viewport, 0 );
 		}
 		
 		public function setArea( x:uint, y:uint, width:uint, height:uint):void{
