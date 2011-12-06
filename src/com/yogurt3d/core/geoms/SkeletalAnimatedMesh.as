@@ -183,6 +183,10 @@ package com.yogurt3d.core.geoms
 		{
 			super.initInternals();
 			
+			reinitBones();
+		}
+		
+		public function reinitBones():void{
 			m_bones = new Vector.<Bone>();
 			
 			var len:int = m_base.bones.length;
