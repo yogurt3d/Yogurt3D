@@ -13,6 +13,10 @@
 			<name>Y3DCONFIG::RELEASE</name>
 			<value>!Y3DCONFIG::DEBUG</value>
 		</define>
+		<define>
+			<name>Y3DCONFIG::SHADOWMAP_SIZE</name>
+			<value>1024</value>
+		</define>
 	</compiler>
 	<metadata>
 		<title>Yogurt3D</title>

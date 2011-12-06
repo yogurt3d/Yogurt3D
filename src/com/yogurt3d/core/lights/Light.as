@@ -275,7 +275,7 @@ package com.yogurt3d.core.lights
 		{
 			if(!m_shadowMap)
 			{
-				m_shadowMap = new RenderTextureTarget(1024,1024);
+				m_shadowMap = new RenderTextureTarget(Y3DCONFIG::SHADOWMAP_SIZE,Y3DCONFIG::SHADOWMAP_SIZE);
 			}
 			return m_shadowMap;
 		}
@@ -284,7 +284,7 @@ package com.yogurt3d.core.lights
 		{
 			if(!m_shadowMap2 && m_type == ELightType.POINT )
 			{
-				m_shadowMap2 = new RenderTextureTarget(1024,1024);
+				m_shadowMap2 = new RenderTextureTarget(Y3DCONFIG::SHADOWMAP_SIZE,Y3DCONFIG::SHADOWMAP_SIZE);
 			}
 			return m_shadowMap2;
 		}
