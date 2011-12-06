@@ -46,8 +46,6 @@ package com.yogurt3d.core.geoms {
 		
 		public var rootHeight					: Number;
 		public var bones						: Vector.<Bone>;
-		public var boneIndies					: Vector.<Number>;
-		public var boneWeights					: Vector.<Number>;
 		
 		
 		public function SkeletalAnimatedMeshBase(_initInternals : Boolean = true) {
@@ -59,52 +57,6 @@ package com.yogurt3d.core.geoms {
 			super.initInternals();			
 		}
 		
-		/*public override function getVertexBufferByContext3D(_context3D:Context3D):VertexBuffer3D {
-
-			if (m_vertexBuffersByContext3D[_context3D]) {
-				return m_vertexBuffersByContext3D[_context3D];
-			}
-			
-			if( m_normals == null )
-			{
-				m_normals = MeshUtils.calculateVerticeNormals( indices, m_vertices );
-			}
-			
-			if( m_tangents == null )
-			{ 
-				m_tangents = MeshUtils.calculateVerticeTangents( m_normals );
-			}
-			var _bufferData		:Vector.<Number>			= MeshUtils.createVertexBufferDataAsVector( m_vertexCount, m_vertices, uvt, m_normals, m_tangents, boneIndies, boneWeights);
-			
-			m_vertexBuffersByContext3D[_context3D] = _context3D.createVertexBuffer( m_vertexCount, 11 + 8 + 8);			
-			m_vertexBuffersByContext3D[_context3D].uploadFromVector(_bufferData, 0, m_vertexCount);
-			
-			return m_vertexBuffersByContext3D[_context3D];
-		}*/
-		
-		public function setupWeightTable():void{
-			/*boneWeights = new Vector.<Number>();
-			boneIndies = new Vector.<Number>();
-			for( var vertexIndex:int = 0; vertexIndex < vertexCount; vertexIndex++ )
-			{
-				var boneList:Array = [-1,-1,-1,-1,-1,-1,-1];
-				var weightList:Array = [0,0,0,0,0,0,0,0];
-				var index:uint = 0;
-				for( var boneIndex:int = 0; boneIndex < bones.length; boneIndex++ )
-				{
-					if( bones[boneIndex].indices.indexOf( vertexIndex ) > -1 )
-					{
-						boneList[index] = boneIndex * 3 ;
-						weightList[index] = bones[boneIndex].weights[ bones[boneIndex].indices.indexOf( vertexIndex ) ];
-						index++;
-					}
-				}
-				boneWeights.push(weightList[0],weightList[1],weightList[2],weightList[3],
-									weightList[4],weightList[5],weightList[6],weightList[7]);
-				boneIndies.push(boneList[0],boneList[1],boneList[2],boneList[3],
-									boneList[4],boneList[5],boneList[6],boneList[7]);
-			}*/
-		}
 		public function setBindPose():void{
 			for( var i:int = 0; i < bones.length; i++)
 			{
