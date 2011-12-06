@@ -207,7 +207,7 @@ package com.yogurt3d.core.scenetree.octree
 			}
 			if( _child.isStatic )
 			{
-				s_octantByScene[_scene].removeItem(_child);
+				s_octantByScene[_scene].remove(_child);
 			}else{
 				_removeChildFromDynamicList( _child, _scene );
 			}
