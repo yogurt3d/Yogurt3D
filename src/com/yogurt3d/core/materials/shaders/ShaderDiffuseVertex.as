@@ -50,11 +50,11 @@ package com.yogurt3d.core.materials.shaders
 		
 		
 		private var vaPos:uint = 0;
-		private var vaUV:uint = 1;
-		private var vaNormal:uint = 2;
-		private var vaTangent:uint = 3;
-		private var vaBoneIndices:uint = 4;
-		private var vaBoneWeight:uint = 6;
+		//private var vaUV:uint = 1;
+		private var vaNormal:uint = 1;
+		private var vaTangent:uint = 2;
+		private var vaBoneIndices:uint = 3;
+		private var vaBoneWeight:uint = 4;
 		//private var vaColor:uint = 7;
 		
 		private var varyingWorldPos:uint = 0;
@@ -113,7 +113,7 @@ package com.yogurt3d.core.materials.shaders
 			params.loopCount			= 1;
 			requiresLight				= true;
 			
-			attributes.push( EVertexAttribute.POSITION, EVertexAttribute.UV, EVertexAttribute.NORMAL, EVertexAttribute.BONE_DATA );
+			attributes.push( EVertexAttribute.POSITION,  EVertexAttribute.NORMAL, EVertexAttribute.BONE_DATA );
 			
 			var _vertexShaderConsts:ShaderConstants;
 			
@@ -257,7 +257,7 @@ package com.yogurt3d.core.materials.shaders
 			{
 				
 				var code:String = ShaderUtils.getSkeletalAnimationVertexShader( 
-					vaPos, vaUV, vaNormal, 
+					vaPos, 0, vaNormal, 
 					vaBoneIndices, vaBoneWeight, 
 					vcProjection, vcModelToWorld, vcBoneMatrices, 
 					0, true, false, false  );

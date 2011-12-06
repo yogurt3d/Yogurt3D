@@ -258,7 +258,7 @@ package com.yogurt3d.core.materials.shaders
 				
 				_normalAGAL = [   
 					
-					"tex ft1 v2 fs1<2d,wrap,linear>",
+					((!m_normalMap.mipmap)?"tex ft1 v2 fs1<2d,wrap,linear>":"tex ft1 v2 fs1<2d,wrap,linear,miplinear>"),
 					// lookup normal from normal map, move from [0,1] to  [-1, 1] range, normalize
 					// texNormal = texNormal * 2 - 1;
 					"mul ft1 ft1 fc1.y",
@@ -281,7 +281,7 @@ package com.yogurt3d.core.materials.shaders
 			if(m_refractivityMap != null){
 				_refractivityAGAL = [   
 					
-					"tex ft2 v2 fs2<2d,wrap,linear>",     // get reflection map
+					((!m_refractivityMap.mipmap)?"tex ft2 v2 fs2<2d,wrap,linear>":"tex ft2 v2 fs2<2d,wrap,linear,miplinear>"),     // get reflection map
 					"mul ft0.w ft2.xyz fc1.x"
 					
 				].join("\n");	
@@ -436,7 +436,10 @@ package com.yogurt3d.core.materials.shaders
 				
 			}
 			
-			key = "Yogurt3DOriginalsShaderRefraction" + ((m_normalMap)?"WithNormal":"") + ((m_refractivityMap)?"WithRefractivity":"");
+			key = "Yogurt3DOriginalsShaderRefraction" + ((m_normalMap)?"WithNormal":"") 
+				+ ((m_normalMap && m_normalMap.mipmap)?"WithNormalMip":"") 
+				+ ((m_refractivityMap)?"WithRefractivity":"")
+				+ ((m_refractivityMap && m_refractivityMap.mipmap)?"WithRefMip":"") ;
 			return super.getProgram( _context3D, _lightType, _meshType );
 		}
 	}

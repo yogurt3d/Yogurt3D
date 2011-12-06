@@ -21,12 +21,10 @@ package com.yogurt3d.core.effects.filters
 	import com.yogurt3d.core.lights.ELightType;
 	import com.yogurt3d.core.materials.base.Color;
 	import com.yogurt3d.core.utils.ShaderUtils;
-	import com.yogurt3d.core.viewports.Viewport;
 	
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DProgramType;
 	import flash.geom.Rectangle;
-	import flash.geom.Vector3D;
 	import flash.utils.ByteArray;
 	
 	public class FilterThermalVision extends Filter

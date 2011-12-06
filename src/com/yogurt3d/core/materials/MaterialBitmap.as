@@ -45,9 +45,9 @@ package com.yogurt3d.core.materials
 		 * @param _initInternals
 		 * 
 		 */
-		public function MaterialBitmap(_texture:BitmapData, _miplevel:uint=0, _initInternals:Boolean=true)
+		public function MaterialBitmap(_texture:BitmapData, _initInternals:Boolean=true)
 		{
-			super( new TextureMap(_texture), _miplevel, _initInternals);
+			super( new TextureMap(_texture, null, null),_initInternals);
 		}
 	}
 }

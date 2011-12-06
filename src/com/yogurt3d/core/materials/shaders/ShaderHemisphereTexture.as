@@ -65,21 +65,15 @@ package com.yogurt3d.core.materials.shaders
 		private var fcMaterialEmissive:uint			= 5;
 		private var fcMaterialAmbient:uint			= 6;
 		
-		private var _alphaShaderConsts:ShaderConstants;
-		
-		private var m_alphaLookup:Boolean = false;
-		
-		private var m_dirty:Boolean			= true;
-		
+		private var _alphaShaderConsts:ShaderConstants;	
 		private var _textureConst:ShaderConstants;
-		
 		private var m_texture:TextureMap;
 			
 		public function ShaderHemisphereTexture( texture:TextureMap, _alpha:Number = 1)
 		{
 			super();
 			
-			key = "Yogurt3DOriginalsShaderHemisphereTexture";
+			key = "Yogurt3DOriginalsShaderHemisphereTexture"+ (texture.transparent?"withAlpha":"");
 			
 			m_texture = texture;
 			
@@ -122,12 +116,10 @@ package com.yogurt3d.core.materials.shaders
 			_alphaShaderConsts = new ShaderConstants();
 			_alphaShaderConsts.type					= EShaderConstantsType.CUSTOM_VECTOR;
 			_alphaShaderConsts.firstRegister		= fcMaterialOpacity;
-			_alphaShaderConsts.vector				= Vector.<Number>([_alpha,0.000001,1,1]);
+			_alphaShaderConsts.vector				= Vector.<Number>([_alpha,0.000001,1,0.2]);
 			
 			params.fragmentShaderConstants.push(_alphaShaderConsts);
-			
-			
-			//
+		
 			_vertexShaderConsts = new ShaderConstants();
 			_vertexShaderConsts.type			    = EShaderConstantsType.CUSTOM_VECTOR;
 			_vertexShaderConsts.firstRegister		= vcGroundColor;
@@ -167,13 +159,7 @@ package com.yogurt3d.core.materials.shaders
 			_textureConst.texture = texture;
 			
 			params.fragmentShaderConstants.push( _textureConst );
-			
-			//var _fragmentShaderConsts:ShaderConstants;
-			/*_fragmentShaderConsts = new ShaderConstants();
-			_fragmentShaderConsts.type				= ShaderConstantsType.MATERIAL_EMISSIVE_COLOR;
-			_fragmentShaderConsts.firstRegister		= fcMaterialEmissive;
-			
-			params.fragmentShaderConstants.push(_fragmentShaderConsts);*/
+		
 		}
 		
 		public function get texture():TextureMap
@@ -184,37 +170,14 @@ package com.yogurt3d.core.materials.shaders
 		public function set texture(value:TextureMap):void
 		{
 			m_texture = value;
-		}
-
-		public function get alphaTexture():Boolean{
-			return m_alphaLookup;
-			
-		}
-		
-		public function set alphaTexture(_texture:Boolean):void{
-			m_alphaLookup = _texture;
-			m_dirty = true;
+			key = "Yogurt3DOriginalsShaderHemisphereTexture"+ (value.transparent?"withAlpha":"");
 		}
 		
 		public function set opacity(_alpha:Number):void{
 			
-			_alphaShaderConsts.vector = Vector.<Number>([_alpha, 0.000001, 1.0, 1.0 ]);
-			params.fragmentShaderConstants[params.fragmentShaderConstants.indexOf(_alphaShaderConsts)] = _alphaShaderConsts;
+			_alphaShaderConsts.vector[0] = _alpha;
 		}
-		public override function getProgram(_context3D:Context3D, _lightType:ELightType=null, _meshKey:String=""):Program3D{
-			if( m_dirty )
-			{
-				m_dirty = false;
-				disposeShaders();
-			}
-			if( m_alphaLookup )
-			{
-				key = "Yogurt3DOriginalsShaderHemisphereTextureWithAlphaTexture";
-			}else {
-				key = "Yogurt3DOriginalsShaderHemisphereTexture";
-			}
-			return super.getProgram( _context3D, _lightType, _meshKey );
-		}
+
 		
 		public override function getVertexProgram( _meshKey:String, _lightType:ELightType = null ):ByteArray{
 			if( _meshKey == "SkinnedMesh" )
@@ -256,9 +219,6 @@ package com.yogurt3d.core.materials.shaders
 				//"mul vt2.xyz, vt2.xyz, vc" + vcMaterialAmbient + "\n"+
 				//"sub vt5.x , vc" + vcZeroVec +".y, "*/
 				"mov v3, vt4\n"
-					   
-				
-				
 				return assembler.assemble(Context3DProgramType.VERTEX, 	code );
 			}
 			return new AGALMiniAssembler().assemble(Context3DProgramType.VERTEX, 
@@ -307,8 +267,8 @@ package com.yogurt3d.core.materials.shaders
 				//"add ft0, ft0, ft1\n" + // float4 color = emissive + ambient;
 				"mov ft0, v3 \n" +
 				"mov ft0.w, fc" + fcMaterialOpacity + ".x\n" + // color.w = opacity;
-				"tex ft2, v0.xy, fs0<wrap,linear>\n"+ 
-				(( m_alphaLookup)?"tex ft1, v0.xy, fs0<wrap,linear>\nmul ft0.w, ft0.w, ft1.w\nsub ft1.w, ft1.w, fc"+fcMaterialOpacity+".y\nkil ft1.w\n":"" )+ 
+				((!texture.mipmap)?"tex ft2, v0.xy, fs0<2d,wrap,linear>\n":"tex ft2, v0.xy, fs0<2d,wrap,linear,miplinear>\n")+ 
+				((texture.transparent)?"sub ft1.w ft2.w fc"+fcMaterialOpacity+".w\nkil ft1.w\n":"" )+ 
 				"mul ft0, ft0, ft2\n" + 
 				"mov oc, ft0\n" // outputColor = color;
 			);

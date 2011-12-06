@@ -3,7 +3,6 @@ package com.yogurt3d.core.effects.filters
 	import com.adobe.utils.AGALMiniAssembler;
 	import com.yogurt3d.core.lights.ELightType;
 	import com.yogurt3d.core.utils.ShaderUtils;
-	import com.yogurt3d.core.viewports.Viewport;
 	
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DProgramType;
@@ -35,18 +34,9 @@ package com.yogurt3d.core.effects.filters
 			return ShaderUtils.fragmentAssambler.assemble( AGALMiniAssembler.FRAGMENT,
 				
 				[
-					
 					"tex ft0 v0 fs0<2d,wrap,linear>", // get render to texture
-					
-					/*"pow ft1 ft0 fc0.x", //pow(color, 1.0 / gammaRGB)
-					"slt ft2 ft0.x fc0.y",//if (color[0].r < 0.50)
-					"mul ft1 ft2 ft1", // outColor.rgb = pow(color, 1.0 / gamma) * ft2;
-					
-					"sub ft3 fc0.w ft1", // else outColor.rgb = color;
-					"mul ft0 ft0 ft3",
-					
-					"add ft0 ft0 ft1",
-					"mov ft0.w fc0.w",*/
+					"pow ft0 ft0 fc0.xxx", //pow(color, 1.0 / gammaRGB)
+					"mov ft0.w fc0.w",
 					
 					"mov oc ft0"
 					

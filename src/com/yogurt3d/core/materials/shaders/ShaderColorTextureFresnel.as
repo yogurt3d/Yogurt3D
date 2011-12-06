@@ -118,7 +118,7 @@ package com.yogurt3d.core.materials.shaders
 			
 			// fc2 : custom vector for normal map based vertex normal calculation
 			m_gainConsts   								= new ShaderConstants(2, EShaderConstantsType.CUSTOM_VECTOR);
-			m_gainConsts.vector							= Vector.<Number>([ 1.0, m_gain, 1.0, 1.0 ]);
+			m_gainConsts.vector							= Vector.<Number>([ 1.0, m_gain, 1.0, 0.2 ]);
 			params.fragmentShaderConstants.push(m_gainConsts);
 			
 			// fc3 : fresnel custom vector
@@ -289,7 +289,7 @@ package com.yogurt3d.core.materials.shaders
 				
 				_normalAGAL = [   
 					(m_normalMapUVOffset)?"add ft1 v2 fc4":"mov ft1 v2",
-					"tex ft1 ft1 fs1<2d,wrap,linear>",
+					((!normalMap.mipmap)?"tex ft1 ft1 fs1<2d,wrap,linear>":"tex ft1 ft1 fs1<2d,wrap,linear,miplinear>"),
 					// lookup normal from normal map, move from [0,1] to  [-1, 1] range, normalize
 					// texNormal = texNormal * 2 - 1;
 					"mul ft1 ft1 fc1.y",
@@ -312,7 +312,7 @@ package com.yogurt3d.core.materials.shaders
 			if(m_reflectivityMap != null){
 				_reflectivityAGAL = [   
 					
-					"tex ft2 v2 fs2<2d,wrap,linear>",     // get reflection map
+					((!m_reflectivityMap.mipmap)?"tex ft2 v2 fs2<2d,wrap,linear>":"tex ft2 v2 fs2<2d,wrap,linear,miplinear>"),     // get reflection map
 					"mul ft0.w ft2.xyz ft0.w",
 					"mul ft0.w fc1.x ft0.w"
 					
@@ -361,10 +361,12 @@ package com.yogurt3d.core.materials.shaders
 				"mul ft5 ft5 fc4",						// get color 1
 				
 				"sub ft6.xyz ft6.xyz fc2.y",			// 1 - fresnel - gain
-				"tex ft7 v2 fs0<wrap,linear>",			// get texture
+				((!texture.mipmap)?"tex ft7 v2 fs0<wrap,linear>":"tex ft7 v2 fs0<wrap,linear,miplinear>"),			// get texture
+				((texture.transparent)?"sub ft1.x ft7.w fc2.w\nkil ft1.x":""),
+				
 				"mul ft6 ft7 ft6",
-					
 				"add ft0 ft5 ft6",
+				"mov ft0.w ft7.w",
 				
 				_reflectivityAGAL,                    // set alpha
 				//"mul ft0.w fc1.x ft0.w",
@@ -443,7 +445,12 @@ package com.yogurt3d.core.materials.shaders
 				m_normalMapUVOffsetConst.vector = Vector.<Number>([m_normalMapUVOffset.x,m_normalMapUVOffset.y,0,0]);
 			}
 			
-			key = "Yogurt3DOriginalsShaderColorTextureFresnel" + ((m_normalMap)?"WithNormal":"") + ((m_reflectivityMap)?"WithReflectivity":"") + ((m_normalMapUVOffset)?"WithNormalUVOffset":"") ;
+			key = "Yogurt3DOriginalsShaderColorTextureFresnel" + 
+				((m_normalMap)?"WithNormal":"") + 
+				((m_normalMap && m_normalMap.mipmap)?"WithNormalMip":"") + 
+				((m_reflectivityMap)?"WithReflectivity":"") + 
+				((m_reflectivityMap && m_reflectivityMap.mipmap)?"WithRefMip":"") + 
+				((m_normalMapUVOffset)?"WithNormalUVOffset":"") ;
 			return super.getProgram( _context3D, _lightType, _meshType );
 		}
 	}

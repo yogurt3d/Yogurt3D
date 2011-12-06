@@ -140,6 +140,11 @@ package com.yogurt3d.core.materials.base
 			return (m_color[3] * 255) << 24 | (m_color[0] * 255) << 16 | (m_color[1] * 255) << 8 | (m_color[2] * 255);
 		}
 		
+		public function toUintRGB():uint
+		{
+			return ((m_color[0] * 255) << 16 | (m_color[1] * 255) << 8 | (m_color[2] * 255));
+		}
+		
 		private function generateVector():void{
 			m_colorVector = Vector.<Number>([m_color[0] * m_color[3], m_color[1] * m_color[3], m_color[2] * m_color[3], m_color[3]]);
 			m_colorVectorRaw = Vector.<Number>([m_color[0] , m_color[1] , m_color[2] , m_color[3]]);

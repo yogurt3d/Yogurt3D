@@ -47,18 +47,12 @@ package com.yogurt3d.core.materials
 		private var m_lightShader:ShaderSpecular;
 		private var m_ambientShader:ShaderAmbient;
 		private var m_decalShader:ShaderTexture;
-
-		private var m_alphaTexture:Boolean = false;
-		
-		public var onAlphaTextureChanged						:Signal;
 		
 		public function MaterialSpecularTexture( _texture:TextureMap = null, _opacity:Number = 1, _initInternals:Boolean=true)
 		{
 			super(_initInternals);
 			
-			onAlphaTextureChanged = new Signal();
-			
-			m_decalShader = new ShaderTexture(_texture, 0);
+			m_decalShader = new ShaderTexture(_texture);
 			m_decalShader.params.blendEnabled = true;
 			m_decalShader.params.blendSource = Context3DBlendFactor.DESTINATION_COLOR;
 			m_decalShader.params.blendDestination = Context3DBlendFactor.ZERO;
@@ -70,6 +64,7 @@ package com.yogurt3d.core.materials
 				m_decalShader
 			]);
 			
+			texture = _texture;
 			super.opacity = _opacity;
 		}
 		
@@ -105,37 +100,16 @@ package com.yogurt3d.core.materials
 		{
 			m_lightShader.specularMap = value;
 		}
-		
-		[Bindable(event="alphaTextureChange")]
-		public function get alphaTexture():Boolean{
-			return m_alphaTexture;
-		}
-		public function set alphaTexture(value:Boolean):void{
 			
-			if( m_alphaTexture != value)
-			{
-				m_alphaTexture = value;
-				
-				if( value )
-				{
-					m_ambientShader.alphaTexture = m_decalShader.texture as TextureMap;
-				}else{
-					m_ambientShader.alphaTexture = null;
-				}
-				
-				onAlphaTextureChanged.dispatch();
-			}
-		}
-		
 		public function get texture():TextureMap{
 			return m_decalShader.texture as TextureMap;
 		}
 		
 		public function set texture(_value:TextureMap):void{
 			m_decalShader.texture = _value;
-			if( m_alphaTexture )
+			if( _value.transparent )
 			{
-				m_ambientShader.alphaTexture = m_decalShader.texture;
+				m_ambientShader.texture = _value;
 			}
 		}
 	}

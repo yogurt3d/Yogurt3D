@@ -37,13 +37,8 @@ package com.yogurt3d.core.materials
 	 */
 	public class MaterialEnvMapDiffuseTexture extends Material
 	{
-		private var m_envMap:CubeTextureMap;
-		private var m_colorMap:TextureMap;
-		private var m_normalMap:TextureMap;
-		private var m_alpha:Number;
-		private var m_reflectivityMap:TextureMap;
-		public  var m_decalShader:ShaderTexture;
 
+		public  var m_decalShader:ShaderTexture;
 		private var m_envShader:ShaderEnvMapping;
 		private var m_ambShader:ShaderAmbient;
 		private var m_diffShader:ShaderDiffuse;
@@ -54,30 +49,28 @@ package com.yogurt3d.core.materials
 										_reflectivityMap:TextureMap=null,
 									    _alpha:Number=1.0,
 										_opacity:Number=1.0,
+										_mipLevel:Boolean=false,
 									    _initInternals:Boolean=true)
 		{
 			super(_initInternals);
 			
 			super.opacity = _opacity;
-			
-			m_envMap = _envMap;		
-			m_colorMap = _colorMap;
-			m_normalMap = _normalMap;
-			m_alpha = _alpha;
-			m_reflectivityMap = _reflectivityMap;
-			
-			m_envShader = new ShaderEnvMapping(m_envMap, m_normalMap, m_reflectivityMap, m_alpha);
-			m_ambShader = new ShaderAmbient();
-			m_ambShader.opacity = _opacity;
+					
+			m_envShader = new ShaderEnvMapping(_envMap, _normalMap, _reflectivityMap, _alpha);
+			m_ambShader = new ShaderAmbient(_opacity);
 			m_diffShader = new ShaderDiffuse();
+			
+			if(_colorMap && _colorMap.transparent){
+				m_ambShader.texture = _colorMap;
+				m_envShader.texture = _colorMap;
+			}
 			
 			shaders = new Vector.<com.yogurt3d.core.materials.shaders.base.Shader>;
 			
 			shaders.push(m_ambShader);
 			shaders.push(m_diffShader);
 			
-			
-			m_decalShader = new ShaderTexture(m_colorMap);
+			m_decalShader = new ShaderTexture(_colorMap);
 			m_decalShader.params.blendEnabled = true;
 			m_decalShader.params.blendSource = Context3DBlendFactor.DESTINATION_COLOR;
 			m_decalShader.params.blendDestination = Context3DBlendFactor.ZERO;
@@ -91,32 +84,33 @@ package com.yogurt3d.core.materials
 			m_ambShader.opacity = _value;
 		
 		}
-		
-		
+	
 		public function get envMap():CubeTextureMap
 		{
-			return m_envMap;
+			return m_envShader.envMap;
 		}
 		
 		public function set envMap(value:CubeTextureMap):void{
-			m_envMap = value;
 			m_envShader.envMap = value;
 		}
 		
 		public function get texture():TextureMap{
-			return m_colorMap;	
+			return m_decalShader.texture;	
 		}
 		
 		public function set texture(value:TextureMap):void
 		{
-			m_colorMap = value;
 			if( value )
 			{
+				
+				m_ambShader.texture = value;
+				m_envShader.texture = value;
+				
 				if( m_decalShader )
 				{
 					m_decalShader.texture = value;
 				}else{
-					m_decalShader = new ShaderTexture(m_colorMap);
+					m_decalShader = new ShaderTexture(value);
 					m_decalShader.params.blendEnabled = true;
 					m_decalShader.params.blendSource = Context3DBlendFactor.DESTINATION_COLOR;
 					m_decalShader.params.blendDestination = Context3DBlendFactor.ZERO;
@@ -135,33 +129,30 @@ package com.yogurt3d.core.materials
 		
 		public function get normalMap():TextureMap
 		{
-			return m_normalMap;
+			return m_envShader.normalMap;
 		}
 		
 		public function set normalMap(value:TextureMap):void
 		{
-			m_normalMap = value;
 			m_envShader.normalMap = value;
 			m_diffShader.normalMap = value;
 		}
 		
 		public function get alpha():Number{
-			return m_alpha;	
+			return m_envShader.alpha;	
 		}
 		public function set alpha(_value:Number):void{
 			m_envShader.alpha = _value;
-			m_alpha = _value;
 		}
 		
 		public function get reflectivityMap():TextureMap
 		{
-			return m_reflectivityMap;
+			return m_envShader.reflectivityMap;
 		}
 		
 		
 		public function set reflectivityMap(_value:TextureMap):void
 		{
-			m_reflectivityMap = _value;
 			m_envShader.reflectivityMap = _value;
 		}
 		

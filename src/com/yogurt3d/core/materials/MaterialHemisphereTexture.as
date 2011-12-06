@@ -24,38 +24,29 @@ package com.yogurt3d.core.materials
 	
 	public class MaterialHemisphereTexture extends Material
 	{
+		private var m_hemiShader:ShaderHemisphereTexture;
+	
 		public function MaterialHemisphereTexture(texture:TextureMap, _initInternals:Boolean=true)
 		{
 			super(_initInternals);
-			shaders.push( hemi = new ShaderHemisphereTexture(texture) );
-			m_texture = texture;
+			shaders.push( m_hemiShader = new ShaderHemisphereTexture(texture) );
 			ambientColor.a = 1;
 		}
 		
-		public function get alphaTexture():Boolean
-		{
-			return hemi.alphaTexture;
+		public override function set opacity(value:Number):void{
+			super.opacity = value;
+			m_hemiShader.opacity = value;
 		}
-
-		public function set alphaTexture(value:Boolean):void
-		{
-			hemi.alphaTexture = value;
-		}
-
+	
 		public function get texture():TextureMap
 		{
-			return m_texture;
+			return m_hemiShader.texture;
 		}
 
 		public function set texture(value:TextureMap):void
 		{
-			m_texture = value;
+			m_hemiShader.texture = value;
 		}
-
-		private var m_texture:TextureMap;
-		public var hemi:ShaderHemisphereTexture;
-		
-		
 		
 	}
 }

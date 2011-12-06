@@ -29,6 +29,7 @@ package com.yogurt3d.core.materials
 	import com.yogurt3d.core.texture.TextureMap;
 	
 	import flash.display3D.Context3DBlendFactor;
+	import flash.display3D.Context3DCompareMode;
 	
 	/**
 	 * 
@@ -36,23 +37,12 @@ package com.yogurt3d.core.materials
 	 *  
 	 */
 	public class MaterialEnvMapFresnelSpecularTexture extends Material
-	{
-		
-		private var m_envMap:CubeTextureMap;
-		private var m_colorMap:TextureMap;
-		private var m_normalMap:TextureMap;
-		private var m_specularMap:TextureMap;
-		private var m_reflectivityMap:TextureMap;;
-		private var m_alpha:Number;
-		
-		private var m_fresnelReflectance:Number;
-		private var m_fresnelPower:uint;
-		
+	{		
 		private var lightShader:ShaderSpecular;
 		private var m_envShader:ShaderEnvMapFresnel;
-		private var m_ambShader:ShaderAmbient;
-
-			
+		public  var decal:ShaderTexture = null;
+		//private var m_ambShader:ShaderAmbient;
+		
 		public function MaterialEnvMapFresnelSpecularTexture( _envMap:CubeTextureMap=null, 
 											   _colorMap:TextureMap=null,
 											   _normalMap:TextureMap=null,
@@ -67,122 +57,138 @@ package com.yogurt3d.core.materials
 			super(_initInternals);
 			
 			super.opacity = _opacity;
+						
+			m_envShader = new ShaderEnvMapFresnel(_envMap, _normalMap, _reflectivityMap, 
+													_alpha, _fresnelReflectance, _fresnelPower);
 			
-			m_envMap = _envMap;		
-			m_colorMap = _colorMap;
-			m_reflectivityMap = _reflectivityMap;
-			
-			m_fresnelReflectance = _fresnelReflectance;
-			m_fresnelPower = _fresnelPower;
-			m_alpha = _alpha;
-			
-			m_envShader = new ShaderEnvMapFresnel(_envMap,_colorMap ,  _normalMap, m_reflectivityMap, 
-													m_alpha, m_fresnelReflectance, m_fresnelPower);
-			
-			m_envShader.params.blendEnabled = true;
-			m_envShader.params.blendSource = Context3DBlendFactor.DESTINATION_COLOR;
-			m_envShader.params.blendDestination = Context3DBlendFactor.ZERO;
-			
-			m_ambShader = new ShaderAmbient(_opacity);
-			
-			shaders = new Vector.<com.yogurt3d.core.materials.shaders.base.Shader>;
-			
-			shaders.push(m_ambShader);	
-			shaders.push(lightShader = new ShaderSpecular());
-			
+			if(_colorMap != null){
+				decal = new ShaderTexture(_colorMap);
+				decal.params.blendEnabled = true;
+				decal.params.blendSource = Context3DBlendFactor.ONE;
+				decal.params.blendDestination = Context3DBlendFactor.ZERO;
+				decal.params.depthFunction = Context3DCompareMode.LESS_EQUAL;
+				shaders.push(decal);
+				texture = _colorMap;
+			}
+
+			lightShader = new ShaderSpecular(_opacity);
+			shaders.push(lightShader);
 			shaders.push(m_envShader);
 			
 			normalMap = _normalMap;
 			specularMap = _specularMap;
+			texture = _colorMap;
 		}
 		
 		public function get shininess():Number{
 			return lightShader.shininess;
 		}
+		
 		public function set shininess(_value:Number):void{
 			lightShader.shininess = _value;
 		}
 		
 		public function get envMap():CubeTextureMap
 		{
-			return m_envMap;
+			return m_envShader.envMap;
 		}
+		
 		public function set envMap(value:CubeTextureMap):void
 		{
-			m_envMap = value;
 			m_envShader.envMap = value;
 		}
 		
 		public function get texture():TextureMap
 		{
-			return m_colorMap;
+			return m_envShader.texture;
 		}
+		
 		public function set texture(value:TextureMap):void
 		{
-			m_colorMap = value;
-			m_envShader.texture = value;
+			if(value && value.transparent){
+				m_envShader.texture = value;
+			}
+			
+			if(decal && value){
+				decal.texture = value;
+			}else if(!decal && value){
+				decal = new ShaderTexture(value);
+				shaders.splice(shaders.indexOf(m_envShader), 1);
+				decal.params.blendEnabled = true;
+				decal.params.blendSource = Context3DBlendFactor.ONE;
+				decal.params.blendDestination = Context3DBlendFactor.ZERO;
+				decal.params.depthFunction = Context3DCompareMode.LESS_EQUAL;
+				shaders.push(decal);
+				shaders.push(m_envShader);
+			}else{
+				if( decal )
+				{
+					shaders.splice(2,1);
+					decal.dispose();
+					decal = null;
+				}
+			}
+
 		}
 		
 		public function get normalMap():TextureMap
 		{
-			return m_normalMap;
+			return m_envShader.normalMap;
 		}
+		
 		public function set normalMap(value:TextureMap):void
 		{
-			m_normalMap = value;
 			m_envShader.normalMap = value;
 			lightShader.normalMap = value;
 		}
 		
 		public function get specularMap():TextureMap
 		{
-			return m_specularMap;
+			return lightShader.specularMap;
 		}
+		
 		public function set specularMap(value:TextureMap):void
 		{
-			m_specularMap = value;
 			lightShader.specularMap = value;
-			
 		}
 		
 		public function get alpha():Number{
-			return m_alpha;
+			return m_envShader.alpha;
 		}
+		
 		public function set alpha(_value:Number):void{
-			m_alpha = _value;
 			m_envShader.alpha = _value;
 		}
 		
-		
 		public function get fresnelReflectance():Number{
-			return m_fresnelReflectance;
+			return m_envShader.fresnelReflectance;
 		}
+		
 		public function set fresnelReflectance(value:Number):void{
-			m_fresnelReflectance = value;
 			m_envShader.fresnelReflectance = value;
 		}
 		
 		public function get fresnelPower():uint{
-			return m_fresnelPower;
+			return m_envShader.fresnelPower;
 		}
+		
 		public function set fresnelPower(value:uint):void{
-			m_fresnelPower = value;
 			m_envShader.fresnelPower = value;
 		}
 		
 		public function get reflectivityMap():TextureMap
 		{
-			return m_reflectivityMap;
+			return m_envShader.reflectivityMap;
 		}
+		
 		public function set reflectivityMap(value:TextureMap):void
 		{
-			m_reflectivityMap = value;
 			m_envShader.reflectivityMap = value;
 		}
 		
 		public override function set opacity(value:Number):void{
 			super.opacity = value;
-			m_ambShader.opacity = value;
+			m_envShader.alpha = value;
 		}
 		
 	}

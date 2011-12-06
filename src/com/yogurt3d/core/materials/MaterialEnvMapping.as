@@ -32,12 +32,8 @@ package com.yogurt3d.core.materials
 	public class MaterialEnvMapping extends Material
 	{
 
-		private var m_envMap:CubeTextureMap;
-		private var m_normalMap:TextureMap;
 		private var m_envShader:ShaderEnvMapping;
-		private var m_reflectivityMap:TextureMap;
-
-		
+	
 		public function MaterialEnvMapping( _envMap:CubeTextureMap, 
 											_normalMap:TextureMap=null,
 											_reflectivityMap:TextureMap=null,
@@ -47,33 +43,27 @@ package com.yogurt3d.core.materials
 			super(_initInternals);
 			
 			super.opacity = _opacity;
-			
-			m_envMap = _envMap;		
-			m_normalMap = _normalMap;
-			m_reflectivityMap = _reflectivityMap;
-					
+				
 			shaders = Vector.<com.yogurt3d.core.materials.shaders.base.Shader>([
-				m_envShader = new ShaderEnvMapping(m_envMap, m_normalMap,m_reflectivityMap, _opacity)
+				m_envShader = new ShaderEnvMapping(_envMap, _normalMap,_reflectivityMap, _opacity)
 			]);			
 		}
 		
 		public function get envMap():CubeTextureMap
 		{
-			return m_envMap;
+			return m_envShader.envMap;
 		}
 		public function set envMap(value:CubeTextureMap):void
 		{
-			m_envMap = value;
 			m_envShader.envMap = value;
 		}
 		
 		public function get normalMap():TextureMap
 		{
-			return m_normalMap;
+			return m_envShader.normalMap;
 		}
 		public function set normalMap(value:TextureMap):void
 		{
-			m_normalMap = value;
 			m_envShader.normalMap = value;
 		}
 	
@@ -84,11 +74,10 @@ package com.yogurt3d.core.materials
 		
 		public function get reflectivityMap():TextureMap
 		{
-			return m_reflectivityMap;
+			return m_envShader.reflectivityMap;
 		}
 		public function set reflectivityMap(value:TextureMap):void
 		{
-			m_reflectivityMap = value;
 			m_envShader.reflectivityMap = value;
 		}
 		

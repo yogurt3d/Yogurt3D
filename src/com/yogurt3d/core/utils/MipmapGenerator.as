@@ -28,7 +28,7 @@ package com.yogurt3d.core.utils
 			_rect.height = h;
 			
 			while (w >= 1 && h >= 1) {
-				if (source.transparent) mipmap.fillRect(_rect, 0);
+				if (alpha) mipmap.fillRect(_rect, 0x00000000);
 				mipmap.draw(source, _matrix, null, null, null, true);
 				target.uploadFromBitmapData(mipmap, i++);
 				w >>= 1;

@@ -23,6 +23,7 @@ package com.yogurt3d.io.managers.loadmanagers {
 	import com.yogurt3d.io.cache.LoadCache;
 	import com.yogurt3d.io.loaders.DataLoader;
 	import com.yogurt3d.io.loaders.interfaces.ILoader;
+	import com.yogurt3d.io.parsers.TextureMap_Parser;
 	import com.yogurt3d.io.parsers.interfaces.IParser;
 	
 	import flash.events.Event;
@@ -30,6 +31,7 @@ package com.yogurt3d.io.managers.loadmanagers {
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
 	import flash.utils.Dictionary;
+
 	/**
 	 * 
 	 * 
@@ -51,6 +53,7 @@ package com.yogurt3d.io.managers.loadmanagers {
 		YOGURT3D_INTERNAL var m_loaderInstanceByType	:Dictionary;
 		YOGURT3D_INTERNAL var m_parserInstanceByType	:Dictionary;
 		YOGURT3D_INTERNAL var m_parserTypeByFilePath	:Dictionary;
+		YOGURT3D_INTERNAL var m_mipmapType				:Dictionary;
 		YOGURT3D_INTERNAL var m_propsByFilePath			:Dictionary;
 		
 		use namespace YOGURT3D_INTERNAL;
@@ -122,7 +125,7 @@ package com.yogurt3d.io.managers.loadmanagers {
 		 * @see com.yogurt3d.io.parsers.Y3D_Parser
 		 * @see com.yogurt3d.io.parsers.YOA_Parser
 		 */
-		public function add(_filePath:String, _loaderType:Class, _parserType:Class = null, _props:Object = null):void
+		public function add(_filePath:String, _loaderType:Class, _parserType:Class = null, _props:Object = null, _mipmap:Boolean=false):void
 		{
 			if(!m_loaderInstanceByType[_loaderType])
 			{
@@ -139,11 +142,16 @@ package com.yogurt3d.io.managers.loadmanagers {
 				if(!m_parserInstanceByType[_parserType])
 				{
 					var _parser:IParser					= new _parserType();
+					if(_parser is TextureMap_Parser){
+						(_parser as TextureMap_Parser).mipmap = _mipmap;
+					}
 					m_parserInstanceByType[_parserType] = _parser;
 				}
 				
 				m_parserTypeByFilePath[_filePath]		= _parserType;
 			}
+			
+			m_mipmapType[_filePath]  				= _mipmap;
 			
 			m_files[m_files.length]					= _filePath;
 			m_loaderTypes[m_loaderTypes.length]		= _loaderType;
@@ -184,10 +192,17 @@ package com.yogurt3d.io.managers.loadmanagers {
 		{
 			var _loadedFilePath	:String	= m_files[m_loadedFileCount];
 			var _parserType		:Class	= m_parserTypeByFilePath[_loadedFilePath];
+			var _mipmap:Boolean = m_mipmapType[_loadedFilePath];
 			
 			if(_parserType)
 			{
 				var _parser	:IParser	= m_parserInstanceByType[_parserType];
+				if(_parser is TextureMap_Parser){
+					//(_parser as TextureMap_Parser).mipmap = _mipmap;
+				//	trace(_loadedFilePath);
+					TextureMap_Parser(_parser).mipmap = _mipmap;
+					//trace("LOAD MANAGER ", _filePath, " - ", (_parser as TextureMap_Parser).mipmap);
+				}
 				m_currentCache.addResource(_loadedFilePath, _parser.parse(m_currentLoader.loadedContent));
 			} else {
 				m_currentCache.addResource(_loadedFilePath, m_currentLoader.loadedContent);
@@ -251,6 +266,7 @@ package com.yogurt3d.io.managers.loadmanagers {
 			m_parserInstanceByType	= new Dictionary();
 			m_parserTypeByFilePath	= new Dictionary();
 			m_propsByFilePath		= new Dictionary();
+			m_mipmapType			= new Dictionary();
 			
 			m_currentCache			= m_localLoadCache;
 		}

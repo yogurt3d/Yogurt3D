@@ -19,26 +19,20 @@
  
 package com.yogurt3d.core.materials.shaders
 {
-	import com.adobe.utils.AGALMiniAssembler;
-	import com.yogurt3d.Yogurt3D;
 	import com.yogurt3d.core.lights.ELightType;
 	import com.yogurt3d.core.materials.shaders.base.EVertexAttribute;
 	import com.yogurt3d.core.materials.shaders.base.Shader;
 	import com.yogurt3d.core.materials.shaders.renderstate.EShaderConstantsType;
 	import com.yogurt3d.core.materials.shaders.renderstate.ShaderConstants;
 	import com.yogurt3d.core.texture.TextureMap;
-	import com.yogurt3d.core.texture.base.ITexture;
 	import com.yogurt3d.core.utils.ShaderUtils;
 	
-	import flash.display.BitmapData;
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DBlendFactor;
 	import flash.display3D.Context3DCompareMode;
 	import flash.display3D.Context3DProgramType;
-	import flash.display3D.Context3DTextureFormat;
 	import flash.display3D.Context3DTriangleFace;
 	import flash.display3D.Program3D;
-	import flash.display3D.textures.Texture;
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
 
@@ -50,13 +44,9 @@ package com.yogurt3d.core.materials.shaders
  	 **/
 	public class ShaderTexture extends Shader
 	{
-		private var _textureMap:Dictionary;
-		
 		private var _textureShaderConstants:ShaderConstants;
 		
 		private var m_bitmapData:TextureMap;
-		
-		private var m_mipLevel:uint;
 		
 		private var vaPos:uint = 0;
 		private var vaUV:uint = 1;
@@ -70,25 +60,19 @@ package com.yogurt3d.core.materials.shaders
 		private var vcProjection:uint   = 5;
 		private var vcBoneMatrices:uint = 9;
 		
-		private var m_shadowMap:TextureMap;
+		private var m_lightMap:TextureMap;
 		private var m_shadowMapDirty:Boolean = false;
 		private var m_shadowMapShaderConstants:ShaderConstants;
 		
-		private var m_alphaTextureDirty:Boolean = false;
-		private var m_alphaTexture:Boolean = false;
-		private var m_alphaShaderConstant:ShaderConstants;
+		private var m_transparencyDirty:Boolean = false;
+		private var m_transparencyConstant:ShaderConstants = null;
 		
 		
-		public function ShaderTexture(_texture:TextureMap, _miplevel:uint = 0)
+		public function ShaderTexture(_texture:TextureMap)
 		{
 			super();
-			
-			key = "Yogurt3DOriginalsShaderBitmapData";
-						
-			_textureMap = new Dictionary();
-			
-			m_bitmapData = _texture;
-			m_mipLevel = _miplevel;
+		
+			key = "Yogurt3DOriginalsShaderBitmapData"+((_texture &&_texture.mipmap)?"WithMipmap":"");
 			
 			attributes.push( EVertexAttribute.POSITION, EVertexAttribute.UV, EVertexAttribute.BONE_DATA );
 			
@@ -107,50 +91,31 @@ package com.yogurt3d.core.materials.shaders
 			
 			params.vertexShaderConstants.push( new ShaderConstants(vcBoneMatrices, EShaderConstantsType.BONE_MATRICES));
 			
-			_textureShaderConstants 	= new ShaderConstants(0, EShaderConstantsType.TEXTURE);
-			_textureShaderConstants.texture 				= _texture;
+			_textureShaderConstants 	    = new ShaderConstants(0, EShaderConstantsType.TEXTURE);
+			_textureShaderConstants.texture = _texture;
 			params.fragmentShaderConstants.push(_textureShaderConstants);
 			
-			m_alphaShaderConstant 	= new ShaderConstants(0, EShaderConstantsType.CUSTOM_VECTOR );
-			m_alphaShaderConstant.vector 				= Vector.<Number>([0.2,1,0,0]);
-			
-			
 			m_shadowMapShaderConstants = new ShaderConstants(1, EShaderConstantsType.TEXTURE);
-		}
-		
-		public function get alphaTexture():Boolean{
-			return m_alphaTexture;
-		}
-		
-		public function set alphaTexture(value:Boolean):void{
-			if( m_alphaTexture != value )
-			{
-				m_alphaTexture = value;
-				if( m_alphaTexture )
-				{
-					params.fragmentShaderConstants.push(m_alphaShaderConstant);
-				}else{
-					params.fragmentShaderConstants.splice( params.fragmentShaderConstants.indexOf( m_alphaShaderConstant ), 1 );
-				}
-				m_alphaTextureDirty = true;
-			}
+			
+			texture = _texture;
 		}
 		
 		public function get lightMap():TextureMap
 		{
-			return m_shadowMap;
+			return m_lightMap;
 		}
 		public function set lightMap(value:TextureMap):void
 		{
-			m_shadowMap = value;
+			m_lightMap = value;
 			m_shadowMapDirty = true;
-			if( m_shadowMap )
+		
+			if( m_lightMap )
 			{
 				if( params.fragmentShaderConstants.indexOf( m_shadowMapShaderConstants ) == -1 )
 				{
 					params.fragmentShaderConstants.push( m_shadowMapShaderConstants );
 				}
-				m_shadowMapShaderConstants.texture = m_shadowMap;
+				m_shadowMapShaderConstants.texture = m_lightMap;
 			}else{
 				if( params.fragmentShaderConstants.indexOf( m_shadowMapShaderConstants ) > -1 )
 				{
@@ -158,8 +123,6 @@ package com.yogurt3d.core.materials.shaders
 				}
 			}
 		}
-		
-		
 		
 		public function get shadowAndLightMapUVChannel(  ):uint{
 			return m_lightMapChannel;
@@ -186,20 +149,38 @@ package com.yogurt3d.core.materials.shaders
 			{
 				disposeShaders();
 				m_shadowMapDirty = false;
-				key = "Yogurt3DOriginalsShaderBitmapData" + ((m_shadowMap)?"WithShadowMap"+m_lightMapChannel:"") + ((m_alphaTexture)?"WithAlphaTexture":"");
-				
 			}
 			
-			if( m_alphaTextureDirty )
+			if( m_transparencyDirty )
 			{
+				if(texture.transparent){
+				
+					if (m_transparencyConstant == null){
+						m_transparencyConstant = new ShaderConstants(0, EShaderConstantsType.CUSTOM_VECTOR );
+						m_transparencyConstant.vector = Vector.<Number>([0.2, 1.0, 0, 0]);
+						params.fragmentShaderConstants.push(m_transparencyConstant);
+					}
+				
+				}else{
+				
+					if(m_transparencyConstant != null){
+						params.fragmentShaderConstants.splice( params.fragmentShaderConstants.indexOf( m_transparencyConstant ), 1 );
+						m_transparencyConstant = null;
+					}
+				
+				}
 				disposeShaders();
-				m_alphaTextureDirty = false;
-				key = "Yogurt3DOriginalsShaderBitmapData" + ((m_shadowMap)?"WithShadowMap"+m_lightMapChannel:"") + ((m_alphaTexture)?"WithAlphaTexture":"");
+				m_transparencyDirty = false;
+			
 			}
 			if(!m_bitmapData)
 			{
 				return null;
 			}
+			
+			key = "Yogurt3DOriginalsShaderBitmapData" + ((m_lightMap)?"WithShadowMap"+m_lightMapChannel:"") 
+				+ ((texture.transparent)?"WithAlphaTexture":"") + ((texture.mipmap)?"WithMipmap":"");
+			
 			return super.getProgram( _context3D, _lightType, _meshKey );
 		}
 		
@@ -220,7 +201,7 @@ package com.yogurt3d.core.materials.shaders
 				return ShaderUtils.vertexAssambler.assemble(Context3DProgramType.VERTEX, 	code );
 			}
 			return ShaderUtils.vertexAssambler.assemble(Context3DProgramType.VERTEX, 	
-				"m44 op, va0, vc5\nmov v0, va1.xyzw\n" + ((m_shadowMap )?"mov v1 va"+vaUV2+"\n":"")
+				"m44 op, va0, vc5\nmov v0, va1.xyzw\n" + ((m_lightMap )?"mov v1 va"+vaUV2+"\n":"")
 			);
 		}
 		/**
@@ -228,18 +209,26 @@ package com.yogurt3d.core.materials.shaders
 		 * 
 		 */
 		public override function getFragmentProgram(_lightType:ELightType=null):ByteArray{
-			var code:String = "tex ft0, v0, fs0<2d,wrap,linear,nomip>\n";
+			var code:String;
 			
-			if( m_alphaTexture )
+			if(texture.mipmap)
+				code = "tex ft0, v0, fs0<2d,wrap,linear,miplinear>\n";
+			else
+				code = "tex ft0, v0, fs0<2d,wrap,linear>\n";
+			
+			if( texture.transparent)
 			{
 				code += "sub ft1.x, ft0.w, fc0.x\nkil ft1.x\n";
 			}
-			if(m_shadowMap){
-				code += "tex ft1, v1.xy, fs1<2d,wrap,linear,nomip>\nmul ft0, ft1, ft0\n";
+			if(m_lightMap){
+				if(m_lightMap.mipmap)
+					code += "tex ft1, v1.xy, fs1<2d,wrap,linear,miplinear>\nmul ft0, ft1, ft0\n";
+				else
+					code += "tex ft1, v1.xy, fs1<2d,wrap,linear>\nmul ft0, ft1, ft0\n";
 			}
 			
-			
-			//code += "mov ft0.w, fc.y\n";
+		//	if()
+		//	code += "mul ft0.w, ft0.w, fc0.y\n";
 			code += "mov oc, ft0";
 			return ShaderUtils.fragmentAssambler.assemble(Context3DProgramType.FRAGMENT,code);
 		}
@@ -262,9 +251,10 @@ package com.yogurt3d.core.materials.shaders
 		public function set texture(value:TextureMap):void
 		{
 			if( value )
-			{
+			{				
 				m_bitmapData = value;
 				_textureShaderConstants.texture = m_bitmapData;
+				m_transparencyDirty = true;
 			}
 		}
 		

@@ -230,6 +230,10 @@ package com.yogurt3d.core.sceneobjects
 			m_postEffects.push( _effect );
 		}
 		
+		public function removeAllEffects():void{
+			m_postEffects.splice(0,m_postEffects.length);
+		}
+		
 		public function removePostEffect( _effect:Effect ):void{
 			var index:uint;
 			if( (index = m_postEffects.indexOf( _effect ) ) != -1 )

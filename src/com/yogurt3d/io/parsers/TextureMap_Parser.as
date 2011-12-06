@@ -32,10 +32,22 @@ package com.yogurt3d.io.parsers
 	
 	public class TextureMap_Parser implements IParser
 	{
-		public function TextureMap_Parser()
+		private var m_mipmap:Boolean = false;
+		public function TextureMap_Parser(_mipmap:Boolean=false)
 		{
+			m_mipmap = _mipmap;
 		}
 		
+		public function get mipmap():Boolean
+		{
+			return m_mipmap;
+		}
+
+		public function set mipmap(value:Boolean):void
+		{
+			m_mipmap = value;
+		}
+
 		public function parse(_value:*, split:Boolean=true):*
 		{
 			var texture:TextureMap;
@@ -57,7 +69,8 @@ package com.yogurt3d.io.parsers
 					cubeMap = 0x80 & cubeMap;
 					var Log2Width:uint = byte.readUnsignedByte();
 					var Log2Height:uint = byte.readUnsignedByte();
-					var Count:uint = byte.readUnsignedByte();
+					var mipLevel:uint = byte.readUnsignedByte();
+			
 					if( cubeMap == 0 )
 					{
 						texture = new TextureMap();
@@ -66,14 +79,28 @@ package com.yogurt3d.io.parsers
 						texture.YOGURT3D_INTERNAL::m_height = Math.pow(2, Log2Height);
 						byte.position = 0;
 						texture.byteArray = byte;
+						texture.mipLevel = mipLevel;
+						if(texture.mipLevel > 1){
+							texture.mipmap = true;
+							m_mipmap = true;
+						}else{
+							texture.mipmap = false;
+							m_mipmap = false;
+						}
+							
 						return texture;
 					}else{
+						// TODO
 						var cubetexture:CubeTextureMap = new CubeTextureMap();
 						cubetexture.YOGURT3D_INTERNAL::m_compressed = true;
 						cubetexture.YOGURT3D_INTERNAL::m_width = Math.pow(2, Log2Width);
 						cubetexture.YOGURT3D_INTERNAL::m_height = Math.pow(2, Log2Height);
 						byte.position = 0;
+						//texture.m_mipLevel = Count;
 						cubetexture.setFromCompressedByteArray( byte );
+						
+//						if(texture.m_mipLevel > 1)
+//							texture.mipmap = true;
 						return cubetexture;
 					}
 				}else{
@@ -83,16 +110,19 @@ package com.yogurt3d.io.parsers
 				texture = new TextureMap();
 				texture.YOGURT3D_INTERNAL::m_compressed = false;
 				texture.bitmapData = _value.bitmapData;
+				texture.mipmap = m_mipmap;
 				return texture;
 			}else if( _value is BitmapData ){
 				texture = new TextureMap();
 				texture.YOGURT3D_INTERNAL::m_compressed = false;
 				texture.bitmapData = _value as BitmapData;
+				texture.mipmap = m_mipmap;
 				return texture;
 			}else if( _value is DisplayObject ){
 				texture = new TextureMap();
 				texture.YOGURT3D_INTERNAL::m_compressed = false;
 				texture.displayObject = _value;
+				texture.mipmap = m_mipmap;
 				return texture;
 			}
 		}

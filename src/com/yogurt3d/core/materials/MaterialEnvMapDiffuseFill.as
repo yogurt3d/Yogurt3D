@@ -39,11 +39,11 @@ package com.yogurt3d.core.materials
 	public class MaterialEnvMapDiffuseFill extends Material
 	{
 	
-		private var m_envMap:CubeTextureMap;
-		private var m_normalMap:TextureMap;
-		private var m_reflectivityMap:TextureMap;
-		private var m_alpha:Number;
-		private var m_color:uint;
+//		private var m_envMap:CubeTextureMap;
+//		private var m_normalMap:TextureMap;
+//		private var m_reflectivityMap:TextureMap;
+//		private var m_alpha:Number;
+//		private var m_color:uint;
 		
 		public  var decal:ShaderSolidFill;
 		private var m_envShader:ShaderEnvMapping;
@@ -61,20 +61,13 @@ package com.yogurt3d.core.materials
 			super(_initInternals);
 			
 			super.opacity = _opacity;
-			
-			m_envMap = _envMap;		
-			m_color  = _color;
-			m_normalMap = _normalMap;
-			m_reflectivityMap = _reflectivityMap;
-			m_alpha = _alpha;
-			
 			shaders = new Vector.<com.yogurt3d.core.materials.shaders.base.Shader>;
 			
-			m_envShader = new ShaderEnvMapping(m_envMap, m_normalMap,m_reflectivityMap, m_alpha);
+			m_envShader = new ShaderEnvMapping(_envMap, _normalMap,_reflectivityMap, _alpha);
 			m_ambShader = new ShaderAmbient(_opacity);
 			m_diffShader = new ShaderDiffuse();
 			
-			decal = new ShaderSolidFill(m_color);
+			decal = new ShaderSolidFill(_color);
 			decal.params.blendEnabled = true;
 			decal.params.blendSource = Context3DBlendFactor.DESTINATION_COLOR;
 			decal.params.blendDestination = Context3DBlendFactor.ZERO;
@@ -89,50 +82,45 @@ package com.yogurt3d.core.materials
 		
 		public function get envMap():CubeTextureMap
 		{
-			return m_envMap;
+			return m_envShader.envMap;
 		}
 		public function set envMap(value:CubeTextureMap):void
 		{
-			m_envMap = value;
 			m_envShader.envMap = value;	
 		}
 		
 		public function get normalMap():TextureMap
 		{
-			return m_normalMap;
+			return m_envShader.normalMap;
 		}
 		public function set normalMap(value:TextureMap):void
 		{
-			m_normalMap = value;
 			m_envShader.normalMap = value;
 			m_diffShader.normalMap = value;
 		}
 		
 		public function get reflectivityMap():TextureMap
 		{
-			return m_reflectivityMap;
+			return m_envShader.reflectivityMap;
 		}
 		public function set reflectivityMap(value:TextureMap):void
 		{
-			m_reflectivityMap = value;
 			m_envShader.reflectivityMap = value;
 		}
 		
 		public function get alpha():Number{
-			return m_alpha;
+			return m_envShader.alpha;
 		}
 		public function set alpha(_alpha:Number):void{
-			m_envShader.alpha = _alpha;
-			m_alpha = _alpha;	
+			m_envShader.alpha = _alpha;	
 		}
 		
 		public function get color():uint
 		{
-			return m_color;
+			return decal.color;
 		}
 		public function set color(value:uint):void
 		{
-			m_color = value;
 			decal.color = value;
 		}
 		

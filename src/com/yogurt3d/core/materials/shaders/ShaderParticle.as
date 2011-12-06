@@ -164,7 +164,7 @@ package com.yogurt3d.core.materials.shaders
 			var _vertexShader:String = [
 					
 				"m44 op va0 vc0",	
-				"mov v1 va2",  // pass normals
+				//"mov v1 va2",  // pass normals
 				"mov v2 va1"  // pass UV
 				
 			].join("\n");

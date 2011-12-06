@@ -50,6 +50,10 @@ package com.yogurt3d.core.materials.shaders
 		private var m_normalMapConst				:ShaderConstants;
 		private var m_reflectivityMapDirty			:Boolean = false;
 		private var m_reflectivityMapConst			:ShaderConstants;
+
+		private var _alphaTextureConst:ShaderConstants;
+		private var _alphaDirty:Boolean = false;
+		private var m_texture:TextureMap;
 	
 		/**
 		 * 
@@ -61,11 +65,6 @@ package com.yogurt3d.core.materials.shaders
 										 _reflectivityMap:TextureMap=null,
 										 _alpha:Number=1.0 ){
 			key = "Yogurt3DOriginalsShaderEnvMapping";
-			
-			m_cubeMap					= _cubeMap;
-			m_alpha 					= _alpha;
-			normalMap 					= _normalMap;
-			reflectivityMap			    = _reflectivityMap;
 			
 			params.writeDepth 		= true;
 			params.depthFunction 	= Context3DCompareMode.LESS_EQUAL;
@@ -84,7 +83,7 @@ package com.yogurt3d.core.materials.shaders
 			
 			// environmental map // FS0
 			m_envMapTexture 							= new ShaderConstants(0, EShaderConstantsType.TEXTURE);
-			m_envMapTexture.texture 					= m_cubeMap;
+			m_envMapTexture.texture 					= _cubeMap;
 			params.fragmentShaderConstants.push(m_envMapTexture);
 			
 
@@ -95,12 +94,27 @@ package com.yogurt3d.core.materials.shaders
 				
 			// fc1 : alpha
 			m_alphaConsts   							= new ShaderConstants(1,EShaderConstantsType.CUSTOM_VECTOR );
-			m_alphaConsts.vector						= Vector.<Number>([ m_alpha, 1.0, 0.5, -1.0 ]);
+			m_alphaConsts.vector						= Vector.<Number>([ _alpha, 1.0, 0.2, -1.0 ]);
 			params.fragmentShaderConstants.push(m_alphaConsts);
 			
-			
+			envMap					= _cubeMap;
+			alpha 					= _alpha;
+			normalMap 				= _normalMap;
+			reflectivityMap			= _reflectivityMap;
+
 		}
 		
+		public function get texture():TextureMap
+		{
+			return m_texture;
+		}
+
+		public function set texture(value:TextureMap):void
+		{
+			m_texture = value;
+			_alphaDirty = true;
+		}
+
 		public function get envMap():CubeTextureMap{
 			return m_cubeMap;
 		}
@@ -200,7 +214,7 @@ package com.yogurt3d.core.materials.shaders
 				
 				_normalAGAL = [   
 					
-					"tex ft1 v2 fs1<2d,wrap,linear>",
+					((!normalMap.mipmap)?"tex ft1 v2 fs1<2d,wrap,linear>":"tex ft1 v2 fs1<2d,wrap,linear,miplinear>"),
 					// lookup normal from normal map, move from [0,1] to  [-1, 1] range, normalize
 					// texNormal = texNormal * 2 - 1;
 					"add ft1 ft1 ft1",
@@ -223,7 +237,7 @@ package com.yogurt3d.core.materials.shaders
 			if(m_reflectivityMap != null){
 				_reflectivityAGAL = [   
 				
-					"tex ft2 v2 fs2<2d,wrap,linear>",     // get reflection map
+					((!reflectivityMap.mipmap)?"tex ft2 v2 fs2<2d,wrap,linear>":"tex ft2 v2 fs2<2d,wrap,linear,miplinear>"),     // get reflection map
 					"mul ft0.w ft2.xyz fc1.x"
 				
 				].join("\n");
@@ -248,6 +262,8 @@ package com.yogurt3d.core.materials.shaders
 					"mul ft0 ft0 ft1",   			      // 2(V.N)N
 					"sub ft0 ft0 ft7",   				  // 2(V.N)N - V
 					"tex ft0 ft0 fs0<3d,cube,linear> ",   // get envMap
+					((texture && texture.transparent)?"tex ft1, v2.xy, fs3<2d,wrap,linear>\n" +
+						"sub ft1.w ft1.w fc1.z\nkil ft1.w":""),
 					_reflectivityAGAL,                    // set alpha
 					"mov oc ft0"
 				
@@ -306,7 +322,34 @@ package com.yogurt3d.core.materials.shaders
 				
 			}
 			
-			key = "Yogurt3DOriginalsShaderEnvMapping" + ((m_normalMap)?"WithNormal":"") + ((m_reflectivityMap)?"WithReflectivity":"");
+			if(_alphaDirty )
+			{
+				
+				if(texture != null ){
+					
+					if( _alphaTextureConst == null )
+					{
+						_alphaTextureConst 	= new ShaderConstants(3, EShaderConstantsType.TEXTURE);
+						params.fragmentShaderConstants.push(_alphaTextureConst);	
+					}
+					_alphaTextureConst.texture = texture;
+				}else{
+					
+					if(_alphaTextureConst != null){
+						params.fragmentShaderConstants.splice( params.fragmentShaderConstants.indexOf( _alphaTextureConst ), 1 );
+						_alphaTextureConst = null;
+					}
+				}
+				disposeShaders();
+				_alphaDirty = false;
+				
+			}
+			
+			key = "Yogurt3DOriginalsShaderEnvMapping" + ((m_normalMap)?"WithNormal":"") +
+				((m_normalMap && m_normalMap.mipmap)?"WithNormalMipmap":"") + 
+				((m_reflectivityMap && m_reflectivityMap.mipmap)?"WithRefMipmap":"") + 
+				((m_reflectivityMap)?"WithReflectivity":"")+
+				((m_texture && m_texture.transparent)?"WithTextureAlpha":"");
 			return super.getProgram( _context3D, _lightType, _meshType );
 		}
 	}
