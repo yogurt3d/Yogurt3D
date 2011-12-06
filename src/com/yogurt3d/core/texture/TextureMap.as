@@ -326,6 +326,10 @@ package com.yogurt3d.core.texture
 				m_tempBitmap = new BitmapData( m_width, m_height, true, 0x00FFFFFF );
 			}
 			// draw the displayObject onto a bitmapData
+			if( transparent )
+			{
+				m_tempBitmap.fillRect( m_tempBitmap.rect, 0x00FFFFFF );
+			}
 			m_tempBitmap.draw( m_displayObject, null,null,null,m_tempBitmap.rect, false );	
 			
 			if( !m_mipmap )
@@ -353,16 +357,21 @@ package com.yogurt3d.core.texture
 			// check weather texture is uploaded to the GPU of texture has changes
 			if( m_context3DMap[ _context3D ] == null || m_dirty )
 			{
-				// If texture has changed dispose old.
-				if( m_context3DMap[ _context3D ] != null )
-				{
-					TextureBase(m_context3DMap[ _context3D ]).dispose();
-				}
+				var _oldWidth:Number = m_width;
+				var _oldHeight:Number = m_height;
 				m_width = MathUtils.getClosestPowerOfTwo( m_width );
 				m_height = MathUtils.getClosestPowerOfTwo( m_height );
-				// create a new texture
-				var _texture:Texture = _context3D.createTexture(m_width, m_height, Context3DTextureFormat.BGRA, false );
 				
+				if( _oldWidth != m_width && _oldHeight != m_height )
+				{
+					// If texture has changed dispose old.
+					if( m_context3DMap[ _context3D ] != null )
+					{
+						TextureBase(m_context3DMap[ _context3D ]).dispose();
+					}
+					// create a new texture
+					var _texture:Texture = _context3D.createTexture(m_width, m_height, Context3DTextureFormat.BGRA, false );
+				}
 				// According to the texture type upload if to the GPU
 				if( m_byteArray && m_compressed )
 				{
