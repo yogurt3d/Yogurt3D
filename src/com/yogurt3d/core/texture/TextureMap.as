@@ -361,8 +361,8 @@ package com.yogurt3d.core.texture
 				var _oldHeight:Number = m_height;
 				m_width = MathUtils.getClosestPowerOfTwo( m_width );
 				m_height = MathUtils.getClosestPowerOfTwo( m_height );
-				
-				if( _oldWidth != m_width && _oldHeight != m_height )
+				var _texture:Texture;
+				if( m_context3DMap[ _context3D ] == null || (_oldWidth != m_width && _oldHeight != m_height) )
 				{
 					// If texture has changed dispose old.
 					if( m_context3DMap[ _context3D ] != null )
@@ -370,7 +370,9 @@ package com.yogurt3d.core.texture
 						TextureBase(m_context3DMap[ _context3D ]).dispose();
 					}
 					// create a new texture
-					var _texture:Texture = _context3D.createTexture(m_width, m_height, Context3DTextureFormat.BGRA, false );
+					_texture = _context3D.createTexture(m_width, m_height, Context3DTextureFormat.BGRA, false );
+				}else{
+					_texture = m_context3DMap[ _context3D ];
 				}
 				// According to the texture type upload if to the GPU
 				if( m_byteArray && m_compressed )
