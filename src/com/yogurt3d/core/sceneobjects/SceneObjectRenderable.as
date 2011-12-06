@@ -254,8 +254,8 @@ package com.yogurt3d.core.sceneobjects {
 		{
 			var _sceneObjectCopy:SceneObjectRenderable 	= new SceneObjectRenderable();
 			
-			_sceneObjectCopy.geometry	 				= m_geometry;
-			_sceneObjectCopy.m_material					= m_material;
+			_sceneObjectCopy.geometry	 				= m_geometry.instance();
+			_sceneObjectCopy.m_material					= m_material.instance();
 			_sceneObjectCopy.m_visible 					= m_visible;
 			
 			_sceneObjectCopy.m_castShadows 				= m_castShadows;
