@@ -57,14 +57,18 @@ package com.yogurt3d.presets.cameras
 			
 			_viewport.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown );
 			_viewport.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyUp );
-			//_viewport.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMoveEvent );
+			_viewport.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMoveEvent );
 			_viewport.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheelEvent );
 			
 			m_target = new SceneObject;
+			
+			target.transformation.moveAlongLocal(40,0,40);
 		}
+		
 		private function onKeyDown( _e:KeyboardEvent ):void{
 			m_keydict[_e.keyCode] = true;
 		}
+		
 		private function onKeyUp( _e:KeyboardEvent ):void{
 			delete m_keydict[_e.keyCode];
 		}
@@ -102,8 +106,7 @@ package com.yogurt3d.presets.cameras
 			
 			if (event.buttonDown )
 			{
-				rotY += _offsetX ;
-				rotX += _offsetY ;
+				target.transformation.moveAlongLocal(_offsetX*0.06,0,_offsetY*0.06);
 			}
 			
 			m_mouseLastX 	= event.localX;
@@ -220,23 +223,15 @@ package com.yogurt3d.presets.cameras
 			m_matrix3d = new Matrix3D();
 			
 			target.transformation.rotationY = this.rotY;
-			
-			if( m_keydict[ Keyboard.W ] != null )
-			{
-				target.transformation.moveAlongLocal(0,0,-1);
-			}
-			if( m_keydict[Keyboard.S ] != null)
-			{
-				target.transformation.moveAlongLocal(0,0,1);
-			}
-			
+
 			if( m_keydict[Keyboard.A ] != null)
 			{
-				target.transformation.moveAlongLocal(-1,0,0);
+				dist -= 1;
 			}
-			if( m_keydict[Keyboard.D ] != null)
+				
+			else if( m_keydict[Keyboard.Z ] != null)
 			{
-				target.transformation.moveAlongLocal(1,0,0);
+				dist += 1;
 			}
 			
 			
@@ -276,6 +271,17 @@ package com.yogurt3d.presets.cameras
 			m_matrix3d.appendRotation( m_rotX, Vector3D.X_AXIS );
 			m_matrix3d.appendRotation( m_rotY, Vector3D.Y_AXIS );
 			m_matrix3d.appendRotation( m_rotZ, Vector3D.Z_AXIS );
+			
+			if(m_target.transformation.x > 80)
+				m_target.transformation.x = 80;
+			else if(m_target.transformation.x < 10)
+				m_target.transformation.x = 10;
+			
+			if(m_target.transformation.z > 80)
+				m_target.transformation.z = 80;
+			else if(m_target.transformation.z < 10)
+				m_target.transformation.z = 10;
+			
 			m_matrix3d.appendTranslation( m_target.transformation.x, m_target.transformation.y, m_target.transformation.z );
 			
 			transformation.position = m_matrix3d.position;
