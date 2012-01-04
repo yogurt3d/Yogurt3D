@@ -24,25 +24,33 @@ package com.yogurt3d.core.scenetree.octree
 	
 	public class OctNode
 	{
-		public var m_box:AxisAlignedBoundingBox;
-		
 		public var m_sumChildren:int;
 		public var m_numNodes:int;
-		public var nodes:Array = new Array(null,null);
+		public var nodes:Vector.<OctNode> = new Vector.<OctNode>(8,true);
 		public var m_parent:OctNode = null;
 		
+		public var m_min:Vector3D;
+		
+		public var m_max:Vector3D;
+		
+		public var m_looseMin:Vector3D;
+		
+		public var m_looseMax:Vector3D;
+		
+		public var m_center:Vector3D;
+		
+		public var m_testSizeVector:Vector3D;
+		
+		public var m_halfSizeVector:Vector3D;
+		
+		public var m_testSizeVectorLength:Number;
+		
 		public var children:Vector.<Octant> = new Vector.<Octant>();
-		//public var childrenDynamic:Vector.<ISceneObjectRenderable> = new Vector.<ISceneObjectRenderable>();
+
 		
 		
 		public function OctNode(parent:OctNode)
 		{
-			for(var x:int = 0; x < 2; x++)
-			{
-				nodes[x] = new Array(null, null);
-				for(var y:int = 0; y < 2; y++)
-					nodes[x][y] = new Array(null,null);
-			}
 			m_sumChildren = 0;
 			m_numNodes = 0;
 			m_parent = parent;
@@ -53,43 +61,11 @@ package com.yogurt3d.core.scenetree.octree
 		
 		public function isTwiceSize( boxOfOctant:AxisAlignedBoundingBox ):Boolean
 		{
-			var boxSize:Vector3D =  boxOfOctant.max.subtract(boxOfOctant.min);
+			var boxSize:Vector3D = boxOfOctant.size;
 			
-			return ((boxSize.x <= m_box.halfSize.x) && (boxSize.y <= m_box.halfSize.y) && (boxSize.z <= m_box.halfSize.z));
+			return ((boxSize.x <= m_halfSizeVector.x) && (boxSize.y <= m_halfSizeVector.y) && (boxSize.z <= m_halfSizeVector.z));
 		}
-		
-		
-		public function getIndexes( boxOfOctant:AxisAlignedBoundingBox, indexes:Vector.<int> ):void
-		{
-			if ( boxOfOctant.center.x > m_box.center.x )
-				indexes[0] = 1;
-			else
-				indexes[0] = 0;
-			
-			if ( boxOfOctant.center.y > m_box.center.y )
-				indexes[1] = 1;
-			else
-				indexes[1] = 0;
-			
-			if ( boxOfOctant.center.z > m_box.center.z )
-				indexes[2] = 1;
-			else
-				indexes[2] = 0;			
-		}
-		
-		public function containsOctant( octant:Octant ):Boolean
-		{
-			if ( !(( m_box.max.x > octant.m_box.center.x && m_box.max.y > octant.m_box.center.y && 
-				m_box.max.z > octant.m_box.center.z  ) && ( m_box.min.x < octant.m_box.center.x  
-					&& m_box.min.y < octant.m_box.center.y && m_box.min.x < octant.m_box.center.x)) )
-			{
-				return false;
-			}
-			//isTwiceSize can be ignored 
-			//the other test is for main size comparison of loose octree ,can be made between actual sizes (not half sizes)
-			return (!(isTwiceSize(octant.m_box)) && ( octant.m_box.halfSize.x < m_box.halfSize.x 
-				&& octant.m_box.halfSize.y < m_box.halfSize.y && octant.m_box.halfSize.z < m_box.halfSize.z));
-		}
+
 		
 		
 	}

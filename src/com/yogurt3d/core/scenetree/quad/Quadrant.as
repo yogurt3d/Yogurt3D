@@ -1,5 +1,5 @@
 /*
-* OctNode.as
+* Octant.as
 * This file is part of Yogurt3D Flash Rendering Engine 
 *
 * Copyright (C) 2011 - Yogurt3D Corp.
@@ -22,49 +22,42 @@ package com.yogurt3d.core.scenetree.quad
 	
 	import flash.geom.Vector3D;
 	
-	public class QuadNode
+	public class Quadrant
 	{
-		public var m_sumChildren:int;
-		public var m_numNodes:int;
-		public var nodes:Vector.<QuadNode> = new Vector.<QuadNode>(4,true);
-		public var m_parent:QuadNode = null;
+		public var m_parentNode:QuadNode = null;
 		
-
+		public var sceneObject:ISceneObjectRenderable;
 		
-		public var m_min:Vector3D;
-		
-		public var m_max:Vector3D;
-		
-		public var m_looseMin:Vector3D;
-		
-		public var m_looseMax:Vector3D;
-		
-		public var m_center:Vector3D;
-		
-		public var m_testSizeVector:Vector3D;
-		
-		public var m_halfSizeVector:Vector3D;
-		
-		public var m_testSizeVectorLength:Number;
-		
-		public var children:Vector.<Quadrant> = new Vector.<Quadrant>();
-	
-		
-		public function QuadNode(parent:QuadNode)
+		public function Quadrant(sceneObject:ISceneObjectRenderable)
 		{
-			m_sumChildren = 0;
-			m_numNodes = 0;
-			m_parent = parent;
+			this.sceneObject = sceneObject;
+			
 		}
 		
-		
-		
-		
-		public function isTwiceSize( boxOfOctant:AxisAlignedBoundingBox ):Boolean
+		public function isInParent():Boolean
 		{
-			var boxSize:Vector3D = boxOfOctant.size;
 			
-			return ((boxSize.x <= m_halfSizeVector.x) && (boxSize.z <= m_halfSizeVector.z));
+			var parentNodeMax:Vector3D =  m_parentNode.m_looseMax;
+			var parentNodeMin:Vector3D =  m_parentNode.m_looseMin;
+			
+			var quadrantMax:Vector3D =  sceneObject.axisAlignedBoundingBox.max;
+			var quadrantMin:Vector3D =  sceneObject.axisAlignedBoundingBox.min;
+			
+			if ( (  
+					parentNodeMax.x > quadrantMax.x && 
+					//parentNodeMax.y > quadrantMax.y && 
+					parentNodeMax.z > quadrantMax.z  
+				  ) && 
+				 (  
+					parentNodeMin.x < quadrantMin.x && 
+					//parentNodeMin.y < quadrantMin.y && 
+					parentNodeMin.z < quadrantMin.z  
+				 ) 
+			)
+				return true;
+			
+			
+			return false;
 		}
 	}
 }

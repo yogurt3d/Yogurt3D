@@ -64,6 +64,8 @@ package com.yogurt3d.core.transformations {
 		
 		YOGURT3D_INTERNAL var m_onChange							: Signal;
 		
+		YOGURT3D_INTERNAL var m_isAddedToSceneRefreshList:Boolean 	= false;
+		
 		/**
 		 * 
 		 */

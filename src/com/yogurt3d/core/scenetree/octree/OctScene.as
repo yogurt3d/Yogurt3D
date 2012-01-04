@@ -21,15 +21,17 @@ package com.yogurt3d.core.scenetree.octree
 	
 	public class OctScene extends Scene
 	{
-		public function OctScene( minX:Number, minY:Number, minZ:Number, maxX:Number,maxY:Number, maxZ:Number,  _initInternals:Boolean=true)
+		public function OctScene( minX:Number, minY:Number, minZ:Number, maxX:Number,maxY:Number, maxZ:Number, maxDepth:uint = 3, preAllocateNodes:Boolean = true,  _initInternals:Boolean=true)
 		{
 			var args:Object = new Object();
 			args["x"] = minX;
 			args["y"] = minY;
 			args["z"] = minZ;
-			args["width"] = maxX - minX;
-			args["height"] = maxY - minY;
-			args["depth"] = maxZ - minZ;
+			args["width"] = maxX;
+			args["height"] = maxY;
+			args["depth"] = maxZ;
+			args["maxDepth"] = maxDepth;
+			args["preAllocateNodes"] = preAllocateNodes;
 			super("OcSceneTreeManagerDriver", args, _initInternals);
 		}
 	}

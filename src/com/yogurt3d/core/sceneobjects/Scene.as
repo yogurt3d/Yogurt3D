@@ -19,6 +19,7 @@
 package com.yogurt3d.core.sceneobjects
 {
 	import com.yogurt3d.Yogurt3D;
+	import com.yogurt3d.core.cameras.Camera;
 	import com.yogurt3d.core.cameras.interfaces.ICamera;
 	import com.yogurt3d.core.effects.Effect;
 	import com.yogurt3d.core.lights.Light;
@@ -30,6 +31,7 @@ package com.yogurt3d.core.sceneobjects
 	import com.yogurt3d.core.sceneobjects.interfaces.IScene;
 	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObject;
 	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObjectRenderable;
+	import com.yogurt3d.core.lights.ELightType;
 	
 	/**
 	 * <strong>IScene</strong> interface abstract type.
@@ -86,9 +88,31 @@ package com.yogurt3d.core.sceneobjects
 			return SceneTreeManager.getSceneRenderableSet(this,_camera);
 		}
 		
-		public function prepareSceneForNewFrame():void
+		public function getIlluminatorLightIndexes(_scene:IScene, _objectRenderable:ISceneObjectRenderable):Vector.<int>
 		{
-			SceneTreeManager.clearSceneFrameData( this );
+			return SceneTreeManager.getIlluminatorLightIndexes(this,_objectRenderable);
+		}
+		
+		public function clearIlluminatorLightIndexes(_scene:IScene, _objectRenderable:ISceneObjectRenderable):void
+		{
+			return SceneTreeManager.clearIlluminatorLightIndexes(this,_objectRenderable);
+		}
+		
+		public function getRenderableSetLight(_light:Light, _lightIndex:int):Vector.<ISceneObjectRenderable>
+		{
+			return SceneTreeManager.getSceneRenderableSetLight(this, _light, _lightIndex);
+		}
+		
+		public function preRender(_activeCamera:ICamera):void
+		{
+			SceneTreeManager.clearSceneFrameData( this, _activeCamera);
+			getRenderableSet(_activeCamera);
+			SceneTreeManager.initIntersectedLightByCamera(this, _activeCamera);
+		}
+		
+		public function postRender():void
+		{
+		
 		}
 		
 		/**
@@ -102,6 +126,11 @@ package com.yogurt3d.core.sceneobjects
 		public function get lightSet():Vector.<Light>
 		{
 			return SceneTreeManager.getSceneLightSet(this);
+		}
+		
+		public function getIntersectedLightsByCamera(_camera:ICamera):Vector.<Light>
+		{
+			return SceneTreeManager.s_intersectedLightsByCamera[_camera];
 		}
 		
 		/**

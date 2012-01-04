@@ -49,7 +49,20 @@ package com.yogurt3d.core.sceneobjects.interfaces
 		 * */
 		function getRenderableSet(_camera:ICamera):Vector.<ISceneObjectRenderable>;
 		
-		function prepareSceneForNewFrame():void;
+		function getIlluminatorLightIndexes(_scene:IScene, _objectRenderable:ISceneObjectRenderable):Vector.<int>;
+		
+		function clearIlluminatorLightIndexes(_scene:IScene, _objectRenderable:ISceneObjectRenderable):void;
+		
+		function getRenderableSetLight(_light:Light, _lightIndex:int):Vector.<ISceneObjectRenderable>;
+		
+		function getIntersectedLightsByCamera(_camera:ICamera):Vector.<Light>;
+
+		
+		//function prepareSceneForNewFrame():void;
+		
+		function preRender(_activeCamera:ICamera):void;
+		
+		function postRender():void;
 		
 		/**
 		 * <strong>ICamera</strong>

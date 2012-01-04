@@ -213,7 +213,7 @@ package com.yogurt3d.io.parsers
 				//base.setBindPose();
 				
 				totalBones 		+= base.bones.length;
-				totalMIndices	+= base.indices.length;
+				totalMIndices		+= base.indices.length;
 				totalTri 		+= base.indices.length/3;
 				totalVert 		+= base.vertexCount;
 				

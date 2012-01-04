@@ -19,6 +19,7 @@
 package com.yogurt3d.core.managers.scenetreemanager
 {
 	import com.yogurt3d.core.cameras.interfaces.ICamera;
+	import com.yogurt3d.core.lights.ELightType;
 	import com.yogurt3d.core.lights.Light;
 	import com.yogurt3d.core.managers.idmanager.IDManager;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
@@ -33,6 +34,8 @@ package com.yogurt3d.core.managers.scenetreemanager
 	import com.yogurt3d.core.scenetree.SceneTreeManagerDriver;
 	
 	import flash.utils.Dictionary;
+	
+
 
 	/**
 	 * 
@@ -56,6 +59,13 @@ package com.yogurt3d.core.managers.scenetreemanager
 		private static var s_lightsByScene					:Dictionary;
 		private static var s_cameraObjectsByScene			:Dictionary;
 		private static var s_sceneTreeManagerByScene		:Dictionary;
+		public static var  s_renSetIlluminatorLightIndexes  :Dictionary;
+		public static var  s_sceneLightIndexes              :Dictionary;
+		public static var  s_scenePointLightIndexes         :Dictionary;
+		public static var  s_sceneSpotLightIndexes          :Dictionary;
+		public static var  s_sceneDirectionalLightIndexes   :Dictionary;
+		public static var  s_intersectedLightsByCamera      :Dictionary;
+		
 		
 		private static var s_renderableSetByScene			:Dictionary;
 		
@@ -81,6 +91,65 @@ package com.yogurt3d.core.managers.scenetreemanager
 		public static function getParent(_sceneObject:ISceneObject):ISceneObject
 		{
 			return s_parentBySceneObjects[_sceneObject];
+		}
+		
+		public static function getSceneLightIndexes(_scene:IScene):Vector.<int>
+		{
+			return s_sceneLightIndexes[_scene];
+		}
+		
+/*		public static function getRenSetIlluminatorLightIndexes(_scene:IScene, _renderableChild:ISceneObjectRenderable):Vector.<int>
+		{
+			return s_renSetIlluminatorLightIndexes[ _scene ][_renderableChild];
+		}*/
+		
+		public static function initIntersectedLightByCamera(_scene:IScene, _activeCamera:ICamera):void
+		{
+			var lights:Vector.<Light> =  s_lightsByScene[_scene];
+			var k:int;
+			
+			if( lights )
+			{				
+				if( SceneTreeManager.s_intersectedLightsByCamera[_activeCamera] == null)
+					SceneTreeManager.s_intersectedLightsByCamera[_activeCamera] = new Vector.<Light>;
+					
+				for ( k = 0; k < lights.length; k++) 
+				{
+					var _light:Light = lights[k];
+					
+					if(_light.type == ELightType.DIRECTIONAL)
+						
+						SceneTreeManager.s_intersectedLightsByCamera[_activeCamera].push(_light);
+					
+					else if(_activeCamera.frustum.containmentTestSphere(_light.frustum.boundingSphere) != 0)
+					{
+						getSceneRenderableSetLight(_scene, _light, k );
+						SceneTreeManager.s_intersectedLightsByCamera[_activeCamera].push(_light);
+					}
+				}
+			}
+			
+		}
+		public static function initRenSetIlluminatorLightIndexes(_scene:IScene, _renderableChild:ISceneObjectRenderable):void
+		{
+			if( s_renSetIlluminatorLightIndexes[ _scene ] == null )
+			{
+				s_renSetIlluminatorLightIndexes[ _scene ] = new Dictionary();
+			}
+			
+			s_renSetIlluminatorLightIndexes[ _scene ][_renderableChild] = new Vector.<int>;
+		}
+		
+		public static function getIlluminatorLightIndexes(_scene:IScene, _renderableChild:ISceneObjectRenderable):Vector.<int>
+		{
+			return IRenderableManager(s_sceneTreeManagerByScene[ _scene ]).getIlluminatorLightIndexes( _scene, _renderableChild );
+			//return s_renSetIlluminatorLightIndexes[_scene][_renderableChild].concat(s_sceneDirectionalLightIndexes);
+		}
+		
+		public static function clearIlluminatorLightIndexes(_scene:IScene, _renderableChild:ISceneObjectRenderable):void
+		{
+			 IRenderableManager(s_sceneTreeManagerByScene[ _scene ]).clearIlluminatorLightIndexes( _scene, _renderableChild );
+			//s_renSetIlluminatorLightIndexes[_scene][_renderableChild].length = 0;
 		}
 		
 		public static function getRoot(_sceneObject:ISceneObject):ISceneObject
@@ -117,10 +186,16 @@ package com.yogurt3d.core.managers.scenetreemanager
 			return s_sceneObjectsByScene[_scene];
 		}
 		
-		public static function clearSceneFrameData( _scene:IScene ):void{
+		public static function clearSceneFrameData( _scene:IScene, _camera:ICamera ):void{
+			
 			if( s_renderableSetByScene[ _scene ] != null )
 			{
 				delete s_renderableSetByScene[ _scene ];
+			}
+			
+			if( s_intersectedLightsByCamera[ _camera ] != null )
+			{
+				delete s_intersectedLightsByCamera[ _camera ];
 			}
 		}
 		
@@ -132,7 +207,7 @@ package com.yogurt3d.core.managers.scenetreemanager
 			}
 			if( s_renderableSetByScene[ _scene ] == null )
 			{
-				s_renderableSetByScene[ _scene ] = new Dictionary();
+				s_renderableSetByScene[ _scene ] = new Dictionary(true);
 			}			
 			if( s_sceneTreeManagerByScene[ _scene ] )
 			{
@@ -140,6 +215,28 @@ package com.yogurt3d.core.managers.scenetreemanager
 			}
 			return null; // s_renderableObjectsByScene[_scene];
 		}
+		
+		
+		public static function getSceneRenderableSetLight(_scene:IScene, _light:Light, _lightIndex:int):Vector.<ISceneObjectRenderable>
+		{
+			if( s_renderableSetByScene[ _scene ] && s_renderableSetByScene[ _scene ][_light] )
+			{
+				return s_renderableSetByScene[ _scene ][_light];
+			}
+			if( s_renderableSetByScene[ _scene ] == null )
+			{
+				s_renderableSetByScene[ _scene ] = new Dictionary(true);
+			}			
+			if( s_sceneTreeManagerByScene[ _scene ] )
+			{
+				if(_light.type == ELightType.DIRECTIONAL)
+					return IRenderableManager(s_sceneTreeManagerByScene[ _scene ]).getSceneRenderableSetLight( _scene, _light, _lightIndex );
+				
+				return s_renderableSetByScene[ _scene ][_light] = IRenderableManager(s_sceneTreeManagerByScene[ _scene ]).getSceneRenderableSetLight( _scene, _light, _lightIndex );
+			}
+			return null; // s_renderableObjectsByScene[_scene];
+		}
+		
 		
 		public static function getSceneLightSet(_scene:IScene):Vector.<Light>
 		{
@@ -434,11 +531,50 @@ package com.yogurt3d.core.managers.scenetreemanager
 			
 			if(!_sceneLights)
 			{
+				s_sceneLightIndexes[_scene] = new Vector.<int>();
+				
 				_sceneLights				= new Vector.<Light>();
 				s_lightsByScene[_scene] 	= _sceneLights;
+				
+				//if(_light.type == ELightType.POINT)
+				s_scenePointLightIndexes[_scene] = new Vector.<int>();
+
+				// initialized in class declaration because of some "not null" needs
+				//else if(_light.type == ELightType.DIRECTIONAL)
+				s_sceneDirectionalLightIndexes[_scene] = new Vector.<int>();
+
+				//else if(_light.type == ELightType.SPOT)
+				s_sceneSpotLightIndexes[_scene] = new Vector.<int>();
+
+				
+					
 			}
 			
+			if(_light.type == ELightType.POINT)
+				s_scenePointLightIndexes[_scene].push(s_sceneLightIndexes[_scene].length);
+			
+			else if(_light.type == ELightType.DIRECTIONAL)
+				s_sceneDirectionalLightIndexes[_scene].push(s_sceneLightIndexes[_scene].length);
+			
+			else if(_light.type == ELightType.SPOT)
+				s_sceneSpotLightIndexes[_scene].push(s_sceneLightIndexes[_scene].length);
+			
+			s_sceneLightIndexes[_scene].push(s_sceneLightIndexes[_scene].length);
 			_sceneLights[_sceneLights.length]		= _light;
+		
+
+			var dict:Dictionary = IRenderableManager(s_sceneTreeManagerByScene[ _scene ]).getListOfVisibilityTesterByScene();
+			
+			if(dict == null)
+				return;
+			
+			if(dict[_scene] == null)
+				dict[_scene] = new Dictionary();
+			
+			if(dict[_scene][_light] == null)
+				dict[_scene][_light] = new Vector.<ISceneObjectRenderable>(1500);
+			
+			
 		}
 		
 		private static  function addChildIntoSceneSet(_sceneObject:ISceneObject, _scene:IScene):void
@@ -451,7 +587,7 @@ package com.yogurt3d.core.managers.scenetreemanager
 		{
 			if( s_sceneTreeManagerByScene[ _scene ] )
 			{
-				IRenderableManager(s_sceneTreeManagerByScene[ _scene ]).addChild(_renderableChild,_scene,index);
+				IRenderableManager(s_sceneTreeManagerByScene[ _scene ]).addChild(_renderableChild, _scene, index);
 			}
 		}
 		
@@ -466,6 +602,19 @@ package com.yogurt3d.core.managers.scenetreemanager
 			}
 			
 			_camerasByScene[_camerasByScene.length] = ICamera(_cameraChild);
+			
+			var dict:Dictionary = IRenderableManager(s_sceneTreeManagerByScene[ _scene ]).getListOfVisibilityTesterByScene();
+			
+			if(dict == null)
+				return;
+			
+			if(dict[_scene] == null)
+				dict[_scene] = new Dictionary();
+			
+			if(dict[_scene][_cameraChild] == null)
+				dict[_scene][_cameraChild] = new Vector.<ISceneObjectRenderable>(1500);
+			
+			
 		}
 		
 		private static  function removeChildFromSceneSet(_sceneObject:ISceneObject, _scene:IScene):void
@@ -483,7 +632,7 @@ package com.yogurt3d.core.managers.scenetreemanager
 		{
 			if( s_sceneTreeManagerByScene[ _scene ] )
 			{
-				IRenderableManager(s_sceneTreeManagerByScene[ _scene ]).removeChild( _renderableChild,_scene );
+				IRenderableManager(s_sceneTreeManagerByScene[ _scene ]).removeChildFromTree( _renderableChild, _scene );
 			}
 			/*var _renderableObjectsByScene 	:Vector.<ISceneObjectRenderable>	= s_renderableObjectsByScene[_scene];
 			var _index						:int								= _renderableObjectsByScene.indexOf(_renderableChild);
@@ -502,17 +651,47 @@ package com.yogurt3d.core.managers.scenetreemanager
 		private static function removeLightFromSceneSet(_light:Light, _scene:IScene):void 
 		{
 			var _sceneLights		:Vector.<Light>	= s_lightsByScene[_scene];
-			var _index				:int				= _sceneLights.indexOf(_light);
+			var _index				:int			= _sceneLights.indexOf(_light);
 			
 			if (_index != -1) 
 			{
 				_sceneLights.splice(_index, 1);
+				s_sceneLightIndexes[_scene].pop();
+				
+				var indexes:Vector.<int>;
+				
+				if(_light.type == ELightType.POINT)
+					indexes = s_scenePointLightIndexes[_scene];
+				else if(_light.type == ELightType.DIRECTIONAL)
+					indexes = s_sceneDirectionalLightIndexes[_scene];
+				else if(_light.type == ELightType.SPOT)
+					indexes = s_sceneSpotLightIndexes[_scene];
+				
+				for(var i:int = 0; i < indexes.length; i++)
+				{
+					if(indexes[i] == _index)
+						indexes.splice(indexes[i], 1);
+					
+					if(indexes.length == 0)
+						indexes = null;
+				}
 			}
 			
 			if(_sceneLights.length == 0)
 			{
-				s_lightsByScene[_light] = null;
+				s_lightsByScene[_scene] = null;
+				delete s_sceneLightIndexes[_scene];
+				
 			}
+			
+			var dict:Dictionary = IRenderableManager(s_sceneTreeManagerByScene[ _scene ]).getListOfVisibilityTesterByScene();
+			
+			if(dict == null)
+				return;
+			
+			if(dict[_scene][_light] == null)
+				 delete dict[_scene][_light];
+			
 			
 		}
 		
@@ -530,6 +709,16 @@ package com.yogurt3d.core.managers.scenetreemanager
 			{
 				s_cameraObjectsByScene[_scene] = null;
 			}
+			
+			var dict:Dictionary = IRenderableManager(s_sceneTreeManagerByScene[ _scene ]).getListOfVisibilityTesterByScene();
+			
+			if(dict == null)
+				return;
+			
+			if(dict[_scene][_cameraChild])
+				delete dict[_scene][_cameraChild];
+			
+			
 		}
 		
 		private static function initContainerDictionaries(_container:ISceneObject):void
@@ -560,7 +749,13 @@ package com.yogurt3d.core.managers.scenetreemanager
 			s_cameraObjectsByScene			= new Dictionary(true);
 			s_lightsByScene					= new Dictionary(true);
 			s_renderableSetByScene			= new Dictionary(true);
-			
+			s_renSetIlluminatorLightIndexes = new Dictionary(true);
+			s_intersectedLightsByCamera     = new Dictionary(true);
+			s_sceneLightIndexes				= new Dictionary(true);
+			s_scenePointLightIndexes  		= new Dictionary(true);
+			s_sceneDirectionalLightIndexes  = new Dictionary(true);
+			s_sceneSpotLightIndexes			= new Dictionary(true);
+			//s_sceneLightIndexes             = new Vector.<int>;
 			return true;
 		}
 	}

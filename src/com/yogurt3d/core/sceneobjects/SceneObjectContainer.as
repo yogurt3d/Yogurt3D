@@ -38,7 +38,7 @@ package com.yogurt3d.core.sceneobjects {
  	 * @author Yogurt3D Engine Core Team
  	 * @company Yogurt3D Corp.
  	 **/
-	public class SceneObjectContainer extends SceneObject implements ISceneObject
+	public class SceneObjectContainer extends SceneObject
 	{
 		
 	}

@@ -323,7 +323,7 @@ package com.yogurt3d.core.sceneobjects {
 		public function removeChild(_value:ISceneObject):void
 		{
 			SceneTreeManager.removeChild(_value, this);
-			
+			m_reinitboundingVolumes = true;
 			_value.transformation.onChange.remove( seekChildTransformationChange );
 		}
 		

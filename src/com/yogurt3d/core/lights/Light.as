@@ -48,7 +48,7 @@ package com.yogurt3d.core.lights
 	 * @author Yogurt3D Engine Core Team
 	 * @company Yogurt3D Corp.
 	 **/
-	public class Light extends SceneObject implements ICamera
+	public class Light extends SceneObject
 	{		
 		private static var m_depthProgram:ShaderDepthMap;
 		
@@ -346,6 +346,41 @@ package com.yogurt3d.core.lights
 			}
 		}
 		
+		
+		public function updateProjectionDirectional():void{
+			
+			//if( m_type == ELightType.DIRECTIONAL && scene) {
+				var temp:Matrix3D = MatrixUtils.TEMP_MATRIX;
+				temp.copyFrom( transformation.matrixGlobal );
+				temp.position = new Vector3D(0,0,0);
+				temp.invert();
+				
+				//var _x :Vector.<Number> = this.directionVector;
+				
+				var _min :Vector3D = new Vector3D(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
+				var _max :Vector3D = new Vector3D(Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
+				var corner:Vector3D;
+				
+				var corners:Vector.<Vector3D> = Scene(scene).m_rootObject.axisAlignedBoundingBox.corners;
+				
+				for(var i:int = 0 ; i < 8; i++)
+				{
+					corner = temp.transformVector(corners[i]);
+					
+					if(corner.x > _max.x) _max.x = corner.x;
+					if(corner.x < _min.x) _min.x = corner.x;
+					if(corner.y > _max.y) _max.y = corner.y;
+					if(corner.y < _min.y) _min.y = corner.y;
+					if(corner.z > _max.z) _max.z = corner.z;
+					if(corner.z < _min.z) _min.z = corner.z;
+					
+				}
+				frustum.setProjectionOrthoAsymmetric(_min.x, _max.x, _min.y, _max.y, -_max.z, -_min.z );
+			
+		}
+		
+		
+		
 		private function onAddedToSceneEvent( obj:ISceneObject, scene:IScene ):void{
 			setProjection();
 		}
@@ -359,6 +394,9 @@ package com.yogurt3d.core.lights
 			super.initInternals();
 			
 			m_frustum = new Frustum();
+			
+			if(type == ELightType.POINT)
+				m_frustum.sphereCheck = true;
 			
 			onAddedToScene.add( onAddedToSceneEvent );
 			
@@ -377,7 +415,7 @@ package com.yogurt3d.core.lights
 			
 			innerConeAngle 			= 40;
 			outerConeAngle 			= 60;
-			range 					= 150;
+			range 				= 200;
 
 			m_shadowColor 			= new Color(0,0,0,1);
 			

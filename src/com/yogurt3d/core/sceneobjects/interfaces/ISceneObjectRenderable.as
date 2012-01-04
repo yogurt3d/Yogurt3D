@@ -21,6 +21,7 @@ package com.yogurt3d.core.sceneobjects.interfaces {
 	import com.yogurt3d.core.geoms.Mesh;
 	import com.yogurt3d.core.geoms.interfaces.IMesh;
 	import com.yogurt3d.core.materials.base.Material;
+	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.viewports.ViewportLayer;
 	
 	import flash.utils.ByteArray;
@@ -76,6 +77,12 @@ package com.yogurt3d.core.sceneobjects.interfaces {
 
 		function get culling():String;
 		function set culling(_value:String):void;
+		
+		function get isInFrustum():Boolean;
+		function set isInFrustum( _value:Boolean ):void;
+		
+		function get enlighteningLightIndexes():Vector.<int>;
+		function set enlighteningLightIndexes( _value:Vector.<int> ):void;
 		
 	}
 }

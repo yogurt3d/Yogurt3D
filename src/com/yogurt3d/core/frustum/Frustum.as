@@ -46,6 +46,8 @@ package com.yogurt3d.core.frustum{
 		public var boundingSphere: BoundingSphere;
 		public var m_bSCenterOrginal: Vector3D;
 		
+		private var m_sphereCheck:Boolean = false;
+		
 		private var m_projectionMatrix:Matrix3D;
 		
 		public function Frustum()
@@ -56,7 +58,13 @@ package com.yogurt3d.core.frustum{
 			{
 				vPlanes[i] = new Plane();	
 			}
+			
 			m_vCornerPoints = new Vector.<Vector3D>(8,true);
+			
+			for(var j:int = 0; j < m_vCornerPoints.length; j++)
+			{
+				m_vCornerPoints[j] = new Vector3D();	
+			}
 			
 			m_projectionMatrix = new Matrix3D();
 		}
@@ -71,6 +79,16 @@ package com.yogurt3d.core.frustum{
 			return m_projectionMatrix;
 		}
 		
+		
+		YOGURT3D_INTERNAL function get sphereCheck():Boolean
+		{
+			return m_sphereCheck;
+		}
+		
+		YOGURT3D_INTERNAL function set sphereCheck(value:Boolean):void
+		{
+			m_sphereCheck = value;
+		}
 		
 		/**
 		 * @inheritDoc  
@@ -100,9 +118,7 @@ package com.yogurt3d.core.frustum{
 		{
 			ProjectionUtils.setProjectionOrthoAsymmetric(m_projectionMatrix, _left, _right, _bottom, _top, _near, _far);
 			
-			CalcFrustumBSOrthoAsymmetric(_left, _right, _bottom, _top, _near, _far);
-			//CalcFrustumBSPers(_fovy, _aspect, _near, _far);
-			//CalcFrustumPointsPers(_fovy, _aspect, _near, _far);
+			CalcFrustumBSOrthoAsym(_left, _right, _bottom, _top, _near, _far);
 		}
 		/**
 		 * @inheritDoc   
@@ -117,7 +133,6 @@ package com.yogurt3d.core.frustum{
 			ProjectionUtils.setProjectionPerspective(m_projectionMatrix, _fovy, _aspect, _near, _far);
 			
 			CalcFrustumBSPers(_fovy, _aspect, _near, _far);
-			CalcFrustumPointsPers(_fovy, _aspect, _near, _far);
 		}
 		/**
 		 * @inheritDoc   
@@ -137,7 +152,7 @@ package com.yogurt3d.core.frustum{
 			//CalcFrustumPointsPers(_fovy, _aspect, _near, _far);
 		}
 		
-		private function CalcFrustumBSPers(_fovy:Number, _aspect:Number, _near:Number, _far:Number):void
+		public function CalcFrustumBSPers(_fovy:Number, _aspect:Number, _near:Number, _far:Number):void
 		{
 			var viewDistance :Number =_near - _far;
 			m_bSCenterOrginal = new Vector3D(0, 0, -_near + viewDistance*0.5);
@@ -150,46 +165,27 @@ package com.yogurt3d.core.frustum{
 			
 			boundingSphere = new BoundingSphere(differVector.lengthSquared, m_bSCenterOrginal);
 		}
-		private function CalcFrustumBSOrthoAsymmetric(_left:Number, _right:Number, _bottom:Number, _top:Number, _near:Number, _far:Number):void{
-			
-			m_bSCenterOrginal = new Vector3D((_right-_left) / 2 + _right, (_top-_bottom) / 2 + _bottom, -_near + (_near - _far) / 2);
-			
-			var h:Number = _top-_bottom;
-			var w:Number = Math.abs(_right-_left);
-			
-			boundingSphere = new BoundingSphere( Math.max( h, w, _far - _near ) / 2, m_bSCenterOrginal);
-			
-			var points:Vector.<Vector3D> = m_vCornerPoints;
-			
-			
-			points[0] = new Vector3D(-w/2,-h/2,-_far);//far bottom left
-			points[1] = new Vector3D(w/2,-h/2,-_far);//far bottom right
-			points[2] = new Vector3D(w/2,h/2,-_far);//far top right
-			points[3] = new Vector3D(-w/2,h/2,-_far);//far top left
-			
-			points[4] = new Vector3D(-w/2,-h/2,  -_near);//near bottom left
-			points[5] = new Vector3D(w/2, -h/2,  -_near);//near bottom right
-			points[6] = new Vector3D(w/2,  h/2, -_near);//near top right
-			points[7] = new Vector3D(-w/2,  h/2, -_near);//near top left
-		}
-		private function CalcFrustumBSOrtho(_width:Number, _height:Number, _near:Number, _far:Number):void
+		
+		
+		public function CalcFrustumBSOrthoAsym(_left:Number, _right:Number, _bottom:Number, _top:Number, _near:Number, _far:Number):void
 		{
-			var viewDistance :Number =_near - _far;
-			m_bSCenterOrginal = new Vector3D(_width/2, _height/2, -_near + viewDistance/2 );
+			m_bSCenterOrginal = new Vector3D(_left + ((_right-_left)*0.5), _bottom + ((_top-_bottom)*0.5), -_far + ((_far-_near)*0.5));
 			
-			boundingSphere = new BoundingSphere( Math.max( _width, _height, _far - _near ) / 2, m_bSCenterOrginal);
+			var cornerPoint:Vector3D = new Vector3D(_right, _top, -_far);
 			
-			var points:Vector.<Vector3D> = m_vCornerPoints;
+			boundingSphere = new BoundingSphere(cornerPoint.subtract(m_bSCenterOrginal).lengthSquared, m_bSCenterOrginal);
+		}
+		
+		
+		public function CalcFrustumBSOrtho(_width:Number, _height:Number, _near:Number, _far:Number):void
+		{
+			var viewDistance:Number = _far - _near;
 			
-			points[0] = new Vector3D(-_width/2,-_height/2,-_far);//far bottom left
-			points[1] = new Vector3D(_width/2,-_height/2,-_far);//far bottom right
-			points[2] = new Vector3D(_width/2,_height/2,-_far);//far top right
-			points[3] = new Vector3D(-_width/2,_height/2,-_far);//far top left
+			m_bSCenterOrginal = new Vector3D(0, 0, -_far + viewDistance*0.5);
 			
-			points[4] = new Vector3D(-_width/2,-_height/2,  -_near);//near bottom left
-			points[5] = new Vector3D(_width/2, -_height/2,  -_near);//near bottom right
-			points[6] = new Vector3D(_width/2,  _height/2, -_near);//near top right
-			points[7] = new Vector3D(-_width/2,  _height/2, -_near);//near top left
+			var cornerPoint:Vector3D = new Vector3D(_width*0.5, _height*0.5, -_far);
+			
+			boundingSphere = new BoundingSphere(cornerPoint.subtract(m_bSCenterOrginal).lengthSquared, m_bSCenterOrginal);
 		}
 		
 		private function  CalcFrustumPointsPers(_fovy:Number, _aspect:Number, _near:Number, _far:Number):void
@@ -207,16 +203,53 @@ package com.yogurt3d.core.frustum{
 			
 			var points:Vector.<Vector3D> = m_vCornerPoints;
 			
-			points[0] = new Vector3D(-Wfar/2,-Hfar/2,-_far);//far bottom left
-			points[1] = new Vector3D(Wfar/2,-Hfar/2,-_far);//far bottom right
-			points[2] = new Vector3D(Wfar/2,Hfar/2,-_far);//far top right
-			points[3] = new Vector3D(-Wfar/2,Hfar/2,-_far);//far top left
+			points[0].setTo(-Wfar/2,-Hfar/2,-_far);//far bottom left
+			points[1].setTo(Wfar/2,-Hfar/2,-_far);//far bottom right
+			points[2].setTo(Wfar/2,Hfar/2,-_far);//far top right
+			points[3].setTo(-Wfar/2,Hfar/2,-_far);//far top left
 			
-			points[4] = new Vector3D(-Wnear/2,-Hnear/2,  -_near);//near bottom left
-			points[5] = new Vector3D(Wnear/2, -Hnear/2,  -_near);//near bottom right
-			points[6] = new Vector3D(Wnear/2,  Hnear/2, -_near);//near top right
-			points[7] = new Vector3D(-Wnear/2,  Hnear/2, -_near);//near top left
+			points[4].setTo(-Wnear/2,-Hnear/2,  -_near);//near bottom left
+			points[5].setTo(Wnear/2, -Hnear/2,  -_near);//near bottom right
+			points[6].setTo(Wnear/2,  Hnear/2, -_near);//near top right
+			points[7].setTo(-Wnear/2,  Hnear/2, -_near);//near top left
 		}
+		
+		
+		public function CalcFrustumPointsOrtho(_width:Number, _height:Number, _near:Number, _far:Number):void
+		{
+			var _halfWidth:Number = _width*0.5;
+			var _halfheight:Number = _height*0.5;
+			
+			var points:Vector.<Vector3D> = m_vCornerPoints;
+			
+			points[0].setTo(-_halfWidth,-_halfheight,-_far);//far bottom left
+			points[1].setTo(_halfWidth,-_halfheight,-_far);//far bottom right
+			points[2].setTo(_halfWidth,_halfheight, -_far);//far top right
+			points[3].setTo(-_halfWidth, _halfheight,-_far);//far top left
+			
+			points[4].setTo(-_halfWidth,-_halfheight,  -_near);//near bottom left
+			points[5].setTo(_halfWidth, -_halfheight,  -_near);//near bottom right
+			points[6].setTo(_halfWidth,  _halfheight, -_near);//near top right
+			points[7].setTo(-_halfWidth, _halfheight, -_near);//near top left
+		
+		}
+		
+		public function CalcFrustumPointsOrthoAsym(_left:Number, _right:Number, _bottom:Number, _top:Number, _near:Number, _far:Number):void
+		{
+			var points:Vector.<Vector3D> = m_vCornerPoints;
+			
+			points[0].setTo(_left,_bottom,-_far);//far bottom left
+			points[1].setTo(_right,_bottom,-_far);//far bottom right
+			points[2].setTo(_right,_top, -_far);//far top right
+			points[3].setTo(_left, _top,-_far);//far top left
+			
+			points[4].setTo(_left,_bottom,  -_near);//near bottom left
+			points[5].setTo(_right, _bottom,  -_near);//near bottom right
+			points[6].setTo(_right,  _top, -_near);//near top right
+			points[7].setTo(_left, _top, -_near);//near top left
+			
+		}
+		
 		
 		/*public function TransformedFrustumCorners():Vector.<Vector3D>
 		{

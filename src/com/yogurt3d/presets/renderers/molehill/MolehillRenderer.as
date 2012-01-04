@@ -142,7 +142,7 @@ package com.yogurt3d.presets.renderers.molehill
 			var len:uint; var subMeshIndex:int;
 			
 			// update shadow maps
-			updateShadowMaps( _lights, _scene );
+			updateShadowMaps( _scene.getIntersectedLightsByCamera(_camera), _scene, _camera);
 			tempRect.setTo(0,0,_viewport.width,_viewport.height);
 			// condition weather there are screen space post processing effects
 			if(_postEffects.length > 0)
@@ -160,8 +160,9 @@ package com.yogurt3d.presets.renderers.molehill
 				
 			vsManager.cleanVertexBuffers( _context3d );
 			
-			renderSceneObjects(_renderableSet, _lights, _camera);
-			renderShadowMaps(_lights, _scene, _camera);
+			renderSceneObjects(_renderableSet, _lights, _camera, _scene);
+			renderShadow(_renderableSet, _lights, _camera, _scene);
+			
 			
 			vsManager.cleanVertexBuffers( _context3d );
 			
@@ -216,133 +217,109 @@ package com.yogurt3d.presets.renderers.molehill
 			setProgramConstants 			= rendererHelper.setProgramConstants;
 		}	
 		
-		private function renderShadowMaps(_lights:Vector.<Light>, _scene:IScene, _camera:ICamera):void
-		{
-			var k:int;
-			var _renderableObject:ISceneObjectRenderable;
-			var i:int;
-			
-			var m_tempMatrix:Matrix3D = new Matrix3D();
-			if( _lights )
-			{
-				for ( k = 0; k < _lights.length; k++) {
-					var _light:Light = _lights[k];	
-					if( _light.shadows != EShadowType.NONE )
-					{
-						var _lightRenderables:Vector.<ISceneObjectRenderable> = _scene.getRenderableSet( _camera );
-						renderShadow(_lightRenderables, _light, _camera);
-						
-						if(_light.type == ELightType.POINT)
-						{
-							
-							_context3d.setTextureAt(1, null);
-						}
-						
-					}
-				}
-				m_lastProgram = null;
-				
-			}
-		}
 		
-		private function updateShadowMaps(_lights:Vector.<Light>, _scene:IScene):void
+		private function updateShadowMaps(_lights:Vector.<Light>, _scene:IScene, _camera:ICamera):void
 		{
 			var k:int;
 			var _renderableObject:ISceneObjectRenderable;
 			var i:int;
-			
-			var m_tempMatrix:Matrix3D = new Matrix3D();
+
 			if( _lights )
 			{				
 				for ( k = 0; k < _lights.length; k++) {
-					var _light:Light = _lights[k];	
-					if( _light.shadows != EShadowType.NONE )
+					var _light:Light = _lights[k];
+					
+					var _lightRenderables:Vector.<ISceneObjectRenderable>
+					
+					if(_light.shadows != EShadowType.NONE)
+							_lightRenderables = _scene.getRenderableSetLight(_light, k);
+						else
+							continue;
+					
+
+					
+					rtManager.setRenderTo( _context3d, _light.shadowMap, true );
+					
+					_context3d.setBlendFactors( Context3DBlendFactor.ONE, Context3DBlendFactor.ZERO);
+					
+					_context3d.setColorMask( true, true, true, true);
+					
+					_context3d.setDepthTest( true, Context3DCompareMode.LESS );
+					
+					_context3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, Vector.<Number>([1, 255, 65025, 160581375, 0.003921569, 0.003921569, 0.009, 0 ]), 2);
+					
+					_context3d.setCulling( Context3DTriangleFace.FRONT );
+					
+					if(_light.type == ELightType.POINT)
 					{
-					    rtManager.setRenderTo( _context3d, _light.shadowMap, true );
+						_context3d.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 4, Vector.<Number>([_light.range, 0, -1, 1]), 1);//w is near
+						drawShadowMap(  _lightRenderables , _light );	
 						
-						_context3d.setBlendFactors( Context3DBlendFactor.ONE, Context3DBlendFactor.ZERO);
+						rtManager.setRenderTo( _context3d, _light.shadowMap2, true );
 						
-						_context3d.setColorMask( true, true, true, true);
+						_context3d.setCulling( Context3DTriangleFace.BACK );
+						_context3d.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 4, Vector.<Number>([_light.range, 0,  1, 1]), 1);//w is near
 						
-						_context3d.setDepthTest( true, Context3DCompareMode.LESS );
+						drawShadowMap( _lightRenderables, _light );
 						
-						_context3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, Vector.<Number>([1, 255, 65025, 160581375, 0.003921569, 0.003921569, 0.009, 0 ]), 2);
-
-						_context3d.setCulling( Context3DTriangleFace.FRONT );
+					}else{
+						drawShadowMap( _lightRenderables, _light );	
+					}
+					
+					
+					if(_light.shadows == EShadowType.SOFT)
+					{
+						vsManager.cleanVertexBuffers( _context3d );
 						
-						var _lightRenderables:Vector.<ISceneObjectRenderable> = _scene.getRenderableSet(_light);
+						var lightShadowMapRect:Rectangle = new Rectangle(0,0,_light.shadowMap.width,_light.shadowMap.height);
+						rtManager.setRenderTo( _context3d, m_shadowFilter.getRenderTarget( lightShadowMapRect ) );
 						
-						if(_light.type == ELightType.POINT)
+						//horizantal							
+						m_shadowFilter.setdirection(1,0);
+						m_shadowFilter.postProcess(_context3d, lightShadowMapRect, _light.shadowMap);
+						
+						
+						// swap buffers
+						m_shadowFilter.YOGURT3D_INTERNAL::m_renderTarget = _light.shadowMap;
+						_light.shadowMap = rtManager.getRenderTarget();
+						
+						
+						rtManager.setRenderTo( _context3d, m_shadowFilter.getRenderTarget( lightShadowMapRect ) );
+						
+						//vertical
+						m_shadowFilter.setdirection(0,1);
+						m_shadowFilter.postProcess(_context3d, lightShadowMapRect, _light.shadowMap);
+						
+						// swap buffers
+						m_shadowFilter.YOGURT3D_INTERNAL::m_renderTarget = _light.shadowMap;
+						_light.shadowMap = rtManager.getRenderTarget();
+						
+						if( _light.type == ELightType.POINT )
 						{
-							_context3d.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 4, Vector.<Number>([_light.range, 0, -1, 1]), 1);//w is near
-							drawShadowMap(  _lightRenderables , _light );	
-
-							rtManager.setRenderTo( _context3d, _light.shadowMap2, true );
-							
-							_context3d.setCulling( Context3DTriangleFace.BACK );
-							_context3d.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 4, Vector.<Number>([_light.range, 0,  1, 1]), 1);//w is near
-							
-							drawShadowMap( _lightRenderables, _light );
-							
-						}else{
-							drawShadowMap( _lightRenderables, _light );	
-						}
-						
-						
-						if(_light.shadows == EShadowType.SOFT)
-						{
-							vsManager.cleanVertexBuffers( _context3d );
-							
-							var lightShadowMapRect:Rectangle = new Rectangle(0,0,_light.shadowMap.width,_light.shadowMap.height);
+							lightShadowMapRect.setTo(0,0,_light.shadowMap2.width,_light.shadowMap2.height);
 							rtManager.setRenderTo( _context3d, m_shadowFilter.getRenderTarget( lightShadowMapRect ) );
 							
-							//horizantal							
 							m_shadowFilter.setdirection(1,0);
-							m_shadowFilter.postProcess(_context3d, lightShadowMapRect, _light.shadowMap);
+							m_shadowFilter.postProcess(_context3d, lightShadowMapRect, _light.shadowMap2);
 							
 							
-							// swap buffers
-							m_shadowFilter.YOGURT3D_INTERNAL::m_renderTarget = _light.shadowMap;
-							_light.shadowMap = rtManager.getRenderTarget();
-							
+							m_shadowFilter.YOGURT3D_INTERNAL::m_renderTarget = _light.shadowMap2;
+							_light.shadowMap2 = rtManager.getRenderTarget();
 							
 							rtManager.setRenderTo( _context3d, m_shadowFilter.getRenderTarget( lightShadowMapRect ) );
 							
-							//vertical
 							m_shadowFilter.setdirection(0,1);
-							m_shadowFilter.postProcess(_context3d, lightShadowMapRect, _light.shadowMap);
+							m_shadowFilter.postProcess(_context3d, lightShadowMapRect, _light.shadowMap2);
 							
-							// swap buffers
-							m_shadowFilter.YOGURT3D_INTERNAL::m_renderTarget = _light.shadowMap;
-							_light.shadowMap = rtManager.getRenderTarget();
-							
-							if( _light.type == ELightType.POINT )
-							{
-								lightShadowMapRect.setTo(0,0,_light.shadowMap2.width,_light.shadowMap2.height);
-								rtManager.setRenderTo( _context3d, m_shadowFilter.getRenderTarget( lightShadowMapRect ) );
-								
-								m_shadowFilter.setdirection(1,0);
-								m_shadowFilter.postProcess(_context3d, lightShadowMapRect, _light.shadowMap2);
-							
-								
-								m_shadowFilter.YOGURT3D_INTERNAL::m_renderTarget = _light.shadowMap2;
-								_light.shadowMap2 = rtManager.getRenderTarget();
-								
-								rtManager.setRenderTo( _context3d, m_shadowFilter.getRenderTarget( lightShadowMapRect ) );
-
-								m_shadowFilter.setdirection(0,1);
-								m_shadowFilter.postProcess(_context3d, lightShadowMapRect, _light.shadowMap2);
-								
-								m_shadowFilter.YOGURT3D_INTERNAL::m_renderTarget = _light.shadowMap2;
-								_light.shadowMap2 = rtManager.getRenderTarget();
-							}
-							
-
+							m_shadowFilter.YOGURT3D_INTERNAL::m_renderTarget = _light.shadowMap2;
+							_light.shadowMap2 = rtManager.getRenderTarget();
 						}
+						
+						
 					}
 				}
-				m_lastProgram = null;
 			}
+			m_lastProgram = null;
 		}
 		
 		private function drawShadowMap( _renderableSet:Vector.<ISceneObjectRenderable>, _light:Light):void{
@@ -351,8 +328,8 @@ package com.yogurt3d.presets.renderers.molehill
 
 			var _params:ShaderParameters  = m_shadowDepthShader.params;
 			
-
-			_light.setProjection(); //can be bind to "rotational dirty" state  
+			if( _light.type == ELightType.DIRECTIONAL )
+			_light.updateProjectionDirectional(); //can be bind to "rotational dirty" state  
 		
 
 			
@@ -361,7 +338,7 @@ package com.yogurt3d.presets.renderers.molehill
 			for (var i:uint = 0; i < _numberOfRenderableObjects; i++ ) {
 				// get renderable object and properties
 				_renderableObject = _renderableSet[i];				
-			
+
 				// don't render if not cast or receive shadows
 				if(!_renderableObject.visible || _renderableObject is ISelfRenderable || !(_renderableObject.castShadows || _renderableObject.receiveShadows)){
 					continue;
@@ -391,70 +368,110 @@ package com.yogurt3d.presets.renderers.molehill
 			}
 		}
 		
-		private function renderShadow(_renderableSet:Vector.<ISceneObjectRenderable>,  _light:Light, _camera:ICamera):void
+		private function renderShadow(_renderableSet:Vector.<ISceneObjectRenderable>,  _lights:Vector.<Light>, _camera:ICamera, _scene:IScene):void
 		{
-			var _renderableObject:ISceneObjectRenderable;
-			var _mesh:IMesh;
-			var i:int,j:int,k:int,l:int;
-			var len:uint; var subMeshIndex:int;
-			var program:Program3D;
 			
-			var _numberOfRenderableObjects:uint = _renderableSet.length;
-			
-			var _params:ShaderParameters  = m_shadowRenderShader.params;
-			
-			// Set Blending
-			_context3d.setBlendFactors( _params.blendSource, _params.blendDestination);
-			
-			_context3d.setColorMask( _params.colorMaskR, _params.colorMaskG, _params.colorMaskB, _params.colorMaskA);
-			
-			// set Depth
-			_context3d.setDepthTest( _params.writeDepth, _params.depthFunction );
-			
-			// set Culling
-			_context3d.setCulling( _params.culling );
-			
-			if(_light.type == ELightType.POINT)
+			if(_lights)
 			{
-				_context3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 4, Vector.<Number>([0.5, 0, _light.range, 1]), 1);//w is near
-				_context3d.setTextureAt(1, _light.shadowMap2.getTexture3D(_context3d));
-			}
-			
-			for (i = 0; i < _numberOfRenderableObjects; i++ ) {
-				// get renderable object and properties
-				_renderableObject = _renderableSet[i];
+				var _renderableObject:ISceneObjectRenderable;
+				var _mesh:IMesh;
+				var i:int,j:int,k:int,l:int;
+				var len:uint; var subMeshIndex:int;
+				var program:Program3D;
+				var _light:Light;
+				var _numberOfRenderableObjects:uint = _renderableSet.length;
 				
-				if( !_renderableObject.receiveShadows || !_renderableObject.visible ) continue;
+				var _params:ShaderParameters  = m_shadowRenderShader.params;
 				
-				_mesh = _renderableObject.geometry;
-				if (!_mesh) { trace("Renderable object with no geometry.."); continue; }
+				// Set Blending
+				_context3d.setBlendFactors( _params.blendSource, _params.blendDestination);
 				
-				len = _mesh.subMeshList.length;
-				for( subMeshIndex = 0; subMeshIndex < len; subMeshIndex++)
+				_context3d.setColorMask( _params.colorMaskR, _params.colorMaskG, _params.colorMaskB, _params.colorMaskA);
+				
+				// set Depth
+				_context3d.setDepthTest( _params.writeDepth, _params.depthFunction );
+				
+				// set Culling
+				_context3d.setCulling( _params.culling );
+				
+				
+				
+				for (i = 0; i < _numberOfRenderableObjects; i++ ) 
 				{
-					// set shader program
-					program = m_shadowRenderShader.getProgram(_context3d, _light.type, _mesh.subMeshList[subMeshIndex].type);
-					if( program != m_lastProgram )
-					{
-						_context3d.setProgram( program );
-						m_lastProgram = program;
-					}
+					// get renderable object and properties
+					_renderableObject = _renderableSet[i];
 					
-					setStreamsFromShader( _context3d, _mesh.subMeshList[subMeshIndex], m_shadowRenderShader );
-					
-					// set program constants
-					if( !setProgramConstants(_context3d, _params, _light, _camera, _renderableObject, _mesh.subMeshList[subMeshIndex]) )
+					if( !_renderableObject.receiveShadows || !_renderableObject.visible ) 
 					{
+						_scene.clearIlluminatorLightIndexes(_scene, _renderableObject); 
+						_renderableObject.isInFrustum = false;
 						continue;
 					}
-					_context3d.drawTriangles(_mesh.subMeshList[subMeshIndex].getIndexBufferByContext3D(_context3d), 0, _mesh.subMeshList[subMeshIndex].triangleCount);
+					
+					
+					var lightIndexes:Vector.<int> = _scene.getIlluminatorLightIndexes(_scene, _renderableObject);
+					var lenIndexes:int = lightIndexes.length;
+					
+					for ( k = 0; k < lenIndexes; k++) 
+					{
+						_light = _lights[lightIndexes[k]];
+						var start2:uint = getTimer() ;
+						if(_light.shadows == EShadowType.NONE)
+						{
+							_scene.clearIlluminatorLightIndexes(_scene, _renderableObject); 
+							_renderableObject.isInFrustum = false;
+							continue;
+						}
+						
+						if(_light.type == ELightType.POINT)
+						{
+							_context3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 4, Vector.<Number>([0.5, 0, _light.range, 1]), 1);//w is near
+							_context3d.setTextureAt(1, _light.shadowMap2.getTexture3D(_context3d));
+						}
+						
+						_mesh = _renderableObject.geometry;
+						if (!_mesh) { trace("Renderable object with no geometry.."); continue; }
+						
+						len = _mesh.subMeshList.length;
+						for( subMeshIndex = 0; subMeshIndex < len; subMeshIndex++)
+						{
+							// set shader program
+							program = m_shadowRenderShader.getProgram(_context3d, _light.type, _mesh.subMeshList[subMeshIndex].type);
+							if( program != m_lastProgram )
+							{
+								_context3d.setProgram( program );
+								m_lastProgram = program;
+							}
+							
+							setStreamsFromShader( _context3d, _mesh.subMeshList[subMeshIndex], m_shadowRenderShader );
+							
+							// set program constants
+							if( !setProgramConstants(_context3d, _params, _light, _camera, _renderableObject, _mesh.subMeshList[subMeshIndex]) )
+							{
+								continue;
+							}
+							_context3d.drawTriangles(_mesh.subMeshList[subMeshIndex].getIndexBufferByContext3D(_context3d), 0, _mesh.subMeshList[subMeshIndex].triangleCount);
+						}
+						
+						if(_light.type == ELightType.POINT)
+						{
+							
+							_context3d.setTextureAt(1, null);
+						}
+					}
+					_scene.clearIlluminatorLightIndexes(_scene, _renderableObject); 
+					//lightIndexes.length = 0;
+					_renderableObject.isInFrustum = false;
+					
+					
 				}
 				
+				m_lastProgram = null;
 			}
 			
 		}
 
-		private function renderSceneObjects(  _renderableSet :Vector.<ISceneObjectRenderable>,  _lights :Vector.<Light>, _camera:ICamera ):void{
+		private function renderSceneObjects(  _renderableSet :Vector.<ISceneObjectRenderable>,  _lights :Vector.<Light>, _camera:ICamera, _scene:IScene ):void{
 			var _renderableObject:ISceneObjectRenderable;
 			var _mesh:IMesh;
 			var _light:Light;
@@ -495,7 +512,6 @@ package com.yogurt3d.presets.renderers.molehill
 				var _shaders:Vector.<Shader> = _material.shaders;
 				if (!_shaders || _shaders.length < 1) {	trace("Material with no shader");	continue;	}
 				
-				
 				// for each shader in material
 				for (j=0; j < _shaders.length; j++) {
 					
@@ -516,9 +532,13 @@ package com.yogurt3d.presets.renderers.molehill
 					
 					if ( _params.requiresLight && _lights != null)
 					{
-						for ( k = 0; k < _lights.length; k++) {
-							_light = _lights[k];	
-														
+						var lightIndexes:Vector.<int> = _scene.getIlluminatorLightIndexes(_scene, _renderableObject);
+						var lenIndexes:int = lightIndexes.length;
+						
+						
+						for ( k = 0; k < lenIndexes; k++) {
+							_light = _lights[lightIndexes[k]];	
+							var start2:uint = getTimer() ;						
 							// draw triangles
 							len = _mesh.subMeshList.length;
 							for( subMeshIndex = 0; subMeshIndex < len; subMeshIndex++)

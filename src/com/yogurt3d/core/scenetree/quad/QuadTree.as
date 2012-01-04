@@ -1,222 +1,509 @@
+/*
+* OctTree.as
+* This file is part of Yogurt3D Flash Rendering Engine 
+*
+* Copyright (C) 2011 - Yogurt3D Corp.
+*
+* Yogurt3D Flash Rendering Engine is free software; you can redistribute it and/or
+* modify it under the terms of the YOGURT3D CLICK-THROUGH AGREEMENT
+* License.
+* 
+* Yogurt3D Flash Rendering Engine is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+* 
+* You should have received a copy of the YOGURT3D CLICK-THROUGH AGREEMENT
+* License along with this library. If not, see <http://www.yogurt3d.com/yogurt3d/downloads/yogurt3d-click-through-agreement.html>. 
+*/
 package com.yogurt3d.core.scenetree.quad
 {
+	
 	import com.yogurt3d.core.cameras.interfaces.ICamera;
 	import com.yogurt3d.core.frustum.Frustum;
-	import com.yogurt3d.core.helpers.boundingvolumes.BoundingSphere;
+	import com.yogurt3d.core.helpers.boundingvolumes.AxisAlignedBoundingBox;
+	import com.yogurt3d.core.lights.Light;
+	import com.yogurt3d.core.managers.scenetreemanager.SceneTreeManager;
+	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
+	import com.yogurt3d.core.sceneobjects.interfaces.IScene;
 	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObjectRenderable;
 	
-	import flash.geom.Rectangle;
 	import flash.geom.Vector3D;
+	import flash.utils.Dictionary;
+	
+	use namespace YOGURT3D_INTERNAL;
 	
 	public class QuadTree
 	{
-		public var root:QuadNode;
-		public var list:Vector.<ISceneObjectRenderable> = new Vector.<ISceneObjectRenderable>();
+		public var m_root:QuadNode;
 		
-		public function QuadTree( _bound:Rectangle, _maxDepth:uint = 3, _maxChildren:uint = 4)
+		public var m_maxDepth:int;
+		public var preAllocateNodes:Boolean;
+		public var list:Vector.<ISceneObjectRenderable>;
+		public var listlength:int = 0;
+		
+
+		
+		public var sceneObjectToQuadrant:Dictionary;
+		
+		public function QuadTree( _bound:AxisAlignedBoundingBox, _maxDepth:int = 3, _preAllocateNodes:Boolean = true )
 		{
-			root = new QuadNode(_bound,0,_maxDepth,_maxChildren );	
+			m_root = new QuadNode(null);
+			
+			m_maxDepth = _maxDepth;
+			
+			m_root.m_min = _bound.min;
+			
+			m_root.m_max = _bound.max;
+			
+			m_root.m_looseMin = _bound.min;
+			
+			m_root.m_looseMax = _bound.max;
+			
+			m_root.m_center = m_root.m_max.add( m_root.m_min );
+			
+			m_root.m_center.scaleBy(.5);
+			
+			m_root.m_testSizeVector = m_root.m_max.subtract( m_root.m_min );
+			
+			m_root.m_testSizeVector.scaleBy(.5);
+			
+			m_root.m_halfSizeVector = new Vector3D(m_root.m_testSizeVector.x, m_root.m_testSizeVector.y, m_root.m_testSizeVector.z);
+			
+			m_root.m_testSizeVectorLength = m_root.m_testSizeVector.length;
+			
+			preAllocateNodes = _preAllocateNodes;
+			
+			if(preAllocateNodes)
+				_allocateNodes(m_root);
+			
+			sceneObjectToQuadrant = new Dictionary();
+			
 		}
 		
-		public function insert( _sceneObject:ISceneObjectRenderable ):void{
-			var min:Vector3D = _sceneObject.geometry.axisAlignedBoundingBox.min;
-			var max:Vector3D = _sceneObject.geometry.axisAlignedBoundingBox.max;
-			Y3DCONFIG::TRACE
+		public function insert( quadrant:ISceneObjectRenderable ):void
+		{
+			var quad:Quadrant = new Quadrant(quadrant);
+			sceneObjectToQuadrant[quadrant] = quad;
+			_insert( quad, m_root, 0 );
+		}
+		
+		private function _allocateNodes( node:QuadNode, depth:int = 0 ):void
+		{
+			var nodeMin:Vector3D = node.m_min;
+			var nodeMax:Vector3D = node.m_max;
+			
+			if ( depth < m_maxDepth )
 			{
-				trace("[QuadNode](insert)",min,max);
+				for(var i:int = 0; i < 4; i++)
+				{
+					var min:Vector3D = new Vector3D;
+					var max:Vector3D = new Vector3D;
+					
+					switch(i)
+					{
+						case 0:
+							min.x = nodeMin.x;
+							max.x = ( nodeMin.x + nodeMax.x ) * 0.5;
+							min.z = nodeMin.z;
+							max.z = ( nodeMin.z + nodeMax.z ) * 0.5;
+							break;
+						case 1:
+							min.x = nodeMin.x;
+							max.x = ( nodeMin.x + nodeMax.x ) * 0.5;
+							min.z = ( nodeMin.z + nodeMax.z ) * 0.5;
+							max.z = nodeMax.z;
+							break;
+						case 2:
+							min.x = ( nodeMin.x + nodeMax.x ) * 0.5;
+							max.x = nodeMax.x;
+							min.z = nodeMin.z;
+							max.z = ( nodeMin.z + nodeMax.z ) * 0.5;
+							break;
+						case 3:
+							min.x = ( nodeMin.x + nodeMax.x ) * 0.5;
+							max.x = nodeMax.x;
+							min.z = ( nodeMin.z + nodeMax.z ) * 0.5;
+							max.z = nodeMax.z;
+							break;
+					}
+					
+					min.y = m_root.m_min.y
+					max.y = m_root.m_max.y
+					
+					node.m_numNodes++;
+					
+					node.nodes[ i ] = new QuadNode(node);
+					var quadNode:QuadNode = node.nodes[ i ];
+					
+					quadNode.m_center = max.add( min );
+					quadNode.m_center.scaleBy(.5);
+					quadNode.m_testSizeVector = max.subtract(min);
+					quadNode.m_halfSizeVector = new Vector3D(quadNode.m_testSizeVector.x*0.5, quadNode.m_testSizeVector.y*0.5, quadNode.m_testSizeVector.z*0.5);
+					quadNode.m_max = max;
+					quadNode.m_min = min;
+					quadNode.m_looseMax = max.add(quadNode.m_halfSizeVector);
+					quadNode.m_looseMin = min.subtract(quadNode.m_halfSizeVector);
+					quadNode.m_testSizeVectorLength = quadNode.m_testSizeVector.length;
+					
+					_allocateNodes( quadNode, depth+1 );
+				}
 			}
-			root.insert( _sceneObject );
-		}
-		public function retrieve( _bound:Rectangle ):Vector.<ISceneObjectRenderable>{
-			return root.retrieve( _bound );
 		}
 		
-		public function visibilityProcess( camera:ICamera ) :void
+		
+		
+		private function _insert( quadrant:Quadrant, node:QuadNode, depth:int = 0 ):void
 		{
+			var quadAABB:AxisAlignedBoundingBox = quadrant.sceneObject.axisAlignedBoundingBox;
+			
+			if ( ( depth < m_maxDepth ) && node.isTwiceSize( quadAABB ) )//nod depth
+			{
+				var indexX:int = 0;
+				var indexZ:int = 0;
+				
+				var nodeBoxCenter:Vector3D = node.m_center;
+				var quadrantBoxCenter:Vector3D = quadrant.sceneObject.axisAlignedBoundingBox.center;
+				
+				//get indexes
+				if ( quadrantBoxCenter.x > nodeBoxCenter.x )
+					indexX = 2;
+
+				if ( quadrantBoxCenter.z > nodeBoxCenter.z )
+					indexZ = 1;
+				
+				var index:int = indexX+indexZ;
+				
+				var quadNode:QuadNode = node.nodes[ index ];
+				
+				if ( !preAllocateNodes && quadNode == null )
+				{
+					node.nodes[ index ] = new QuadNode(node);
+					
+					quadNode = node.nodes[ index ];
+					
+					node.m_numNodes++;
+					
+					var nodeMin:Vector3D = node.m_min;
+					
+					var nodeMax:Vector3D = node.m_max;
+					
+					var min:Vector3D = new Vector3D;
+					var max:Vector3D = new Vector3D;
+					
+					if ( indexX == 0 )
+					{
+						min.x = nodeMin.x;
+						max.x = ( nodeMin.x + nodeMax.x ) * 0.5;
+					}
+					else
+					{
+						min.x = ( nodeMin.x + nodeMax.x ) * 0.5;
+						max.x = nodeMax.x;
+					}
+					
+
+				    min.y = m_root.m_min.y;
+				    max.y = m_root.m_max.y;
+
+					
+					if ( indexZ == 0 )
+					{
+						min.z = nodeMin.z;
+						max.z = ( nodeMin.z + nodeMax.z ) * 0.5;
+					}
+					else
+					{
+						min.z = ( nodeMin.z + nodeMax.z ) * 0.5;
+						max.z = nodeMax.z;
+					}
+
+					quadNode.m_center = max.add( min );
+					quadNode.m_center.scaleBy(.5);
+					quadNode.m_testSizeVector = max.subtract(min);
+					quadNode.m_halfSizeVector = new Vector3D(quadNode.m_testSizeVector.x*0.5, quadNode.m_testSizeVector.y*0.5, quadNode.m_testSizeVector.z*0.5);
+					quadNode.m_max = max;
+					quadNode.m_min = min;
+					quadNode.m_looseMax = max.add(quadNode.m_halfSizeVector);
+					quadNode.m_looseMin = min.subtract(quadNode.m_halfSizeVector);
+					quadNode.m_testSizeVectorLength = quadNode.m_testSizeVector.length;
+					
+					
+					
+				}
+				
+				_insert(quadrant, quadNode, ++depth );
+				node.m_sumChildren++;
+			}
+				
+			else
+			{
+				node.children.push( quadrant );
+				quadrant.m_parentNode = node;
+				node.m_sumChildren++;
+			}
+		}
+		
+		
+		public function updateTree(childrenDynamic:Vector.<ISceneObjectRenderable> ):void
+		{
+			var len:int = childrenDynamic.length;
+			var quadrant:Quadrant;
+			for(var i:int = 0; i < len; i++)
+			{
+				var scn:ISceneObjectRenderable = childrenDynamic.pop();
+				scn.transformation.m_isAddedToSceneRefreshList = false;
+				quadrant = sceneObjectToQuadrant[scn];
+				
+				if(!quadrant.isInParent())
+				{
+					removeFromNode( scn );
+					_insert(quadrant, m_root);
+				}
+			}
+		}
+		
+		
+		public function removeFromNode(sceneObject:ISceneObjectRenderable):void
+		{
+			var quadrant:Quadrant = sceneObjectToQuadrant[sceneObject];
+			if( quadrant )
+			{
+				var array:Vector.<Quadrant> = quadrant.m_parentNode.children;//dynamic
+				array.splice(array.indexOf(quadrant),1);
+				var parent:QuadNode = quadrant.m_parentNode;
+				
+				while(parent)
+				{
+					parent.m_sumChildren--;
+					parent = parent.m_parent;
+					
+				}
+				parent = null;
+
+			}
+			
+		}
+		
+		public function visibilityProcess( camera:ICamera):void{
+			listlength = 0;
 			list.length = 0;
-			return _visibilityProcess( camera, root, true );
+			
+			
+			_visibilityProcess(camera.frustum, m_root, true);
+		}
+		
+		
+		public function visibilityProcessLight( light:Light, lightIndex:int, _scene:IScene):void{
+			listlength = 0;
+			list.length = 0;
+			
+			_visibilityProcessLight(light.frustum, m_root, true, lightIndex, _scene);
 		}
 		
 		
 		// recursive
-		private function _visibilityProcess( camera:ICamera, node:QuadNode, bTestChildren:Boolean) :void
+		private function _visibilityProcess( frustum:Frustum, node:QuadNode, bTestChildren:Boolean) :void
 		{		
+			var i:int;
+			
+			var quadrantSceneObject:ISceneObjectRenderable;
+			var axis:AxisAlignedBoundingBox;
+			
 			if(bTestChildren) 
 			{
-				var pos:Vector3D = camera.transformation.matrixGlobal.position;
-				var frustum:Frustum = camera.frustum;
-				var boundingSphere:BoundingSphere = node.bs;
+				//if(!frustum.boundingSphere.intersectTestSphereParam(node.m_center, node.m_testSizeVectorLength))
+					//return;
 				
-				if(!node.m_bound.contains( pos.x, pos.z) ) 
+				switch( frustum.containmentTestOctant(node.m_testSizeVector, node.m_center) ) 
 				{
-					
-					if(!frustum.boundingSphere.intersectTest(boundingSphere))
+					case (Frustum.OUT):
 						return;
-				
-					switch( frustum.containmentTestSphere(boundingSphere) ) 
-					{
-						case (Frustum.OUT):
-							return;
-						case (Frustum.IN):
-							bTestChildren = false;
-							break;
-						case (Frustum.INTERSECT):
-							
-							var res:int;
-							
-							res = frustum.containmentTestAABR(node.corners);
-	
-							switch(res)
+					case (Frustum.IN):
+						var lena:int = node.children.length;
+						if(lena > 0)
+						{
+							for(i = 0; i < lena; i++)
 							{
-								case (Frustum.IN):
-									bTestChildren = false;
-									break;
-								case (Frustum.OUT):
-									return;
+								quadrantSceneObject = node.children[i].sceneObject;
+								quadrantSceneObject.isInFrustum = true;
+								list[listlength] = quadrantSceneObject;
+								listlength++;
 							}
-							break;
-						
-					}
+						}
+						bTestChildren = false;
+						break;
+					case (Frustum.INTERSECT):
+						//manually test for each item
+						//or do not test-
+						var len:int = node.children.length;
+						if(len > 0)
+						{
+							for(i = 0; i < len; i++)
+							{
+
+								quadrantSceneObject = node.children[i].sceneObject;
+								axis = quadrantSceneObject.axisAlignedBoundingBox;
+								
+								//if(!frustum.boundingSphere.intersectTestSphereParam(axis.center, oct.sceneObject.boundingSphere.m_radius))
+									//continue;
+								if( frustum.containmentTestOctant(axis.halfSize, axis.center) == 0 /*Frustum.OUT */)
+								{
+									continue;
+								}
+								quadrantSceneObject.isInFrustum = true;
+								list[listlength] = quadrantSceneObject;
+								listlength++;
+							}
+							
+						}
+						break;
 				}
-			}	
-			// we can now check the children or render this node
-			if(node._stuckChildren.length > 0)
-				list = list.concat(node._stuckChildren);
-			
-			if(node.nodes.length == 0)
-			{
-				list = list.concat( node.children);
-				
 			}else
 			{
-				for(var i :int = 0 ; i < node.nodes.length; i++)
+				var lenb:int = node.children.length;
+				if(lenb > 0)
 				{
-					_visibilityProcess( camera, node.nodes[i], bTestChildren);
+					for(i = 0; i < lenb; i++)
+					{
+						quadrantSceneObject = node.children[i].sceneObject;
+						quadrantSceneObject.isInFrustum = true;
+						
+						list[listlength] = quadrantSceneObject;
+						listlength++;
+					}
 				}
 			}
+			
+			
+			
+			var childNode:QuadNode;
+			var nodesOfNode:Vector.<QuadNode> = node.nodes;
+			
+			if(node.m_numNodes)
+			{
+				if ( (childNode = nodesOfNode[0]) != null && childNode.m_sumChildren)
+					_visibilityProcess( frustum, childNode, bTestChildren);
+				
+				if ( (childNode = nodesOfNode[1]) != null && childNode.m_sumChildren)
+					_visibilityProcess( frustum, childNode, bTestChildren);
+				
+				if ( (childNode = nodesOfNode[2] )!= null && childNode.m_sumChildren)
+					_visibilityProcess( frustum, childNode, bTestChildren);
+				
+				if ( (childNode = nodesOfNode[3])!= null && childNode.m_sumChildren)
+					_visibilityProcess( frustum, childNode, bTestChildren);
 
+			}
 		}
 		
-		
-		
-		public function removeItem( x:Number, z:Number, node:QuadNode, bTestChildren:Boolean) : Boolean
-		{
-			var min:Vector3D;
-			var max:Vector3D;
-			var _bounds:Rectangle;
+		// recursive
+		private function _visibilityProcessLight( frustum:Frustum, node:QuadNode, bTestChildren:Boolean, lightIndex:int, _scene:IScene) :void
+		{		
+			var i:int;
+			
+			var quadrantSceneObject:ISceneObjectRenderable;
+			var axis:AxisAlignedBoundingBox;
 			
 			if(bTestChildren) 
 			{
-				if(!node.m_bound.contains( x, z) ) 
-				{
-					bTestChildren = false;
-					return false ;
-				}
-			}	
-			
-			var len:int = node._stuckChildren.length;
-			    
-			
-			if(len > 0)
-			{
-				for(var i :int = 0 ; i < len; i++)
-				{
-					min = node._stuckChildren[i].geometry.axisAlignedBoundingBox.min;
-					max = node._stuckChildren[i].geometry.axisAlignedBoundingBox.max;
-					_bounds = new Rectangle(min.x, min.z, max.x - min.x, max.z - min.z)
-					if( ( (min.x <= x)&&(x <= max.x ) )&&
-						( (min.z <= z)&&(z <= max.z) ) )
-					{    
-						node._stuckChildren.splice(i , 1 );
-						removeRegulate(node);
-						return true;//stuck
-					}
-				}
+				var result:int;
 				
-			}	
-			
-			len = node.nodes.length;
-			
-			if(len == 0)
-			{
-				var lenc:int = node.children.length;
+				if(frustum.sphereCheck)
+					result = frustum.boundingSphere.intersectTestAABB(node.m_looseMin, node.m_looseMax);
+				else
+					result = frustum.containmentTestOctant(node.m_testSizeVector, node.m_center);
 				
-				if(lenc != 0)
+				switch( result ) 
 				{
-					for(var j :int = 0 ; j < lenc; j++)
-					{
-						min = node.children[i].geometry.axisAlignedBoundingBox.min;
-						max = node.children[i].geometry.axisAlignedBoundingBox.max;
-						_bounds = new Rectangle(min.x, min.z, max.x - min.x, max.z - min.z)
-							
-						if( ( (min.x <= x)&&(x <= max.x) ) &&
-							( (min.z <= z)&&(z <= max.z) ) )
-						{    
-							node.children.splice(j , 1 );
-							
-							return true;
+					case (Frustum.OUT):
+						return;
+					case (Frustum.IN):
+						var lena:int = node.children.length;
+						if(lena > 0)
+						{
+							for(i = 0; i < lena; i++)
+							{
+								quadrantSceneObject = node.children[i].sceneObject;
+								if(quadrantSceneObject.isInFrustum)
+									SceneTreeManager.s_renSetIlluminatorLightIndexes[_scene][quadrantSceneObject].push(lightIndex);
+								
+								list[listlength] = quadrantSceneObject;
+								listlength++;
+							}
 						}
-					}
-					
+						bTestChildren = false;
+						break;
+					case (Frustum.INTERSECT):
+						//manually test for each item
+						//or do not test-
+						var len:int = node.children.length;
+						if(len > 0)
+						{
+							for(i = 0; i < len; i++)
+							{
+								quadrantSceneObject = node.children[i].sceneObject;
+								axis = quadrantSceneObject.axisAlignedBoundingBox;
+								if(frustum.sphereCheck)
+								{
+									if(frustum.boundingSphere.intersectTestAABB(axis.m_min, axis.m_max) == Frustum.OUT)
+										continue;
+									
+								}
+								else
+								{
+									if(frustum.containmentTestOctant(axis.halfSize, axis.center) == Frustum.OUT)
+										continue;
+								}
+								
+								if(quadrantSceneObject.isInFrustum)
+									SceneTreeManager.s_renSetIlluminatorLightIndexes[_scene][quadrantSceneObject].push(lightIndex);
+								
+								list[listlength] = quadrantSceneObject;
+								listlength++;
+							}
+							
+						}
+						break;
 				}
-				
-			}
-		
-			for(var k :int = 0 ; k < len; k++)
+			}else
 			{
-				var removed:Boolean = removeItem( x, z, node.nodes[k], bTestChildren);
-					
-				if(removed)
+				
+				var lenb:int = node.children.length;
+				if(lenb > 0)
 				{
-					removeRegulate(node);
+					for(i = 0; i < lenb; i++)
+					{
+						quadrantSceneObject = node.children[i].sceneObject;
+						if(quadrantSceneObject.isInFrustum)
+							SceneTreeManager.s_renSetIlluminatorLightIndexes[_scene][quadrantSceneObject].push(lightIndex);
 						
-					return true;
+						list[listlength] = quadrantSceneObject;
+						listlength++;
+					}
 				}
 			}
-				
-			return true;
 			
-		}
-		
-		public function removeRegulate(node:QuadNode) :void
-		{
-			var sumnn:int;
-			var sumnc:int;
 			
-			var len:int = node.nodes.length;
 			
-			var nodesArr:Vector.<QuadNode> = node.nodes;
-			
-			for(var n :int = 0 ; n < len; n++)
+			var childNode:QuadNode;
+			var nodesOfNode:Vector.<QuadNode> = node.nodes;
+			if(node.m_numNodes)
 			{
+				if ( (childNode = nodesOfNode[0]) != null && childNode.m_sumChildren)
+					_visibilityProcessLight( frustum, childNode, bTestChildren, lightIndex, _scene);
+				
+				if ( (childNode = nodesOfNode[1]) != null && childNode.m_sumChildren)
+					_visibilityProcessLight( frustum, childNode, bTestChildren, lightIndex, _scene );
+				
+				if ( (childNode = nodesOfNode[2] )!= null && childNode.m_sumChildren)
+					_visibilityProcessLight( frustum, childNode, bTestChildren, lightIndex, _scene );
+				
+				if ( (childNode = nodesOfNode[3])!= null && childNode.m_sumChildren)
+					_visibilityProcessLight( frustum, childNode, bTestChildren, lightIndex, _scene);
+
 					
-					sumnc += nodesArr[n].children.length;
-					
-					sumnn += nodesArr[n].nodes.length;
-			}
-			
-			sumnc += node._stuckChildren.length;
-			
-			if(sumnc <= node.m_maxChildren && sumnn == 0) 
-			{
-				if(node._stuckChildren.length)
-				{
-					node.children = node.children.concat(node._stuckChildren);
-					node._stuckChildren.length = 0;
-				}
-				
-				for(var j :int = 0 ; j < len; j++ )
-				{
-					node.children = node.children.concat(node.nodes[j].children);
-				}
-				
-				
-				node.nodes.length = 0;
 			}
 		}
-			
-		
-		
 		
 	}
 }

@@ -73,16 +73,57 @@ package com.yogurt3d.core.helpers.boundingvolumes
 			return m_center;
 		}
 		
-		public function intersectTest(other:BoundingSphere):Boolean
+		public function intersectTestSphere(other:BoundingSphere):Boolean
 		{
-			var centerdiffer:Vector3D = center.subtract(other.center);
+			return intersectTestSphereParam(other.m_center, other.m_radius);
+		}
+		
+		public function intersectTestSphereParam(otherCenter:Vector3D, otherRadius:Number ):Boolean
+		{
+			var centerdiffer:Vector3D = center.subtract(otherCenter);
 			
-			var sumOfRadiis:Number = radius + other.radius;
+			var sumOfRadiis:Number = radius + otherRadius;
 			
 			if( centerdiffer.lengthSquared > (sumOfRadiis * sumOfRadiis) )
 				return false;
 			
 			return true;
+		}
+		
+		public function intersectTestAABB(_min:Vector3D, _max:Vector3D):int
+		{
+			//find closest point on AABB to center of sphere
+			var point_X:Number = m_center.x;
+			var point_Y:Number = m_center.y;
+			var point_Z:Number = m_center.z;
+			
+			if( m_center.x < _min.x )
+				point_X = _min.x;
+			else if( m_center.x > _max.x )
+				point_X = _max.x;
+			
+			if( m_center.y < _min.y )
+				point_Y = _min.y;
+			else if( m_center.y > _max.y )
+				point_Y = _max.y;
+			
+			if( m_center.z < _min.z )
+				point_Z = _min.z;
+			else if( m_center.z > _max.z )
+				point_Z = _max.z;
+			//closest point calculation ends
+			
+			//find vector between closest point and sphere center
+			point_X -= m_center.x;
+			point_Y -= m_center.y;
+			point_Z -= m_center.z;
+			
+			//squared distance
+			var sqrtDistance:Number = (point_X*point_X)+(point_Y*point_Y)+(point_Z*point_Z);
+			if(sqrtDistance > m_radius*m_radius)
+				return 0;//outside
+			else
+				return 2;//intersect or in
 		}
 
 	}

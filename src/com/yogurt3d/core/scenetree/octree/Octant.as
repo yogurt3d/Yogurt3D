@@ -24,8 +24,6 @@ package com.yogurt3d.core.scenetree.octree
 	
 	public class Octant
 	{
-        public var m_box:AxisAlignedBoundingBox;
-
 		public var m_isUpdated:Boolean;
 
 		public var m_parentNode:OctNode = null;
@@ -35,8 +33,32 @@ package com.yogurt3d.core.scenetree.octree
 		public function Octant(sceneObject:ISceneObjectRenderable)
 		{
 			this.sceneObject = sceneObject;
-			m_box = sceneObject.axisAlignedBoundingBox;
 		}
-
+		
+		public function isInParent():Boolean
+		{
+			
+			var parentNodeMax:Vector3D =  m_parentNode.m_looseMax;
+			var parentNodeMin:Vector3D =  m_parentNode.m_looseMin;
+			
+			var octantMax:Vector3D =  sceneObject.axisAlignedBoundingBox.max;
+			var octantMin:Vector3D =  sceneObject.axisAlignedBoundingBox.min;
+			
+			if ( (  
+					parentNodeMax.x > octantMax.x && 
+					parentNodeMax.y > octantMax.y && 
+					parentNodeMax.z > octantMax.z  
+				  ) && 
+				 (  
+					parentNodeMin.x < octantMin.x && 
+					parentNodeMin.y < octantMin.y && 
+					parentNodeMin.z < octantMin.z  
+				 ) 
+			)
+				return true;
+			
+			
+			return false;
+		}
 	}
 }

@@ -18,33 +18,63 @@
 package com.yogurt3d.core.scenetree.octree
 {
 	
-	import com.yogurt3d.core.cameras.Camera;
 	import com.yogurt3d.core.cameras.interfaces.ICamera;
 	import com.yogurt3d.core.frustum.Frustum;
 	import com.yogurt3d.core.helpers.boundingvolumes.AxisAlignedBoundingBox;
+	import com.yogurt3d.core.lights.Light;
+	import com.yogurt3d.core.managers.scenetreemanager.SceneTreeManager;
+	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
+	import com.yogurt3d.core.sceneobjects.interfaces.IScene;
 	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObjectRenderable;
 	
 	import flash.geom.Vector3D;
 	import flash.utils.Dictionary;
+	
+	use namespace YOGURT3D_INTERNAL;
 	
 	public class OctTree
 	{
 		public var m_root:OctNode;
 		
 		public var m_maxDepth:int;
-		
-		public var list:Vector.<ISceneObjectRenderable> = new Vector.<ISceneObjectRenderable>(1500);
+		public var preAllocateNodes:Boolean;
+		public var list:Vector.<ISceneObjectRenderable>;
 		public var listlength:int = 0;
+		
+
 		
 		public var sceneObjectToOctant:Dictionary;
 		
-		public function OctTree( _bound:AxisAlignedBoundingBox, _maxDepth:int = 2 )
+		public function OctTree( _bound:AxisAlignedBoundingBox, _maxDepth:int = 3, _preAllocateNodes:Boolean = true )
 		{
 			m_root = new OctNode(null);
 			
 			m_maxDepth = _maxDepth;
 			
-			m_root.m_box = _bound;
+			m_root.m_min = _bound.min;
+			
+			m_root.m_max = _bound.max;
+			
+			m_root.m_looseMin = _bound.min;
+			
+			m_root.m_looseMax = _bound.max;
+			
+			m_root.m_center = m_root.m_max.add( m_root.m_min );
+			
+			m_root.m_center.scaleBy(.5);
+			
+			m_root.m_testSizeVector = m_root.m_max.subtract( m_root.m_min );
+			
+			m_root.m_testSizeVector.scaleBy(.5);
+			
+			m_root.m_halfSizeVector = new Vector3D(m_root.m_testSizeVector.x, m_root.m_testSizeVector.y, m_root.m_testSizeVector.z);
+			
+			m_root.m_testSizeVectorLength = m_root.m_testSizeVector.length;
+			
+			preAllocateNodes = _preAllocateNodes;
+			
+			if(preAllocateNodes)
+				_allocateNodes(m_root);
 			
 			sceneObjectToOctant = new Dictionary();
 			
@@ -57,79 +87,231 @@ package com.yogurt3d.core.scenetree.octree
 			_insert( oct, m_root, 0 );
 		}
 		
-		private function _insert( octant:Octant, node:OctNode, depth:int = 0 ):void
+		private function _allocateNodes( node:OctNode, depth:int = 0 ):void
 		{
-			if ( ( depth < m_maxDepth ) && node.isTwiceSize( octant.m_box ) )//nod depth
+			
+			var nodeMin:Vector3D = node.m_min;
+			var nodeMax:Vector3D = node.m_max;
+			
+			if ( depth < m_maxDepth )
 			{
-				var indexes:Vector.<int> = new Vector.<int>(3, true);
-				
-				node.getIndexes( octant.m_box, indexes );
-				
-				if ( node.nodes[ indexes[0] ][ indexes[1] ][ indexes[2] ] == null )
+				for(var i:int = 0; i < 8; i++)
 				{
-					node.nodes[ indexes[0] ][ indexes[1] ][ indexes[2] ] = new OctNode(node);//****
+					var min:Vector3D = new Vector3D;
+					var max:Vector3D = new Vector3D;
+					
+					switch(i)
+					{
+						case 0:
+							min.x = nodeMin.x;
+							max.x = ( nodeMin.x + nodeMax.x ) * 0.5;
+							min.y = nodeMin.y;
+							max.y = ( nodeMin.y + nodeMax.y ) * 0.5;
+							min.z = nodeMin.z;
+							max.z = ( nodeMin.z + nodeMax.z ) * 0.5;
+							break;
+						case 1:
+							min.x = nodeMin.x;
+							max.x = ( nodeMin.x + nodeMax.x ) * 0.5;
+							min.y = nodeMin.y;
+							max.y = ( nodeMin.y + nodeMax.y ) * 0.5;
+							min.z = ( nodeMin.z + nodeMax.z ) * 0.5;
+							max.z = nodeMax.z;
+							break;
+						case 2:
+							min.x = ( nodeMin.x + nodeMax.x ) * 0.5;
+							max.x = nodeMax.x;
+							min.y = nodeMin.y;
+							max.y = ( nodeMin.y + nodeMax.y ) * 0.5;
+							min.z = nodeMin.z;
+							max.z = ( nodeMin.z + nodeMax.z ) * 0.5;
+							break;
+						case 3:
+							min.x = ( nodeMin.x + nodeMax.x ) * 0.5;
+							max.x = nodeMax.x;
+							min.y = nodeMin.y;
+							max.y = ( nodeMin.y + nodeMax.y ) * 0.5;
+							min.z = ( nodeMin.z + nodeMax.z ) * 0.5;
+							max.z = nodeMax.z;
+							break;
+						case 4:
+							min.x = nodeMin.x;
+							max.x = ( nodeMin.x + nodeMax.x ) * 0.5;
+							min.y = ( nodeMin.y + nodeMax.y ) * 0.5;
+							max.y = nodeMax.y;
+							min.z = nodeMin.z;
+							max.z = ( nodeMin.z + nodeMax.z ) * 0.5;
+							break;
+						case 5:
+							min.x = nodeMin.x;
+							max.x = ( nodeMin.x + nodeMax.x ) * 0.5;
+							min.y = ( nodeMin.y + nodeMax.y ) * 0.5;
+							max.y = nodeMax.y;
+							min.z = ( nodeMin.z + nodeMax.z ) * 0.5;
+							max.z = nodeMax.z;
+							break;
+						case 6:
+							min.x = ( nodeMin.x + nodeMax.x ) * 0.5;
+							max.x = nodeMax.x;
+							min.y = ( nodeMin.y + nodeMax.y ) * 0.5;
+							max.y = nodeMax.y;
+							min.z = nodeMin.z;
+							max.z = ( nodeMin.z + nodeMax.z ) * 0.5;
+							break;
+						case 7:
+							min.x = ( nodeMin.x + nodeMax.x ) * 0.5;
+							max.x = nodeMax.x;
+							min.y = ( nodeMin.y + nodeMax.y ) * 0.5;
+							max.y = nodeMax.y;
+							min.z = ( nodeMin.z + nodeMax.z ) * 0.5;
+							max.z = nodeMax.z;
+							break;
+					}
+					
 					node.m_numNodes++;
 					
-					var nodeMin:Vector3D = node.m_box.min;
+					node.nodes[ i ] = new OctNode(node);
+					var octNode:OctNode = node.nodes[ i ];
 					
-					var nodeMax:Vector3D = node.m_box.max;
+					octNode.m_center = max.add( min );
+					octNode.m_center.scaleBy(.5);
+					octNode.m_testSizeVector = max.subtract(min);
+					octNode.m_halfSizeVector = new Vector3D(octNode.m_testSizeVector.x*0.5, octNode.m_testSizeVector.y*0.5, octNode.m_testSizeVector.z*0.5);
+					octNode.m_max = max;
+					octNode.m_min = min;
+					octNode.m_looseMax = max.add(octNode.m_halfSizeVector);
+					octNode.m_looseMin = min.subtract(octNode.m_halfSizeVector);
+					octNode.m_testSizeVectorLength = octNode.m_testSizeVector.length;
+					
+					_allocateNodes( octNode, depth+1 );
+				}
+			}
+		}
+		
+		
+		
+		private function _insert( octant:Octant, node:OctNode, depth:int = 0 ):void
+		{
+			if ( ( depth < m_maxDepth ) && node.isTwiceSize( octant.sceneObject.axisAlignedBoundingBox) )//nod depth
+			{
+				var indexX:int = 0;
+				var indexY:int = 0;
+				var indexZ:int = 0;
+				
+				var nodeBoxCenter:Vector3D = node.m_center;
+				var octantBoxCenter:Vector3D = octant.sceneObject.axisAlignedBoundingBox.center;
+				
+				//get indexes
+				if ( octantBoxCenter.x > nodeBoxCenter.x )
+					indexX = 2;
+				
+				
+				if ( octantBoxCenter.y > nodeBoxCenter.y )
+					indexY = 4;
+				
+				
+				if ( octantBoxCenter.z > nodeBoxCenter.z )
+					indexZ = 1;
+				
+				var index:int = indexX+indexY+indexZ;
+				
+				var octNode:OctNode = node.nodes[ index ];
+				
+				if ( !preAllocateNodes && octNode == null )
+				{
+					node.nodes[ index ] = new OctNode(node);
+					
+					octNode = node.nodes[ index ];
+					
+					node.m_numNodes++;
+					
+					var nodeMin:Vector3D = node.m_min;
+					
+					var nodeMax:Vector3D = node.m_max;
 					
 					var min:Vector3D = new Vector3D;
 					var max:Vector3D = new Vector3D;
 					
-					if ( indexes[0] == 0 )
+					if ( indexX == 0 )
 					{
 						min.x = nodeMin.x;
-						max.x = ( nodeMin.x + nodeMax.x ) / 2;
+						max.x = ( nodeMin.x + nodeMax.x ) * 0.5;
 					}
 					else
 					{
-						min.x = ( nodeMin.x + nodeMax.x ) / 2;
+						min.x = ( nodeMin.x + nodeMax.x ) * 0.5;
 						max.x = nodeMax.x;
 					}
 					
-					if ( indexes[1] == 0 )
+					if ( indexY == 0 )
 					{
 						min.y = nodeMin.y;
-						max.y = ( nodeMin.y + nodeMax.y ) / 2;
+						max.y = ( nodeMin.y + nodeMax.y ) * 0.5;
 					}
 					else
 					{
-						min.y = ( nodeMin.y + nodeMax.y ) / 2;
+						min.y = ( nodeMin.y + nodeMax.y ) * 0.5;
 						max.y = nodeMax.y;
 					}
 					
-					if ( indexes[2] == 0 )
+					if ( indexZ == 0 )
 					{
 						min.z = nodeMin.z;
-						max.z = ( nodeMin.z + nodeMax.z ) / 2;
+						max.z = ( nodeMin.z + nodeMax.z ) * 0.5;
 					}
 					else
 					{
-						min.z = ( nodeMin.z + nodeMax.z ) / 2;
+						min.z = ( nodeMin.z + nodeMax.z ) * 0.5;
 						max.z = nodeMax.z;
 					}
+
+					octNode.m_center = max.add( min );
+					octNode.m_center.scaleBy(.5);
+					octNode.m_testSizeVector = max.subtract(min);
+					octNode.m_halfSizeVector = new Vector3D(octNode.m_testSizeVector.x*0.5, octNode.m_testSizeVector.y*0.5, octNode.m_testSizeVector.z*0.5);
+					octNode.m_max = max;
+					octNode.m_min = min;
+					octNode.m_looseMax = max.add(octNode.m_halfSizeVector);
+					octNode.m_looseMin = min.subtract(octNode.m_halfSizeVector);
+					octNode.m_testSizeVectorLength = octNode.m_testSizeVector.length;
 					
-					OctNode(node.nodes[ indexes[0] ][ indexes[1] ][ indexes[2] ]).m_box = new AxisAlignedBoundingBox( min, max, true );//true for debug
 					
 					
 				}
 				
-				_insert(octant, node.nodes[ indexes[0] ][ indexes[1] ][ indexes[2] ], ++depth );
+				_insert(octant, octNode, ++depth );
 				node.m_sumChildren++;
 			}
 				
 			else
 			{
 				node.children.push( octant );
-				// TODO Yagmur: parent Node??
 				octant.m_parentNode = node;
 				node.m_sumChildren++;
 			}
 		}
 		
 		
-		public function remove(sceneObject:ISceneObjectRenderable):void
+		public function updateTree(childrenDynamic:Vector.<ISceneObjectRenderable> ):void
+		{
+			var len:int = childrenDynamic.length;
+			var octant:Octant;
+			for(var i:int = 0; i < len; i++)
+			{
+				var scn:ISceneObjectRenderable = childrenDynamic.pop();
+				scn.transformation.m_isAddedToSceneRefreshList = false;
+				octant = sceneObjectToOctant[scn];
+				
+				if(!octant.isInParent())
+				{
+					removeFromNode( scn );
+					_insert(octant, m_root);
+				}
+			}
+		}
+		
+		
+		public function removeFromNode(sceneObject:ISceneObjectRenderable):void
 		{
 			var octant:Octant = sceneObjectToOctant[sceneObject];
 			if( octant )
@@ -137,33 +319,50 @@ package com.yogurt3d.core.scenetree.octree
 				var array:Vector.<Octant> = octant.m_parentNode.children;//dynamic
 				array.splice(array.indexOf(octant),1);
 				var parent:OctNode = octant.m_parentNode;
+				
 				while(parent)
 				{
 					parent.m_sumChildren--;
 					parent = parent.m_parent;
 					
 				}
-				octant.m_parentNode = null;
-				delete sceneObjectToOctant[ sceneObject ];
+				parent = null;
+
 			}
 			
 		}
 		
-		public function visibilityProcess( camera:ICamera ):void{
+		public function visibilityProcess( camera:ICamera):void{
 			listlength = 0;
 			list.length = 0;
 			
-			_visibilityProcess(camera, m_root, true);
+			
+			_visibilityProcess(camera.frustum, m_root, true);
 		}
 		
+		
+		public function visibilityProcessLight( light:Light, lightIndex:int, _scene:IScene):void{
+			listlength = 0;
+			list.length = 0;
+			
+			_visibilityProcessLight(light.frustum, m_root, true, lightIndex, _scene);
+		}
+		
+		
 		// recursive
-		private function _visibilityProcess( camera:ICamera, node:OctNode, bTestChildren:Boolean) :void
+		private function _visibilityProcess( frustum:Frustum, node:OctNode, bTestChildren:Boolean) :void
 		{		
 			var i:int;
 			
+			var octantSceneObject:ISceneObjectRenderable;
+			var axis:AxisAlignedBoundingBox;
+			
 			if(bTestChildren) 
 			{
-				switch( camera.frustum.containmentTestOctant(node.m_box.size, node.m_box.center) ) 
+				//if(!frustum.boundingSphere.intersectTestSphereParam(node.m_center, node.m_testSizeVectorLength))
+					//return;
+				
+				switch( frustum.containmentTestOctant(node.m_testSizeVector, node.m_center) ) 
 				{
 					case (Frustum.OUT):
 						return;
@@ -173,7 +372,9 @@ package com.yogurt3d.core.scenetree.octree
 						{
 							for(i = 0; i < lena; i++)
 							{
-								list[listlength] = node.children[i].sceneObject;
+								octantSceneObject = node.children[i].sceneObject;
+								octantSceneObject.isInFrustum = true;
+								list[listlength] = octantSceneObject;
 								listlength++;
 							}
 						}
@@ -187,13 +388,18 @@ package com.yogurt3d.core.scenetree.octree
 						{
 							for(i = 0; i < len; i++)
 							{
-								var oct:Octant = node.children[i];
-								var axis:AxisAlignedBoundingBox = oct.m_box;
-								if( camera.frustum.containmentTestOctant(axis.halfSize, axis.center) == 0 /*Frustum.OUT */)
+
+								octantSceneObject = node.children[i].sceneObject;
+								axis = octantSceneObject.axisAlignedBoundingBox;
+								
+								//if(!frustum.boundingSphere.intersectTestSphereParam(axis.center, oct.sceneObject.boundingSphere.m_radius))
+									//continue;
+								if( frustum.containmentTestOctant(axis.halfSize, axis.center) == 0 /*Frustum.OUT */)
 								{
 									continue;
 								}
-								list[listlength] = oct.sceneObject;
+								octantSceneObject.isInFrustum = true;
+								list[listlength] = octantSceneObject;
 								listlength++;
 							}
 							
@@ -207,7 +413,10 @@ package com.yogurt3d.core.scenetree.octree
 				{
 					for(i = 0; i < lenb; i++)
 					{
-						list[listlength] = node.children[i].sceneObject;
+						octantSceneObject = node.children[i].sceneObject;
+						octantSceneObject.isInFrustum = true;
+						
+						list[listlength] = octantSceneObject;
 						listlength++;
 					}
 				}
@@ -216,38 +425,153 @@ package com.yogurt3d.core.scenetree.octree
 			
 			
 			var childNode:OctNode;
+			var nodesOfNode:Vector.<OctNode> = node.nodes;
+			
 			if(node.m_numNodes)
 			{
-				var tmpN1:Array = node.nodes[ 0 ];
-				var tmpN11:Array =tmpN1[ 0 ];
-				var tmpN12:Array =tmpN1[ 1 ];
-				var tmpN2:Array = node.nodes[ 1 ];
-				var tmpN21:Array =tmpN2[ 0 ];
-				var tmpN22:Array =tmpN2[ 1 ];
+				if ( (childNode = nodesOfNode[0]) != null && childNode.m_sumChildren)
+					_visibilityProcess( frustum, childNode, bTestChildren);
 				
-				if ( (childNode = tmpN11[ 0 ]) != null && childNode.m_sumChildren)
-					_visibilityProcess( camera, childNode, bTestChildren);
+				if ( (childNode = nodesOfNode[1]) != null && childNode.m_sumChildren)
+					_visibilityProcess( frustum, childNode, bTestChildren);
 				
-				if ( (childNode = tmpN21[ 0 ]) != null && childNode.m_sumChildren)
-					_visibilityProcess( camera, childNode, bTestChildren);
+				if ( (childNode = nodesOfNode[2] )!= null && childNode.m_sumChildren)
+					_visibilityProcess( frustum, childNode, bTestChildren);
 				
-				if ( (childNode = tmpN12[ 0 ]) != null && childNode.m_sumChildren)
-					_visibilityProcess( camera, childNode, bTestChildren);
+				if ( (childNode = nodesOfNode[3])!= null && childNode.m_sumChildren)
+					_visibilityProcess( frustum, childNode, bTestChildren);
 				
-				if ( (childNode = tmpN22[ 0 ]) != null && childNode.m_sumChildren)
-					_visibilityProcess( camera, childNode, bTestChildren);
+				if ( (childNode = nodesOfNode[4] )!= null && childNode.m_sumChildren)
+					_visibilityProcess( frustum, childNode, bTestChildren);
 				
-				if ( (childNode = tmpN11[ 1 ]) != null && childNode.m_sumChildren)
-					_visibilityProcess( camera, childNode, bTestChildren);
+				if ( (childNode = nodesOfNode[5])!= null && childNode.m_sumChildren)
+					_visibilityProcess( frustum, childNode, bTestChildren);
 				
-				if ( (childNode = tmpN21[ 1 ]) != null && childNode.m_sumChildren)
-					_visibilityProcess( camera, childNode, bTestChildren);
+				if ( (childNode = nodesOfNode[6] )!= null && childNode.m_sumChildren)
+					_visibilityProcess( frustum, childNode, bTestChildren);
 				
-				if ( (childNode = tmpN12[ 1 ]) != null && childNode.m_sumChildren)
-					_visibilityProcess( camera, childNode, bTestChildren);
+				if ( (childNode = nodesOfNode[7] )!= null && childNode.m_sumChildren)
+					_visibilityProcess( frustum, childNode, bTestChildren);
+			}
+		}
+		
+		// recursive
+		private function _visibilityProcessLight( frustum:Frustum, node:OctNode, bTestChildren:Boolean, lightIndex:int, _scene:IScene) :void
+		{		
+			var i:int;
+			
+			var octantSceneObject:ISceneObjectRenderable;
+			var axis:AxisAlignedBoundingBox;
+			
+			if(bTestChildren) 
+			{
+				var result:int;
 				
-				if ( (childNode = tmpN22[ 1 ]) != null && childNode.m_sumChildren)
-					_visibilityProcess( camera, childNode, bTestChildren);
+				if(frustum.sphereCheck)
+					result = frustum.boundingSphere.intersectTestAABB(node.m_looseMin, node.m_looseMax);
+				else
+					result = frustum.containmentTestOctant(node.m_testSizeVector, node.m_center);
+				
+				switch( result ) 
+				{
+					case (Frustum.OUT):
+						return;
+					case (Frustum.IN):
+						var lena:int = node.children.length;
+						if(lena > 0)
+						{
+							for(i = 0; i < lena; i++)
+							{
+								octantSceneObject = node.children[i].sceneObject;
+								if(octantSceneObject.isInFrustum)
+									SceneTreeManager.s_renSetIlluminatorLightIndexes[_scene][octantSceneObject].push(lightIndex);
+								
+								list[listlength] = octantSceneObject;
+								listlength++;
+							}
+						}
+						bTestChildren = false;
+						break;
+					case (Frustum.INTERSECT):
+						//manually test for each item
+						//or do not test-
+						var len:int = node.children.length;
+						if(len > 0)
+						{
+							for(i = 0; i < len; i++)
+							{
+								octantSceneObject = node.children[i].sceneObject;
+								axis = octantSceneObject.axisAlignedBoundingBox;
+								if(frustum.sphereCheck)
+								{
+									if(frustum.boundingSphere.intersectTestAABB(axis.m_min, axis.m_max) == Frustum.OUT)
+										continue;
+									
+								}
+								else
+								{
+									if(frustum.containmentTestOctant(axis.halfSize, axis.center) == Frustum.OUT)
+										continue;
+								}
+								
+								if(octantSceneObject.isInFrustum)
+									SceneTreeManager.s_renSetIlluminatorLightIndexes[_scene][octantSceneObject].push(lightIndex);
+								
+								list[listlength] = octantSceneObject;
+								listlength++;
+							}
+							
+						}
+						break;
+				}
+			}else
+			{
+				
+				var lenb:int = node.children.length;
+				if(lenb > 0)
+				{
+					for(i = 0; i < lenb; i++)
+					{
+						octantSceneObject = node.children[i].sceneObject;
+						if(octantSceneObject.isInFrustum)
+							SceneTreeManager.s_renSetIlluminatorLightIndexes[_scene][octantSceneObject].push(lightIndex);
+						
+						list[listlength] = octantSceneObject;
+						listlength++;
+					}
+				}
+			}
+			
+			
+			
+			var childNode:OctNode;
+			var nodesOfNode:Vector.<OctNode> = node.nodes;
+			if(node.m_numNodes)
+			{
+				if ( (childNode = nodesOfNode[0]) != null && childNode.m_sumChildren)
+					_visibilityProcessLight( frustum, childNode, bTestChildren, lightIndex, _scene);
+				
+				if ( (childNode = nodesOfNode[1]) != null && childNode.m_sumChildren)
+					_visibilityProcessLight( frustum, childNode, bTestChildren, lightIndex, _scene );
+				
+				if ( (childNode = nodesOfNode[2] )!= null && childNode.m_sumChildren)
+					_visibilityProcessLight( frustum, childNode, bTestChildren, lightIndex, _scene );
+				
+				if ( (childNode = nodesOfNode[3])!= null && childNode.m_sumChildren)
+					_visibilityProcessLight( frustum, childNode, bTestChildren, lightIndex, _scene);
+				
+				if ( (childNode = nodesOfNode[4] )!= null && childNode.m_sumChildren)
+					_visibilityProcessLight( frustum, childNode, bTestChildren, lightIndex, _scene );
+				
+				if ( (childNode = nodesOfNode[5])!= null && childNode.m_sumChildren)
+					_visibilityProcessLight( frustum, childNode, bTestChildren, lightIndex, _scene);
+				
+				if ( (childNode = nodesOfNode[6] )!= null && childNode.m_sumChildren)
+					_visibilityProcessLight( frustum, childNode, bTestChildren, lightIndex, _scene );
+				
+				if ( (childNode = nodesOfNode[7] )!= null && childNode.m_sumChildren)
+					_visibilityProcessLight( frustum, childNode, bTestChildren, lightIndex, _scene );
+					
 			}
 		}
 		

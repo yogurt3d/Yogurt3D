@@ -59,8 +59,12 @@ package com.yogurt3d.core.sceneobjects {
 		YOGURT3D_INTERNAL var m_useHandCursor		:Boolean 	= false;
 		YOGURT3D_INTERNAL var m_culling				:String 	= Context3DTriangleFace.BACK;
 		
+		YOGURT3D_INTERNAL var m_isInFrustum		:Boolean 	= false;
+		
 		YOGURT3D_INTERNAL var m_drawWireFrame	:Boolean = false;
 
+		YOGURT3D_INTERNAL var m_enlighteningLightIndexes:Vector.<int> = new Vector.<int>;
+		
 		YOGURT3D_INTERNAL var projectedVectices:Vector.<Number>;
 		YOGURT3D_INTERNAL var projectedUV:Vector.<Number>;
 		
@@ -79,6 +83,25 @@ package com.yogurt3d.core.sceneobjects {
 			m_drawWireFrame = _value;
 		}
 		
+		public function get isInFrustum	():Boolean
+		{
+			return m_isInFrustum;
+		}
+		
+		public function set isInFrustum	( _value:Boolean ):void
+		{
+			m_isInFrustum	 = _value;
+		}
+		
+		public function get enlighteningLightIndexes():Vector.<int>
+		{
+			return m_enlighteningLightIndexes;
+		}
+		
+		public function set enlighteningLightIndexes( _value:Vector.<int> ):void
+		{
+			m_enlighteningLightIndexes = _value;
+		}
 
 		Y3DCONFIG::DEBUG
 		{
@@ -254,8 +277,8 @@ package com.yogurt3d.core.sceneobjects {
 		{
 			var _sceneObjectCopy:SceneObjectRenderable 	= new SceneObjectRenderable();
 			
-			_sceneObjectCopy.geometry	 				= m_geometry.instance();
-			_sceneObjectCopy.m_material					= m_material.instance();
+			_sceneObjectCopy.geometry	 				= m_geometry;
+			_sceneObjectCopy.m_material					= m_material;
 			_sceneObjectCopy.m_visible 					= m_visible;
 			
 			_sceneObjectCopy.m_castShadows 				= m_castShadows;

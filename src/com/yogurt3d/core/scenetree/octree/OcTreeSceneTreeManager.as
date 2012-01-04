@@ -3,6 +3,9 @@ package com.yogurt3d.core.scenetree.octree
 	import com.yogurt3d.core.cameras.interfaces.ICamera;
 	import com.yogurt3d.core.frustum.Frustum;
 	import com.yogurt3d.core.helpers.boundingvolumes.AxisAlignedBoundingBox;
+	import com.yogurt3d.core.lights.ELightType;
+	import com.yogurt3d.core.lights.Light;
+	import com.yogurt3d.core.managers.scenetreemanager.SceneTreeManager;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.sceneobjects.Scene;
 	import com.yogurt3d.core.sceneobjects.SceneObject;
@@ -11,6 +14,7 @@ package com.yogurt3d.core.scenetree.octree
 	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObject;
 	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObjectRenderable;
 	import com.yogurt3d.core.scenetree.IRenderableManager;
+	import com.yogurt3d.core.transformations.Transformation;
 	
 	import flash.events.Event;
 	import flash.geom.Vector3D;
@@ -22,27 +26,31 @@ package com.yogurt3d.core.scenetree.octree
 	public class OcTreeSceneTreeManager implements IRenderableManager
 	{
 		YOGURT3D_INTERNAL static var s_octantByScene:Dictionary;
-		private static var s_childrenByScene:Dictionary;
+		private  var s_staticChildrenByScene:Dictionary;
 		
-		private static var s_dynamicChildrenByScene:Dictionary;
+		private  var s_dynamicChildrenByScene:Dictionary;
+		//the list for storing recursive "visibilityProcess" results for the testers like camera or light
+		public var listOfVisibilityTesterByScene:Dictionary;
+		
+		private var s_transformedDynamicChildren:Vector.<ISceneObjectRenderable> = new Vector.<ISceneObjectRenderable>();
+		private var s_marktransformedDynamicChildren:Dictionary = new Dictionary();
 		
 		public function OcTreeSceneTreeManager()
 		{
 			if( s_octantByScene == null )
 			{
 				s_octantByScene = new Dictionary(false);
-				s_childrenByScene = new Dictionary(true);
+				s_staticChildrenByScene = new Dictionary(true);
 				s_dynamicChildrenByScene = new Dictionary(true);
+				listOfVisibilityTesterByScene = new Dictionary();
+				
+				
 			}
 		}
 		
 		public function addChild(_child:ISceneObjectRenderable, _scene:IScene, index:int=-1):void
 		{
-			if( s_childrenByScene[_scene] == null )
-			{
-				s_childrenByScene[_scene] = new Vector.<ISceneObjectRenderable>();
-			}
-			s_childrenByScene[_scene].push(_child);
+			SceneTreeManager.initRenSetIlluminatorLightIndexes(_scene, _child);
 			
 			if( s_octantByScene[_scene] == null )
 			{
@@ -66,7 +74,9 @@ package com.yogurt3d.core.scenetree.octree
 								Scene(_scene).YOGURT3D_INTERNAL::m_args.height,
 								Scene(_scene).YOGURT3D_INTERNAL::m_args.depth
 							)
-						)
+						),
+						Scene(_scene).YOGURT3D_INTERNAL::m_args.maxDepth, 
+						Scene(_scene).YOGURT3D_INTERNAL::m_args.preAllocateNodes
 					);
 					Y3DCONFIG::TRACE
 					{
@@ -89,38 +99,80 @@ package com.yogurt3d.core.scenetree.octree
 				}
 				
 			}
+			
+			if( listOfVisibilityTesterByScene[_scene] == null )
+			{
+				listOfVisibilityTesterByScene[_scene] = new Dictionary();
+			}
+			
+			
+			if( s_staticChildrenByScene[_scene] == null )
+			{
+				s_staticChildrenByScene[_scene] = new Vector.<ISceneObjectRenderable>();
+			}
+			
+			if( s_dynamicChildrenByScene[_scene] == null )
+			{
+				s_dynamicChildrenByScene[_scene] = new Vector.<ISceneObjectRenderable>();
+			}
+			
+			
 			if( _child.isStatic )
 			{
-				//_child.geometry.axisAlignedBoundingBox.update( SceneObjectRenderable(_child).YOGURT3D_INTERNAL::m_transformation.matrixGlobal );
-				//_child.geometry.boundingSphere.YOGURT3D_INTERNAL::m_center =  SceneObjectRenderable(_child).YOGURT3D_INTERNAL::m_transformation.matrixGlobal.position;
-				s_octantByScene[_scene].insert(_child);
-			}else{
-				if( s_dynamicChildrenByScene[_scene ] == null )
+				//if( s_staticChildrenByScene[_scene] == null )
+				//{
+					//s_staticChildrenByScene[_scene] = new Vector.<ISceneObjectRenderable>();
+				//}
+				s_staticChildrenByScene[_scene].push(_child);
+			}
+			else
+			{
+/*				if( s_dynamicChildrenByScene[_scene] == null )
 				{
 					s_dynamicChildrenByScene[_scene] = new Vector.<ISceneObjectRenderable>();
-				}
+				}*/
 				s_dynamicChildrenByScene[_scene].push( _child );
+				
+				_child.transformation.onChange.add( onChildTransChanged );
 			}
+
+	        s_octantByScene[_scene].insert(_child);
+			
 			_child.onStaticChanged.add(onStaticChange );
 			
 		}
 		
+		private function onChildTransChanged(tras:Transformation):void{
+			if( tras.m_isAddedToSceneRefreshList == false)
+			{
+				s_transformedDynamicChildren[s_transformedDynamicChildren.length] = ISceneObjectRenderable(tras.m_ownerSceneObject);
+				tras.m_isAddedToSceneRefreshList = true;
+			}
+		}
+		
+		public function getListOfVisibilityTesterByScene():Dictionary{
+			return listOfVisibilityTesterByScene;
+		}
+		
+		
 		private function onStaticChange( _scn:SceneObject ):void{
 			var _child:ISceneObjectRenderable = _scn as ISceneObjectRenderable;
+			
 			if( _child.isStatic )
 			{
-				//_child.axisAlignedBoundingBox.update( SceneObjectRenderable(_child).YOGURT3D_INTERNAL::m_transformation.matrixGlobal );
-				//_child.boundingSphere.YOGURT3D_INTERNAL::m_center =  SceneObjectRenderable(_child).geometry.axisAlignedBoundingBox.center;
-				
-				s_octantByScene[_child.scene].insert(_child);
 				_removeChildFromDynamicList( _child, _child.scene );
-			}else{
-				s_octantByScene[_child.scene].remove(_child);
 				
-				if( s_dynamicChildrenByScene[_child.scene ] == null )
-				{
-					s_dynamicChildrenByScene[_child.scene] = new Vector.<ISceneObjectRenderable>();
-				}
+				_child.transformation.onChange.remove( onChildTransChanged );
+				
+				s_staticChildrenByScene[_child.scene].push( _child );
+				
+				
+			}else
+			{
+				_removeChildFromStaticList( _child, _child.scene );
+				
+				_child.transformation.onChange.add( onChildTransChanged );
+				
 				s_dynamicChildrenByScene[_child.scene].push( _child );
 			}
 		}
@@ -138,80 +190,127 @@ package com.yogurt3d.core.scenetree.octree
 				
 				if(_renderableObjectsByScene.length == 0)
 				{
-					s_childrenByScene[_scene] = null;
+					s_dynamicChildrenByScene[_scene] = null;
 				}
 			}
 			
 		}
 		
+		
+		private function _removeChildFromStaticList( _child:ISceneObjectRenderable, _scene:IScene ):void{
+			if( s_dynamicChildrenByScene[_scene ] )
+			{
+				var _renderableObjectsByScene 	:Vector.<ISceneObjectRenderable>	= s_staticChildrenByScene[_scene];
+				var _index						:int								= _renderableObjectsByScene.indexOf(_child);
+				
+				if(_index != -1)
+				{
+					_renderableObjectsByScene.splice(_index, 1);
+				}
+				
+				if(_renderableObjectsByScene.length == 0)
+				{
+					s_staticChildrenByScene[_scene] = null;
+				}
+			}
+			
+		}
+		
+		
 		public function getSceneRenderableSet(_scene:IScene, _camera:ICamera):Vector.<ISceneObjectRenderable>
 		{
-			var temp :Vector3D;
-			
 			var camera:ICamera =  _camera;
-			
-			if( s_octantByScene[_scene] != null && s_dynamicChildrenByScene[_scene] != null )
-			{
-				camera.frustum.extractPlanes(camera.transformation);
-				
-				camera.frustum.boundingSphere.YOGURT3D_INTERNAL::m_center = camera.transformation.matrixGlobal.transformVector(camera.frustum.m_bSCenterOrginal);
-				
-				s_octantByScene[_scene].visibilityProcess( _camera );
-				
-				var remove:Array = [];
-				for( var i:int = 0; i < s_octantByScene[_scene].listlength; i++ )
-				{
-					var item:ISceneObjectRenderable = s_octantByScene[_scene].list[i];
 
-					if( camera.frustum.containmentTestAABB( item.axisAlignedBoundingBox ) == Frustum.OUT )
-					{
-						remove.push( i );
-						continue;
-					}
-				}
-				for( i = remove.length -1; i >= 0; i-- )
-				{
-					s_octantByScene[_scene].list.splice( remove[i], 1 );
-				}
-				
-				return s_dynamicChildrenByScene[_scene].concat( s_octantByScene[_scene].list );
-			}else if( s_octantByScene[_scene] )
+			if( s_octantByScene[_scene] )
 			{
+				s_octantByScene[_scene].updateTree(s_transformedDynamicChildren );
+				
 				camera.frustum.extractPlanes(camera.transformation);
 
 				camera.frustum.boundingSphere.YOGURT3D_INTERNAL::m_center = camera.transformation.matrixGlobal.transformVector(camera.frustum.m_bSCenterOrginal);
+				
+				s_octantByScene[_scene].list = listOfVisibilityTesterByScene[_scene][_camera];
 				
 				s_octantByScene[_scene].visibilityProcess( _camera );
 			
 				return s_octantByScene[_scene].list;
-			}else if( s_dynamicChildrenByScene[_scene] ){
-				return s_dynamicChildrenByScene[_scene];
 			}
 			
 			return null;
 		}
 		
-		public function removeChild(_child:ISceneObjectRenderable, _scene:IScene):void
+		public function getSceneRenderableSetLight(_scene:IScene, _light:Light, lightIndex:int):Vector.<ISceneObjectRenderable>
 		{
-			var _renderableObjectsByScene 	:Vector.<ISceneObjectRenderable>	= s_childrenByScene[_scene];
-			var _index						:int								= _renderableObjectsByScene.indexOf(_child);
+			if(_light.type == ELightType.DIRECTIONAL)
+			{
+				if(s_staticChildrenByScene[_scene] == null)
+					return null;
+					
+				return s_dynamicChildrenByScene[_scene].concat(s_staticChildrenByScene[_scene]);
+			}
 			
+			if( s_octantByScene[_scene] )
+			{
+				
+				_light.frustum.extractPlanes(_light.transformation);
+				
+				_light.frustum.boundingSphere.YOGURT3D_INTERNAL::m_center = _light.transformation.matrixGlobal.transformVector(_light.frustum.m_bSCenterOrginal);
+				
+				s_octantByScene[_scene].list = listOfVisibilityTesterByScene[_scene][_light];
+				
+				s_octantByScene[_scene].visibilityProcessLight( _light, lightIndex, _scene);
+				
+				return s_octantByScene[_scene].list;
+			}
+			
+			return null;
+		}
+		
+		public function removeChildFromTree(_child:ISceneObjectRenderable, _scene:IScene):void
+		{
+			var _renderableObjectsByScene 	:Vector.<ISceneObjectRenderable>;
+			var _index						:int;
+			var _dictionary                 :Dictionary;
+			
+			
+			if(_child.isStatic)
+			{
+				_renderableObjectsByScene	= s_staticChildrenByScene[_scene];
+			    _index	= _renderableObjectsByScene.indexOf(_child);
+				_dictionary = s_staticChildrenByScene;
+			}
+			else
+			{
+				_renderableObjectsByScene	= s_dynamicChildrenByScene[_scene];
+				_index	= _renderableObjectsByScene.indexOf(_child);
+				_dictionary = s_dynamicChildrenByScene;
+				
+			}
+            
 			if(_index != -1)
 			{
 				_renderableObjectsByScene.splice(_index, 1);
+				SceneTreeManager.s_renSetIlluminatorLightIndexes[_scene][_child] = null;
 			}
-			
+				
 			if(_renderableObjectsByScene.length == 0)
 			{
-				s_childrenByScene[_scene] = null;
+				_dictionary[_scene] = null;
 			}
-			if( _child.isStatic )
-			{
-				s_octantByScene[_scene].remove(_child);
-			}else{
-				_removeChildFromDynamicList( _child, _scene );
-			}
-			
+
+			s_octantByScene[_scene].removeFromNode(_child);
+			delete s_octantByScene[_scene].sceneObjectToOctant[ _child ];
+		
+		}
+		
+		public function getIlluminatorLightIndexes(_scene:IScene, _objectRenderable:ISceneObjectRenderable):Vector.<int>
+		{
+			return SceneTreeManager.s_renSetIlluminatorLightIndexes[_scene][_objectRenderable].concat(SceneTreeManager.s_sceneDirectionalLightIndexes[_scene]);
+		}
+		
+		public function clearIlluminatorLightIndexes(_scene:IScene, _objectRenderable:ISceneObjectRenderable):void
+		{
+			SceneTreeManager.s_renSetIlluminatorLightIndexes[_scene][_objectRenderable].length = 0;
 		}
 		
 		
