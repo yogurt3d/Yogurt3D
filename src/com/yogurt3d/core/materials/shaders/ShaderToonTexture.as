@@ -58,7 +58,7 @@ package com.yogurt3d.core.materials.shaders
 			
 			m_texture = _texture;
 			
-			requiresLight				= true;
+			params.requiresLight				= true;
 
 			attributes.push( EVertexAttribute.POSITION, EVertexAttribute.UV, EVertexAttribute.NORMAL, EVertexAttribute.BONE_DATA );
 			

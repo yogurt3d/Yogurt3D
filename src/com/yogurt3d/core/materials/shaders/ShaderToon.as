@@ -54,7 +54,7 @@ package com.yogurt3d.core.materials.shaders
 			
 			key = "Yogurt3DOriginalsShaderToon";
 			
-			requiresLight				= true;
+			params.requiresLight				= true;
 
 			attributes.push( EVertexAttribute.POSITION, EVertexAttribute.NORMAL, EVertexAttribute.BONE_DATA );
 			

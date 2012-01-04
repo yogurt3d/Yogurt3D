@@ -80,7 +80,7 @@ package com.yogurt3d.core.materials.shaders
 			params.colorMaskA			= true;
 			params.culling				= Context3DTriangleFace.FRONT;
 			params.loopCount			= 1;
-			requiresLight				= false;
+			params.requiresLight				= false;
 			
 			attributes.push(EVertexAttribute.POSITION, EVertexAttribute.UV, EVertexAttribute.BONE_DATA );
 			

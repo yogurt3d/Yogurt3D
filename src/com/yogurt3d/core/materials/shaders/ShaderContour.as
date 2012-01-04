@@ -57,7 +57,7 @@ package com.yogurt3d.core.materials.shaders
 			
 			key = "Yogurt3DOriginalsShaderContour";
 			
-			requiresLight				= true;
+			params.requiresLight				= true;
 			
 			attributes.push( EVertexAttribute.POSITION, EVertexAttribute.UV, EVertexAttribute.NORMAL, EVertexAttribute.BONE_DATA);
 			

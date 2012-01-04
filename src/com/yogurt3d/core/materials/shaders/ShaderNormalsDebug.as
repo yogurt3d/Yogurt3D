@@ -53,7 +53,7 @@ package com.yogurt3d.core.materials.shaders
 		
 		private function setProgramParameters():void
 		{
-			requiresLight = false;
+
 			
 			params.depthFunction = Context3DCompareMode.LESS_EQUAL;
 			

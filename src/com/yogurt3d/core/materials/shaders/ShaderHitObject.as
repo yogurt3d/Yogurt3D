@@ -63,7 +63,7 @@ package com.yogurt3d.core.materials.shaders
 			params.colorMaskEnabled		= false;
 			params.culling				= Context3DTriangleFace.FRONT;
 			params.loopCount			= 1;
-			requiresLight				= false;
+			params.requiresLight				= false;
 			
 			attributes.push( EVertexAttribute.POSITION, EVertexAttribute.BONE_DATA );
 		}

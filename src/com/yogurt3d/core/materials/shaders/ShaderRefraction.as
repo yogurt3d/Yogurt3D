@@ -82,7 +82,7 @@ package com.yogurt3d.core.materials.shaders
 			m_refIndex					= _refIndex;
 			color 						= _color;
 				
-			requiresLight				= false;
+
 			
 			params.writeDepth 		= true;
 			params.blendEnabled 	= true;

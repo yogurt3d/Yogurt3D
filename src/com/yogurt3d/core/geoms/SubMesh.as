@@ -49,6 +49,7 @@ package com.yogurt3d.core.geoms
 		YOGURT3D_INTERNAL var m_normals			:Vector.<Number>;
 		YOGURT3D_INTERNAL var m_uvt				:Vector.<Number>;
 		YOGURT3D_INTERNAL var m_uvt_2			:Vector.<Number>;
+		YOGURT3D_INTERNAL var m_uvt_3			:Vector.<Number>;
 		YOGURT3D_INTERNAL var m_tangents		:Vector.<Number>;
 		YOGURT3D_INTERNAL var m_triangleCount	:int;
 		YOGURT3D_INTERNAL var m_vertexCount		:int;
@@ -60,6 +61,7 @@ package com.yogurt3d.core.geoms
 		YOGURT3D_INTERNAL var m_vertexBuffersByContext3D 	:Dictionary;
 		YOGURT3D_INTERNAL var m_uvBuffersByContext3D		:Dictionary;
 		YOGURT3D_INTERNAL var m_uv2BuffersByContext3D		:Dictionary;
+		YOGURT3D_INTERNAL var m_uv3BuffersByContext3D		:Dictionary;
 		YOGURT3D_INTERNAL var m_normalBuffersByContext3D 	:Dictionary;
 		YOGURT3D_INTERNAL var m_tangentBuffersByContext3D 	:Dictionary;
 		
@@ -129,6 +131,26 @@ package com.yogurt3d.core.geoms
 		public function set uvt2(value:Vector.<Number>):void
 		{
 			m_uvt_2 = value;
+			disposeUV2Buffer();
+		}
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */		
+		public function get uvt3():Vector.<Number>
+		{
+			return m_uvt_3;
+		}
+		/**
+		 * @private 
+		 * @param value
+		 * 
+		 */		
+		public function set uvt3(value:Vector.<Number>):void
+		{
+			m_uvt_3 = value;
 			disposeUV2Buffer();
 		}
 		
@@ -362,6 +384,25 @@ package com.yogurt3d.core.geoms
 			
 			return m_uv2BuffersByContext3D[_context3D];
 		}
+		
+		/**
+		 * Returns the vertex uv (channel 2) buffer of the mesh for given Context3D
+		 * If there is currently no buffer for that Context3D, a buffer is created on that Context3D 
+		 * 
+		 * @param _context3D Context3D
+		 * @return Vertex buffer of the mesh for given Context3D
+		 * 
+		 */		
+		public function getUV3BufferByContext3D(_context3D:Context3D):VertexBuffer3D {
+			if (m_uv3BuffersByContext3D[_context3D]) {
+				return m_uv3BuffersByContext3D[_context3D];
+			}
+			
+			m_uv3BuffersByContext3D[_context3D] = _context3D.createVertexBuffer( m_vertexCount, 2);			
+			m_uv3BuffersByContext3D[_context3D].uploadFromVector( m_uvt_2, 0, m_vertexCount );
+			
+			return m_uv3BuffersByContext3D[_context3D];
+		}
 		/**
 		 * Returns the vertex normal buffer of the mesh for given Context3D
 		 * If there is currently no buffer for that Context3D, a buffer is created on that Context3D 
@@ -484,6 +525,7 @@ package com.yogurt3d.core.geoms
 			m_normalBuffersByContext3D		= new Dictionary();
 			m_tangentBuffersByContext3D		= new Dictionary();
 			m_uv2BuffersByContext3D			= new Dictionary();
+			m_uv3BuffersByContext3D			= new Dictionary();
 			super.initInternals();
 		}
 	}

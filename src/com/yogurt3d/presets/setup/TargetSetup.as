@@ -28,6 +28,8 @@ package com.yogurt3d.presets.setup
 			
 			YOGURT3D_INTERNAL::camera = new TargetCamera(viewport);
 			
+			camera.frustum.setProjectionPerspective(55, viewport.width/viewport.height,1,150 );
+			
 			ready();
 		}
 		

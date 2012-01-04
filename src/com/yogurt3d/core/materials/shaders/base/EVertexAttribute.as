@@ -9,6 +9,7 @@ package com.yogurt3d.core.materials.shaders.base
 		public static const POSITION 	 :EVertexAttribute = new EVertexAttribute();
 		public static const UV   		 :EVertexAttribute = new EVertexAttribute();
 		public static const UV_2   		 :EVertexAttribute = new EVertexAttribute();
+		public static const UV_3   		 :EVertexAttribute = new EVertexAttribute();
 		public static const NORMAL       :EVertexAttribute = new EVertexAttribute();
 		public static const TANGENT      :EVertexAttribute = new EVertexAttribute();
 		public static const BONE_DATA    :EVertexAttribute = new EVertexAttribute();

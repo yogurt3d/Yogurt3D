@@ -133,6 +133,7 @@ package com.yogurt3d.io.parsers {
 			var _indicesData			:Vector.<uint>;
 			var _uvtData				:Vector.<Number>;
 			var _uvtData2				:Vector.<Number>;
+			var _uvtData3				:Vector.<Number>;
 			var _normalData				:Vector.<Number>;
 			var _tangentData			:Vector.<Number>;
 			
@@ -176,6 +177,7 @@ package com.yogurt3d.io.parsers {
 				_verticesData						= new Vector.<Number>(vertexCount * 3, true);
 				_uvtData							= new Vector.<Number>(vertexCount * 2);
 				_uvtData2							= new Vector.<Number>(vertexCount * 2);
+				_uvtData3							= new Vector.<Number>(vertexCount * 2);
 				_normalData							= new Vector.<Number>(vertexCount * 3);
 				// read vertex positions
 				for(_verticesLoop = 0; _verticesLoop < vertexCount; _verticesLoop++)
@@ -192,9 +194,13 @@ package com.yogurt3d.io.parsers {
 						{
 							_uvtData[(_uvtLoop * 2)]		= _value.readFloat();
 							_uvtData[(_uvtLoop * 2) + 1]	= 1 - _value.readFloat();
-						}else{
+						}else if ( uvC == 1 ){
 							_uvtData2[(_uvtLoop * 2)] 	  = _value.readFloat();
 							_uvtData2[(_uvtLoop * 2) + 1] = 1 - _value.readFloat();
+						}
+						else{
+							_uvtData3[(_uvtLoop * 2)] 	  = _value.readFloat();
+							_uvtData3[(_uvtLoop * 2) + 1] = 1 - _value.readFloat();
 						}
 						//_uvtData[(_uvtLoop * 3) + 2]	= 0;
 					}
@@ -226,6 +232,7 @@ package com.yogurt3d.io.parsers {
 				subMesh.normals 			= _normalData;
 				subMesh.uvt					= _uvtData;
 				subMesh.uvt2				= _uvtData2;
+				subMesh.uvt3				= _uvtData3;
 				subMesh.tangents			= _tangentData;
 				_inanimateMesh.subMeshList.push( subMesh );
 				return _inanimateMesh;

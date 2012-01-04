@@ -67,7 +67,7 @@ package com.yogurt3d.core.materials.shaders
 			params.culling			= Context3DTriangleFace.NONE;
 			params.depthFunction	= Context3DCompareMode.ALWAYS;
 			
-			requiresLight				= false;
+
 
 			attributes.push( EVertexAttribute.POSITION, EVertexAttribute.UV );
 		

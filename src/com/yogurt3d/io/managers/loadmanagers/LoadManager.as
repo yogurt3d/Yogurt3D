@@ -19,6 +19,7 @@
  
 package com.yogurt3d.io.managers.loadmanagers {
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
+	import com.yogurt3d.core.utils.Enum;
 	import com.yogurt3d.io.cache.GlobalCache;
 	import com.yogurt3d.io.cache.LoadCache;
 	import com.yogurt3d.io.loaders.DataLoader;

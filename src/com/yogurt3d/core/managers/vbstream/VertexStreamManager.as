@@ -92,6 +92,9 @@ package com.yogurt3d.core.managers.vbstream
 					case( EVertexAttribute.UV_2 ):
 						_context3d.setVertexBufferAt( vertexBufferIndex++, mesh.getUV2BufferByContext3D( _context3d ), 0, Context3DVertexBufferFormat.FLOAT_2 );
 						break;
+					case( EVertexAttribute.UV_3 ):
+						_context3d.setVertexBufferAt( vertexBufferIndex++, mesh.getUV3BufferByContext3D( _context3d ), 0, Context3DVertexBufferFormat.FLOAT_2 );
+						break;
 					case( EVertexAttribute.NORMAL ):
 						
 						_context3d.setVertexBufferAt( vertexBufferIndex++, mesh.getNormalBufferByContext3D( _context3d ), 0, Context3DVertexBufferFormat.FLOAT_3 );

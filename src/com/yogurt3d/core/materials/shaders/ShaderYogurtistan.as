@@ -125,7 +125,7 @@ package com.yogurt3d.core.materials.shaders
 			params.blendDestination = Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA;
 			params.culling			= Context3DTriangleFace.FRONT;
 		
-			requiresLight				= true;
+			params.requiresLight				= true;
 		
 			attributes.push( EVertexAttribute.POSITION, EVertexAttribute.UV, EVertexAttribute.NORMAL, EVertexAttribute.BONE_DATA);
 			

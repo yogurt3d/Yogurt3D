@@ -63,6 +63,7 @@ package com.yogurt3d.core.texture
 		YOGURT3D_INTERNAL var m_height			:uint;
 		
 		YOGURT3D_INTERNAL var m_dirty			:Boolean          = true;
+		YOGURT3D_INTERNAL var m_sizedirty		:Boolean          = true;
 
 		private var m_tempBitmap				:BitmapData;
 		
@@ -143,6 +144,7 @@ package com.yogurt3d.core.texture
 		public function set mipmap(value:Boolean):void
 		{
 			m_mipmap = value;
+			m_dirty = true;
 		}
 
 		/**
@@ -209,8 +211,17 @@ package com.yogurt3d.core.texture
 					{
 						throw new Error("File is a CubeMap.");
 					}else{
+						if( m_width != Math.pow(2, Log2Width) )
+						{
+							m_sizedirty = true;
+						}
+						if( m_height != Math.pow(2, Log2Height) )
+						{
+							m_sizedirty = true;
+						}
 						m_width = Math.pow(2, Log2Width);
 						m_height = Math.pow(2, Log2Height);
+						
 					}
 					m_readyToUpload = true;
 				}else{
@@ -250,6 +261,14 @@ package com.yogurt3d.core.texture
 			if( value )
 			{
 				m_displayObject = value;
+				if( m_width != value.width )
+				{
+					m_sizedirty = true;
+				}
+				if( m_height != value.height )
+				{
+					m_sizedirty = true;
+				}
 				m_width = value.width;
 				m_height = value.height;
 				m_bitmapData = null;
@@ -285,6 +304,14 @@ package com.yogurt3d.core.texture
 			if( value )
 			{
 				m_bitmapData = value;
+				if( m_width != value.width )
+				{
+					m_sizedirty = true;
+				}
+				if( m_height != value.height )
+				{
+					m_sizedirty = true;
+				}
 				m_width = value.width;
 				m_height = value.height;
 				m_byteArray = null;
@@ -323,12 +350,12 @@ package com.yogurt3d.core.texture
 			{
 				if( m_tempBitmap!= null )
 					m_tempBitmap.dispose();
-				m_tempBitmap = new BitmapData( m_width, m_height, true, 0x00FFFFFF );
+				m_tempBitmap = new BitmapData( m_width, m_height, true, 0x00000000 );
 			}
 			// draw the displayObject onto a bitmapData
 			if( transparent )
 			{
-				m_tempBitmap.fillRect( m_tempBitmap.rect, 0x00FFFFFF );
+				m_tempBitmap.fillRect( m_tempBitmap.rect, 0x00000000 );
 			}
 			m_tempBitmap.draw( m_displayObject, null,null,null,m_tempBitmap.rect, false );	
 			
@@ -357,20 +384,20 @@ package com.yogurt3d.core.texture
 			// check weather texture is uploaded to the GPU of texture has changes
 			if( m_context3DMap[ _context3D ] == null || m_dirty )
 			{
-				var _oldWidth:Number = m_width;
-				var _oldHeight:Number = m_height;
 				m_width = MathUtils.getClosestPowerOfTwo( m_width );
 				m_height = MathUtils.getClosestPowerOfTwo( m_height );
 				var _texture:Texture;
-				if( m_context3DMap[ _context3D ] == null || (_oldWidth != m_width && _oldHeight != m_height) )
+				if( m_context3DMap[ _context3D ] == null || m_sizedirty )
 				{
 					// If texture has changed dispose old.
 					if( m_context3DMap[ _context3D ] != null )
 					{
 						TextureBase(m_context3DMap[ _context3D ]).dispose();
+						m_context3DMap[ _context3D ] = null;
 					}
 					// create a new texture
-					_texture = _context3D.createTexture(m_width, m_height, Context3DTextureFormat.BGRA, false );
+					_texture = _context3D.createTexture(m_width, m_height, ( m_byteArray && m_compressed)?Context3DTextureFormat.COMPRESSED: Context3DTextureFormat.BGRA, false );
+					m_sizedirty = false;
 				}else{
 					_texture = m_context3DMap[ _context3D ];
 				}

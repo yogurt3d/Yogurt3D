@@ -6,6 +6,7 @@ package com.yogurt3d.io.loaders
 	
 	import flash.display.BitmapData;
 	import flash.utils.ByteArray;
+	import flash.utils.Dictionary;
 	import flash.utils.IDataInput;
 	import flash.utils.getTimer;
 	
@@ -15,9 +16,12 @@ package com.yogurt3d.io.loaders
 	
 	public class CompressedFile extends ZipFile
 	{
+		private var m_internalCache:Dictionary;
+		
 		public function CompressedFile(data:IDataInput)
 		{
 			super(data);
+			m_internalCache = new Dictionary();
 		}
 		/**
 		 * 
@@ -27,6 +31,10 @@ package com.yogurt3d.io.loaders
 		 * 
 		 */		
 		public function getContent(name:String, asyncFunction:Function = null):*{
+			if( m_internalCache[name] != null )
+			{
+				return m_internalCache[name];
+			}
 			var entry:ZipEntry = getEntry( name );
 			var dotIndex:int = entry.name.lastIndexOf(".");
 			
@@ -41,16 +49,20 @@ package com.yogurt3d.io.loaders
 			
 			if( extension == "y3d")
 			{
-				return new Y3D_Parser().parse( byteArray );
+				m_internalCache[name] = new Y3D_Parser().parse( byteArray );
+				return m_internalCache[name];
 			}else if( extension == "yoa")
 			{
-				return new YOA_Parser().parse( byteArray );
+				m_internalCache[name] = new YOA_Parser().parse( byteArray );
+				return m_internalCache[name];
 			}else if( extension == "atf")
 			{
-				return new TextureMap_Parser().parse( byteArray );
+				m_internalCache[name] = new TextureMap_Parser().parse( byteArray );
+				return m_internalCache[name];
 			}else if( extension == "jpg" || extension == "png" || extension == "bmp" || extension == "gif")
 			{
-				return new TextureMap_Parser().parse( byteArray );
+				m_internalCache[name] = new TextureMap_Parser().parse( byteArray );
+				return m_internalCache[name];
 			}
 			return null;
 		}

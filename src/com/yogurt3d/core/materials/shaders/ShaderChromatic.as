@@ -93,7 +93,7 @@ package com.yogurt3d.core.materials.shaders
 			params.depthFunction    = Context3DCompareMode.LESS;
 			
 	
-			requiresLight			= false;
+			params.requiresLight			= false;
 			
 			attributes.push(EVertexAttribute.POSITION, EVertexAttribute.UV, EVertexAttribute.NORMAL, EVertexAttribute.BONE_DATA);
 			

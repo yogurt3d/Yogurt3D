@@ -42,7 +42,7 @@ package com.yogurt3d.core.materials.shaders.base
 	{		
 		use namespace YOGURT3D_INTERNAL;
 		
-		private var m_requiresLight					: Boolean = false;
+		
 		
 		YOGURT3D_INTERNAL var m_params				: ShaderParameters;
 
@@ -134,7 +134,7 @@ package com.yogurt3d.core.materials.shaders.base
 			return MaterialManager.getProgram( _key, _context3D );
 		}
 		
-		private function getKey( _lightType:ELightType = null, _meshKey:String = null ):String{
+		private final function getKey( _lightType:ELightType = null, _meshKey:String = null ):String{
 			if( m_key == null )
 			{
 				m_key = Math.random().toString();
@@ -147,7 +147,7 @@ package com.yogurt3d.core.materials.shaders.base
 		 * @return 
 		 * @see com.yogurt3d.core.materials.shaders.ShaderParameters
 		 */
-		public function get params():ShaderParameters
+		public final function get params():ShaderParameters
 		{
 			return m_params;
 		}
@@ -155,27 +155,9 @@ package com.yogurt3d.core.materials.shaders.base
 		/**
 		 * @private 
 		 */
-		public function set params(value:ShaderParameters):void
+		public final function set params(value:ShaderParameters):void
 		{
 			m_params = value;
-		}
-		
-		/**
-		 * 
-		 * @return 
-		 * 
-		 */		
-		public function get requiresLight():Boolean
-		{
-			return m_requiresLight;
-		}
-		
-		/**
-		 * @private 
-		 */
-		public function set requiresLight(value:Boolean):void
-		{
-			m_requiresLight = value;
 		}
 		
 		/**

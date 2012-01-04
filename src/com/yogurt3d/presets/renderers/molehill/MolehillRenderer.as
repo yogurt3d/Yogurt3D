@@ -65,7 +65,7 @@ package com.yogurt3d.presets.renderers.molehill
 	 * @change
 	 * - added hidden object support (Gurel Erceis)
 	 **/
-	public class MolehillRenderer extends EngineObject implements IRenderer 
+	public final class MolehillRenderer extends EngineObject implements IRenderer 
 	{
 		YOGURT3D_INTERNAL var rendererHelper			:Yogurt3DRendererHelper		= new Yogurt3DRendererHelper();
 		
@@ -514,7 +514,7 @@ package com.yogurt3d.presets.renderers.molehill
 					// set culling
 					_context3d.setCulling( _params.culling );
 					
-					if ( _shader.requiresLight && _lights != null)
+					if ( _params.requiresLight && _lights != null)
 					{
 						for ( k = 0; k < _lights.length; k++) {
 							_light = _lights[k];	
@@ -543,7 +543,7 @@ package com.yogurt3d.presets.renderers.molehill
 						}
 						
 					}
-					else if( !_shader.requiresLight )
+					else if( !_params.requiresLight )
 					{			
 						// draw triangles
 						len = _mesh.subMeshList.length;

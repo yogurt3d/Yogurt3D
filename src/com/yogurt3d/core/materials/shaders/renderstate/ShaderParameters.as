@@ -44,8 +44,7 @@ package com.yogurt3d.core.materials.shaders.renderstate
 		public var colorMaskB				:Boolean		= true;		
 		public var colorMaskA				:Boolean		= true;
 		public var culling					: String		= Context3DTriangleFace.NONE;
-		
-		public var lightRegisterOffset		:uint;
+		public var requiresLight			: Boolean = false;
 		
 		public var loopCount				:int 			= 1;		
 

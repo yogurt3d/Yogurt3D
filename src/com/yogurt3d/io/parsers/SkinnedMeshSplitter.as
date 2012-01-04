@@ -66,10 +66,10 @@ package com.yogurt3d.io.parsers
 			if(_boneLen < SkinnedSubMesh.MAX_BONE_COUNT){			
 				return null;
 			}
-			var _meshIndices:Vector.<uint> = _skeletalAnimatedGPUMesh.subMeshList[0].indices;
-			var _triangleCount:uint = _meshIndices.length/3;
-			var _vertexCount:uint = _skeletalAnimatedGPUMesh.subMeshList[0].vertexCount;
-			var _indicesLength:uint = _meshIndices.length;
+			var _meshIndices:Vector.<uint> 		= _skeletalAnimatedGPUMesh.subMeshList[0].indices;
+			var _triangleCount:uint 			= _meshIndices.length/3;
+			var _vertexCount:uint				= _skeletalAnimatedGPUMesh.subMeshList[0].vertexCount;
+			var _indicesLength:uint 			= _meshIndices.length;
 			
 			var i:uint;
 				
@@ -107,17 +107,22 @@ package com.yogurt3d.io.parsers
 				var _triangleIndice2:uint = _meshIndices[ _triangleIndex * 3 + 1 ];
 				var _triangleIndice3:uint = _meshIndices[ _triangleIndex * 3 + 2 ];
 				
-				x1 = _skeletalAnimatedGPUMesh.subMeshList[0].vertices[_triangleIndice1 * 3 + 0];
-				y1 = _skeletalAnimatedGPUMesh.subMeshList[0].vertices[_triangleIndice1 * 3 + 1];
-				z1 = _skeletalAnimatedGPUMesh.subMeshList[0].vertices[_triangleIndice1 * 3 + 2];
+				var t1:uint = _triangleIndice1 * 3;
+				var t2:uint = _triangleIndice2 * 3;
+				var t3:uint = _triangleIndice3 * 3;
 				
-				x2 = _skeletalAnimatedGPUMesh.subMeshList[0].vertices[_triangleIndice2 * 3 + 0];
-				y2 = _skeletalAnimatedGPUMesh.subMeshList[0].vertices[_triangleIndice2 * 3 + 1];
-				z2 = _skeletalAnimatedGPUMesh.subMeshList[0].vertices[_triangleIndice2 * 3 + 2];
 				
-				x3 = _skeletalAnimatedGPUMesh.subMeshList[0].vertices[_triangleIndice3 * 3 + 0];
-				y3 = _skeletalAnimatedGPUMesh.subMeshList[0].vertices[_triangleIndice3 * 3 + 1];
-				z3 = _skeletalAnimatedGPUMesh.subMeshList[0].vertices[_triangleIndice3 * 3 + 2];
+				x1 = _skeletalAnimatedGPUMesh.subMeshList[0].vertices[t1 + 0];
+				y1 = _skeletalAnimatedGPUMesh.subMeshList[0].vertices[t1 + 1];
+				z1 = _skeletalAnimatedGPUMesh.subMeshList[0].vertices[t1 + 2];
+				
+				x2 = _skeletalAnimatedGPUMesh.subMeshList[0].vertices[t2 + 0];
+				y2 = _skeletalAnimatedGPUMesh.subMeshList[0].vertices[t2 + 1];
+				z2 = _skeletalAnimatedGPUMesh.subMeshList[0].vertices[t2 + 2];
+				
+				x3 = _skeletalAnimatedGPUMesh.subMeshList[0].vertices[t3 + 0];
+				y3 = _skeletalAnimatedGPUMesh.subMeshList[0].vertices[t3 + 1];
+				z3 = _skeletalAnimatedGPUMesh.subMeshList[0].vertices[t3 + 2];
 				
 				vertices = new Vector.<Number>();
 				indices = new Vector.<uint>();
@@ -207,10 +212,10 @@ package com.yogurt3d.io.parsers
 				base.updateWeightTable();
 				//base.setBindPose();
 				
-				totalBones += base.bones.length;
-				totalMIndices += base.indices.length;
-				totalTri += base.indices.length/3;
-				totalVert += base.vertexCount;
+				totalBones 		+= base.bones.length;
+				totalMIndices	+= base.indices.length;
+				totalTri 		+= base.indices.length/3;
+				totalVert 		+= base.vertexCount;
 				
 				Y3DCONFIG::TRACE
 				{

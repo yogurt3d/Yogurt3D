@@ -67,7 +67,7 @@ package com.yogurt3d.core.materials.shaders
 			params.blendDestination = Context3DBlendFactor.ZERO;
 			params.culling			= Context3DTriangleFace.NONE;
 				
-			requiresLight				= false;
+			params.requiresLight				= false;
 			
 			attributes.push(EVertexAttribute.POSITION, EVertexAttribute.NORMAL);
 			
