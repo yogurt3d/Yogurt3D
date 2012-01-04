@@ -7,7 +7,7 @@ package com.yogurt3d.core.managers.rttmanager
 	import flash.display3D.Context3D;
 	
 
-	public class RenderTargetManager
+	public final class RenderTargetManager
 	{
 		private static var m_instance:RenderTargetManager;
 		

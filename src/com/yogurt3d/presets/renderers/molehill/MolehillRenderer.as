@@ -97,7 +97,7 @@ package com.yogurt3d.presets.renderers.molehill
 			super(_initInternals);			
 		}
 		
-		private function renderLayerSort( _a:ISceneObjectRenderable, _b:ISceneObjectRenderable ):Number{
+		private final function renderLayerSort( _a:ISceneObjectRenderable, _b:ISceneObjectRenderable ):Number{
 			if(_a.renderLayer > _b.renderLayer ){return 1;}
 			else if( _a.renderLayer < _b.renderLayer ){return -1;}
 			else{return 0;}
@@ -143,6 +143,7 @@ package com.yogurt3d.presets.renderers.molehill
 			
 			// update shadow maps
 			updateShadowMaps( _scene.getIntersectedLightsByCamera(_camera), _scene, _camera);
+			
 			tempRect.setTo(0,0,_viewport.width,_viewport.height);
 			// condition weather there are screen space post processing effects
 			if(_postEffects.length > 0)
@@ -218,7 +219,7 @@ package com.yogurt3d.presets.renderers.molehill
 		}	
 		
 		
-		private function updateShadowMaps(_lights:Vector.<Light>, _scene:IScene, _camera:ICamera):void
+		private final function updateShadowMaps(_lights:Vector.<Light>, _scene:IScene, _camera:ICamera):void
 		{
 			var k:int;
 			var _renderableObject:ISceneObjectRenderable;
@@ -322,7 +323,7 @@ package com.yogurt3d.presets.renderers.molehill
 			m_lastProgram = null;
 		}
 		
-		private function drawShadowMap( _renderableSet:Vector.<ISceneObjectRenderable>, _light:Light):void{
+		private final function drawShadowMap( _renderableSet:Vector.<ISceneObjectRenderable>, _light:Light):void{
 			
 			var _renderableObject:ISceneObjectRenderable;
 
@@ -368,7 +369,7 @@ package com.yogurt3d.presets.renderers.molehill
 			}
 		}
 		
-		private function renderShadow(_renderableSet:Vector.<ISceneObjectRenderable>,  _lights:Vector.<Light>, _camera:ICamera, _scene:IScene):void
+		private final function renderShadow(_renderableSet:Vector.<ISceneObjectRenderable>,  _lights:Vector.<Light>, _camera:ICamera, _scene:IScene):void
 		{
 			
 			if(_lights)
@@ -471,7 +472,7 @@ package com.yogurt3d.presets.renderers.molehill
 			
 		}
 
-		private function renderSceneObjects(  _renderableSet :Vector.<ISceneObjectRenderable>,  _lights :Vector.<Light>, _camera:ICamera, _scene:IScene ):void{
+		private final function renderSceneObjects(  _renderableSet :Vector.<ISceneObjectRenderable>,  _lights :Vector.<Light>, _camera:ICamera, _scene:IScene ):void{
 			var _renderableObject:ISceneObjectRenderable;
 			var _mesh:IMesh;
 			var _light:Light;

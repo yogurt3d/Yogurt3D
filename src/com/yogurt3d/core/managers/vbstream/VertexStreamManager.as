@@ -11,7 +11,7 @@ package com.yogurt3d.core.managers.vbstream
 	import flash.utils.Dictionary;
 	import flash.utils.getQualifiedClassName;
 
-	public class VertexStreamManager
+	public final class VertexStreamManager
 	{
 		private static var m_instance:VertexStreamManager;
 		
