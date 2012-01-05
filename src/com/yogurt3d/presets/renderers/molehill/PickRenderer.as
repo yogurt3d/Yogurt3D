@@ -20,7 +20,7 @@
 package com.yogurt3d.presets.renderers.molehill
 {
 	import com.yogurt3d.Yogurt3D;
-	import com.yogurt3d.core.cameras.interfaces.ICamera;
+	import com.yogurt3d.core.cameras.Camera;
 	import com.yogurt3d.core.geoms.SkeletalAnimatedMesh;
 	import com.yogurt3d.core.geoms.SkinnedSubMesh;
 	import com.yogurt3d.core.geoms.SubMesh;
@@ -30,8 +30,8 @@ package com.yogurt3d.presets.renderers.molehill
 	import com.yogurt3d.core.materials.shaders.ShaderHitTriangle;
 	import com.yogurt3d.core.objects.EngineObject;
 	import com.yogurt3d.core.renderers.interfaces.IRenderer;
+	import com.yogurt3d.core.sceneobjects.SceneObjectRenderable;
 	import com.yogurt3d.core.sceneobjects.interfaces.IScene;
-	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObjectRenderable;
 	import com.yogurt3d.core.utils.MatrixUtils;
 	import com.yogurt3d.core.viewports.Viewport;
 	
@@ -80,7 +80,7 @@ package com.yogurt3d.presets.renderers.molehill
 		
 		private var m_mouseCoordY					:Number;
 		
-		private var m_lastHit						:ISceneObjectRenderable;
+		private var m_lastHit						:SceneObjectRenderable;
 		
 		private var m_localHitPosition:Vector3D;
 
@@ -103,12 +103,12 @@ package com.yogurt3d.presets.renderers.molehill
 			m_localHitPosition = value;
 		}
 
-		public function get lastHit():ISceneObjectRenderable
+		public function get lastHit():SceneObjectRenderable
 		{
 			return m_lastHit;
 		}
 
-		public function set lastHit(value:ISceneObjectRenderable):void
+		public function set lastHit(value:SceneObjectRenderable):void
 		{
 			m_lastHit = value;
 		}
@@ -137,7 +137,7 @@ package com.yogurt3d.presets.renderers.molehill
 			_context3d = Yogurt3D.CONTEXT3D[3] = _e.target.context3D;
 		}
 		
-		public function render(_scene:IScene, _camera:ICamera, _viewport:Viewport):void
+		public function render(_scene:IScene, _camera:Camera, _viewport:Viewport):void
 		{		
 			m_lastHit = null;
 			
@@ -162,7 +162,7 @@ package com.yogurt3d.presets.renderers.molehill
 				m_initialized = true;
 			}
 			
-			var _renderableObject:ISceneObjectRenderable;
+			var _renderableObject:SceneObjectRenderable;
 			var _mesh:IMesh;
 			var _vertexBuffer:VertexBuffer3D;
 			var submeshlen:uint;
@@ -191,7 +191,7 @@ package com.yogurt3d.presets.renderers.molehill
 			_context3d.setProgramConstantsFromVector( Context3DProgramType.VERTEX, 4, m_viewportData, 1 );
 			
 			// foe each renderable object loop
-			var _renderableSet:Vector.<ISceneObjectRenderable> = _scene.getRenderableSet(_camera);
+			var _renderableSet:Vector.<SceneObjectRenderable> = _scene.getRenderableSet(_camera);
 			
 			var len:uint = (_renderableSet)?_renderableSet.length:0;
 			

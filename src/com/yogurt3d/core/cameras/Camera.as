@@ -17,7 +17,7 @@
 */
 
 package com.yogurt3d.core.cameras {
-	import com.yogurt3d.core.cameras.interfaces.ICamera;
+	import com.yogurt3d.core.cameras.Camera;
 	import com.yogurt3d.core.helpers.ProjectionUtils;
 	import com.yogurt3d.core.helpers.boundingvolumes.BoundingSphere;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
@@ -36,7 +36,7 @@ package com.yogurt3d.core.cameras {
 	 * @author Yogurt3D Engine Core Team
 	 * @company Yogurt3D Corp.
 	 **/	
-	public class Camera extends SceneObject implements ICamera
+	public class Camera extends SceneObject
 	{
 		private var m_frustum :Frustum;
 		

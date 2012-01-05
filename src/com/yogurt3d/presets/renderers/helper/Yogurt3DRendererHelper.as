@@ -19,7 +19,7 @@
  
 package com.yogurt3d.presets.renderers.helper
 {
-	import com.yogurt3d.core.cameras.interfaces.ICamera;
+	import com.yogurt3d.core.cameras.Camera;
 	import com.yogurt3d.core.geoms.SkeletalAnimatedMesh;
 	import com.yogurt3d.core.geoms.SkinnedSubMesh;
 	import com.yogurt3d.core.geoms.SubMesh;
@@ -30,7 +30,7 @@ package com.yogurt3d.presets.renderers.helper
 	import com.yogurt3d.core.materials.shaders.renderstate.ShaderConstants;
 	import com.yogurt3d.core.materials.shaders.renderstate.ShaderParameters;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
-	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObjectRenderable;
+	import com.yogurt3d.core.sceneobjects.SceneObjectRenderable;
 	import com.yogurt3d.core.utils.MatrixUtils;
 	
 	import flash.display3D.Context3D;
@@ -59,7 +59,7 @@ package com.yogurt3d.presets.renderers.helper
 		
 		private var m_tempMatrix		:Matrix3D				= new Matrix3D();
 		private var m_spriteMatrix		:Matrix3D				= new Matrix3D();
-		private var m_lastObject:ISceneObjectRenderable;
+		private var m_lastObject:SceneObjectRenderable;
 		
 		
 		private var setProgramConstantsFromMatrix:Function;
@@ -89,7 +89,7 @@ package com.yogurt3d.presets.renderers.helper
 			return;
 		}
 		
-		public function beginScene(_camera:ICamera=null):void
+		public function beginScene(_camera:Camera=null):void
 		{
 			m_projectionMatrix.copyFrom( _camera.frustum.projectionMatrix );
 			
@@ -114,7 +114,7 @@ package com.yogurt3d.presets.renderers.helper
 		 * @param _subMesh
 		 * 
 		 */		
-		public function setProgramConstants(_context3d:Context3D, _params:ShaderParameters, _light:Light=null, _camera:ICamera=null, _object:ISceneObjectRenderable=null, _subMesh:SubMesh = null):Boolean
+		public function setProgramConstants(_context3d:Context3D, _params:ShaderParameters, _light:Light=null, _camera:Camera=null, _object:SceneObjectRenderable=null, _subMesh:SubMesh = null):Boolean
 		{
 			clearTextures(_context3d);
 			

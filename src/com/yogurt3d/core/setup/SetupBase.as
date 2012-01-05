@@ -1,7 +1,7 @@
 package com.yogurt3d.core.setup
 {
 	import com.yogurt3d.Yogurt3D;
-	import com.yogurt3d.core.cameras.interfaces.ICamera;
+	import com.yogurt3d.core.cameras.Camera;
 	import com.yogurt3d.core.managers.contextmanager.Context;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.renderers.interfaces.IRenderer;
@@ -73,12 +73,12 @@ package com.yogurt3d.core.setup
 			}
 		}
 
-		YOGURT3D_INTERNAL function get camera():ICamera
+		YOGURT3D_INTERNAL function get camera():Camera
 		{
 			return m_context.camera;
 		}
 
-		YOGURT3D_INTERNAL function set camera(value:ICamera):void
+		YOGURT3D_INTERNAL function set camera(value:Camera):void
 		{
 			m_context.camera = value;
 			if( m_context.scene && 

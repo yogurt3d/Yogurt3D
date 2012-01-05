@@ -18,7 +18,7 @@
 
 package com.yogurt3d.core.managers.scenetreemanager
 {
-	import com.yogurt3d.core.cameras.interfaces.ICamera;
+	import com.yogurt3d.core.cameras.Camera;
 	import com.yogurt3d.core.lights.ELightType;
 	import com.yogurt3d.core.lights.Light;
 	import com.yogurt3d.core.managers.idmanager.IDManager;
@@ -27,9 +27,9 @@ package com.yogurt3d.core.managers.scenetreemanager
 	import com.yogurt3d.core.plugin.Kernel;
 	import com.yogurt3d.core.plugin.Server;
 	import com.yogurt3d.core.sceneobjects.Scene;
+	import com.yogurt3d.core.sceneobjects.SceneObject;
+	import com.yogurt3d.core.sceneobjects.SceneObjectRenderable;
 	import com.yogurt3d.core.sceneobjects.interfaces.IScene;
-	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObject;
-	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObjectRenderable;
 	import com.yogurt3d.core.scenetree.IRenderableManager;
 	import com.yogurt3d.core.scenetree.SceneTreeManagerDriver;
 	
@@ -69,13 +69,13 @@ package com.yogurt3d.core.managers.scenetreemanager
 		
 		private static var s_renderableSetByScene			:Dictionary;
 		
-		public static function setSceneRootObject(_rootObject:ISceneObject, _scene:IScene):void
+		public static function setSceneRootObject(_rootObject:SceneObject, _scene:IScene):void
 		{
 			s_sceneBySceneObjects[_rootObject]	= _scene;
 			
 			if(!s_sceneObjectsByScene[_scene])
 			{
-				s_sceneObjectsByScene[_scene]	= new Vector.<ISceneObject>;
+				s_sceneObjectsByScene[_scene]	= new Vector.<SceneObject>;
 				
 				var kernel:Kernel = Kernel.instance;
 				var server:Server = kernel.getServer( SERVERNAME );
@@ -88,7 +88,7 @@ package com.yogurt3d.core.managers.scenetreemanager
 			}
 		}
 		
-		public static function getParent(_sceneObject:ISceneObject):ISceneObject
+		public static function getParent(_sceneObject:SceneObject):SceneObject
 		{
 			return s_parentBySceneObjects[_sceneObject];
 		}
@@ -98,12 +98,12 @@ package com.yogurt3d.core.managers.scenetreemanager
 			return s_sceneLightIndexes[_scene];
 		}
 		
-/*		public static function getRenSetIlluminatorLightIndexes(_scene:IScene, _renderableChild:ISceneObjectRenderable):Vector.<int>
+/*		public static function getRenSetIlluminatorLightIndexes(_scene:IScene, _renderableChild:SceneObjectRenderable):Vector.<int>
 		{
 			return s_renSetIlluminatorLightIndexes[ _scene ][_renderableChild];
 		}*/
 		
-		public static function initIntersectedLightByCamera(_scene:IScene, _activeCamera:ICamera):void
+		public static function initIntersectedLightByCamera(_scene:IScene, _activeCamera:Camera):void
 		{
 			var lights:Vector.<Light> =  s_lightsByScene[_scene];
 			var k:int;
@@ -130,7 +130,7 @@ package com.yogurt3d.core.managers.scenetreemanager
 			}
 			
 		}
-		public static function initRenSetIlluminatorLightIndexes(_scene:IScene, _renderableChild:ISceneObjectRenderable):void
+		public static function initRenSetIlluminatorLightIndexes(_scene:IScene, _renderableChild:SceneObjectRenderable):void
 		{
 			if( s_renSetIlluminatorLightIndexes[ _scene ] == null )
 			{
@@ -140,21 +140,21 @@ package com.yogurt3d.core.managers.scenetreemanager
 			s_renSetIlluminatorLightIndexes[ _scene ][_renderableChild] = new Vector.<int>;
 		}
 		
-		public static function getIlluminatorLightIndexes(_scene:IScene, _renderableChild:ISceneObjectRenderable):Vector.<int>
+		public static function getIlluminatorLightIndexes(_scene:IScene, _renderableChild:SceneObjectRenderable):Vector.<int>
 		{
 			return IRenderableManager(s_sceneTreeManagerByScene[ _scene ]).getIlluminatorLightIndexes( _scene, _renderableChild );
 			//return s_renSetIlluminatorLightIndexes[_scene][_renderableChild].concat(s_sceneDirectionalLightIndexes);
 		}
 		
-		public static function clearIlluminatorLightIndexes(_scene:IScene, _renderableChild:ISceneObjectRenderable):void
+		public static function clearIlluminatorLightIndexes(_scene:IScene, _renderableChild:SceneObjectRenderable):void
 		{
 			 IRenderableManager(s_sceneTreeManagerByScene[ _scene ]).clearIlluminatorLightIndexes( _scene, _renderableChild );
 			//s_renSetIlluminatorLightIndexes[_scene][_renderableChild].length = 0;
 		}
 		
-		public static function getRoot(_sceneObject:ISceneObject):ISceneObject
+		public static function getRoot(_sceneObject:SceneObject):SceneObject
 		{
-			var _currentParent	:ISceneObject	= s_parentBySceneObjects[_sceneObject];
+			var _currentParent	:SceneObject	= s_parentBySceneObjects[_sceneObject];
 			
 			if(_currentParent)
 			{
@@ -169,7 +169,7 @@ package com.yogurt3d.core.managers.scenetreemanager
 			return null;
 		}
 		
-		public static function getScene(_sceneObject:ISceneObject):Scene
+		public static function getScene(_sceneObject:SceneObject):Scene
 		{
 			if(_sceneObject.root)
 			{
@@ -181,12 +181,12 @@ package com.yogurt3d.core.managers.scenetreemanager
 			return null;
 		}
 		
-		public static function getSceneObjectSet(_scene:IScene):Vector.<ISceneObject>
+		public static function getSceneObjectSet(_scene:IScene):Vector.<SceneObject>
 		{
 			return s_sceneObjectsByScene[_scene];
 		}
 		
-		public static function clearSceneFrameData( _scene:IScene, _camera:ICamera ):void{
+		public static function clearSceneFrameData( _scene:IScene, _camera:Camera ):void{
 			
 			if( s_renderableSetByScene[ _scene ] != null )
 			{
@@ -199,7 +199,7 @@ package com.yogurt3d.core.managers.scenetreemanager
 			}
 		}
 		
-		public static function getSceneRenderableSet(_scene:IScene, _camera:ICamera):Vector.<ISceneObjectRenderable>
+		public static function getSceneRenderableSet(_scene:IScene, _camera:Camera):Vector.<SceneObjectRenderable>
 		{
 			if( s_renderableSetByScene[ _scene ] && s_renderableSetByScene[ _scene ][_camera] )
 			{
@@ -217,7 +217,7 @@ package com.yogurt3d.core.managers.scenetreemanager
 		}
 		
 		
-		public static function getSceneRenderableSetLight(_scene:IScene, _light:Light, _lightIndex:int):Vector.<ISceneObjectRenderable>
+		public static function getSceneRenderableSetLight(_scene:IScene, _light:Light, _lightIndex:int):Vector.<SceneObjectRenderable>
 		{
 			if( s_renderableSetByScene[ _scene ] && s_renderableSetByScene[ _scene ][_light] )
 			{
@@ -243,22 +243,22 @@ package com.yogurt3d.core.managers.scenetreemanager
 			return s_lightsByScene[_scene];
 		}
 		
-		public static function getSceneCameraSet(_scene:IScene):Vector.<ICamera>
+		public static function getSceneCameraSet(_scene:IScene):Vector.<Camera>
 		{
 			return s_cameraObjectsByScene[_scene];
 		}
 		
-		public static function getChildren(_container:ISceneObject):Vector.<ISceneObject>
+		public static function getChildren(_container:SceneObject):Vector.<SceneObject>
 		{
 			return s_childrenByContainer[_container];
 		}
 		
-		public static function getChildrenCount(_container:ISceneObject):int
+		public static function getChildrenCount(_container:SceneObject):int
 		{
 			return s_childCountByContainer[_container];
 		}
 		
-		public static function getChildBySystemID(_systemID:String, _container:ISceneObject):ISceneObject
+		public static function getChildBySystemID(_systemID:String, _container:SceneObject):SceneObject
 		{
 			if(!s_childBySystemIDByContainer[_container])
 			{
@@ -268,7 +268,7 @@ package com.yogurt3d.core.managers.scenetreemanager
 			return s_childBySystemIDByContainer[_container][_systemID];
 		}
 		
-		public static function getChildByUserID(_userID:String, _container:ISceneObject):ISceneObject
+		public static function getChildByUserID(_userID:String, _container:SceneObject):SceneObject
 		{
 			if(!s_childBySystemIDByContainer[_container])
 			{
@@ -278,7 +278,7 @@ package com.yogurt3d.core.managers.scenetreemanager
 			return s_childBySystemIDByContainer[_container][IDManager.getSystemIDByUserID(_userID)];
 		}
 		
-		public static function addChild(_child:ISceneObject, _container:ISceneObject, index:int = -1):void
+		public static function addChild(_child:SceneObject, _container:SceneObject, index:int = -1):void
 		{
 			if(	!s_childrenByContainer		 [_container] ||
 				!s_childBySystemIDByContainer[_container] ||
@@ -289,7 +289,7 @@ package com.yogurt3d.core.managers.scenetreemanager
 			}
 			
 			// containers children list
-			var _children				:Vector.<ISceneObject>	= s_childrenByContainer		  [_container];
+			var _children				:Vector.<SceneObject>	= s_childrenByContainer		  [_container];
 			var _systemIDDictionary		:Dictionary				= s_childBySystemIDByContainer[_container];
 			
 			// if the container does not contain this scene object
@@ -314,8 +314,8 @@ package com.yogurt3d.core.managers.scenetreemanager
 				
 				// Add object Into Scene Related Sets
 				
-				var _containerAsSceneObject	:ISceneObject	= ISceneObject(_container);
-				var _rootObject				:ISceneObject	= _containerAsSceneObject.root;
+				var _containerAsSceneObject	:SceneObject	= SceneObject(_container);
+				var _rootObject				:SceneObject	= _containerAsSceneObject.root;
 				var _scene					:IScene;
 				
 				if(!_rootObject)
@@ -327,23 +327,23 @@ package com.yogurt3d.core.managers.scenetreemanager
 				
 				if(_scene)
 				{
-					if(_child is ISceneObjectRenderable)
+					if(_child is SceneObjectRenderable)
 					{
-						addRenderableChildIntoSceneSet(ISceneObjectRenderable(_child), _scene, index);
+						addRenderableChildIntoSceneSet(SceneObjectRenderable(_child), _scene, index);
 					}
 					
-					if(_child is ICamera)
+					if(_child is Camera)
 					{
-						addCameraChildIntoSceneSet(ICamera(_child), _scene);
+						addCameraChildIntoSceneSet(Camera(_child), _scene);
 					}
 					
 					if(_child is Light) {
 						addLightIntoSceneSet(Light(_child), _scene);
 					}
 					
-					//if(_child is ISceneObjectContainer)
+					//if(_child is SceneObjectContainer)
 					//{
-						addContainerChildsIntoSceneSets(ISceneObject(_child), _scene, index);
+						addContainerChildsIntoSceneSets( _child, _scene, index);
 					//} else {
 						//addChildIntoSceneSet(_child, _scene);
 					//}
@@ -355,9 +355,9 @@ package com.yogurt3d.core.managers.scenetreemanager
 		
 		
 		
-		public static function removeChild(_child:ISceneObject, _container:ISceneObject):void
+		public static function removeChild(_child:SceneObject, _container:SceneObject):void
 		{
-			var _children	:Vector.<ISceneObject>	= s_childrenByContainer[_container];
+			var _children	:Vector.<SceneObject>	= s_childrenByContainer[_container];
 			
 			if(_children)
 			{
@@ -372,8 +372,8 @@ package com.yogurt3d.core.managers.scenetreemanager
 					
 					// Remove Object from Scene Sets
 					
-					var _containerAsSceneObject	:ISceneObject	= ISceneObject(_container);
-					var _rootObject				:ISceneObject	= _containerAsSceneObject.root;
+					var _containerAsSceneObject	:SceneObject	= SceneObject(_container);
+					var _rootObject				:SceneObject	= _containerAsSceneObject.root;
 					var _scene					:IScene;
 					
 					if(!_rootObject)
@@ -397,9 +397,9 @@ package com.yogurt3d.core.managers.scenetreemanager
 		}
 		
 		
-		public static function removeChildBySystemID(_systemID:String, _container:ISceneObject):void
+		public static function removeChildBySystemID(_systemID:String, _container:SceneObject):void
 		{
-			var _sceneObject:ISceneObject	= getChildBySystemID(_systemID, _container); 
+			var _sceneObject:SceneObject	= getChildBySystemID(_systemID, _container); 
 			
 			if(_sceneObject)
 			{
@@ -407,9 +407,9 @@ package com.yogurt3d.core.managers.scenetreemanager
 			}
 		}
 		
-		public static function removeChildByUserID(_userID:String, _container:ISceneObject):void
+		public static function removeChildByUserID(_userID:String, _container:SceneObject):void
 		{
-			var _sceneObject:ISceneObject	= getChildByUserID(_userID, _container); 
+			var _sceneObject:SceneObject	= getChildByUserID(_userID, _container); 
 			
 			if(_sceneObject)
 			{
@@ -417,7 +417,7 @@ package com.yogurt3d.core.managers.scenetreemanager
 			}
 		}
 		
-		public static function contains(_sceneObject:ISceneObject, _container:ISceneObject, _recursive:Boolean):Boolean
+		public static function contains(_sceneObject:SceneObject, _container:SceneObject, _recursive:Boolean):Boolean
 		{
 			if(s_parentBySceneObjects[_sceneObject] == _container)
 			{
@@ -426,14 +426,14 @@ package com.yogurt3d.core.managers.scenetreemanager
 			
 			if(_recursive)
 			{
-				var _children	:Vector.<ISceneObject>	= s_childrenByContainer[_container];
+				var _children	:Vector.<SceneObject>	= s_childrenByContainer[_container];
 				var _childCount	:int					= _children.length; 
 				
 				for(var i:int = 0; i < _childCount; i++)
 				{
-					//if(_children[i] is ISceneObjectContainer)
+					//if(_children[i] is SceneObjectContainer)
 					{
-						if(contains(_sceneObject, ISceneObject(_children[i]), true))
+						if(contains(_sceneObject, SceneObject(_children[i]), true))
 						{
 							return true;
 						}
@@ -444,15 +444,15 @@ package com.yogurt3d.core.managers.scenetreemanager
 			return false;
 		}
 		
-		public static function _removeChild(_child:ISceneObject, _scene:IScene):void{
-			if(_child is ISceneObjectRenderable)
+		public static function _removeChild(_child:SceneObject, _scene:IScene):void{
+			if(_child is SceneObjectRenderable)
 			{
-				removeRenderableChildFromSceneSet(ISceneObjectRenderable(_child), _scene);
+				removeRenderableChildFromSceneSet(SceneObjectRenderable(_child), _scene);
 			}
 			
-			if(_child is ICamera)
+			if(_child is Camera)
 			{
-				removeCameraChildFromSceneSet(ICamera(_child), _scene);
+				removeCameraChildFromSceneSet(Camera(_child), _scene);
 			}
 			
 			if(_child is Light)
@@ -460,23 +460,23 @@ package com.yogurt3d.core.managers.scenetreemanager
 				removeLightFromSceneSet(Light(_child), _scene);
 			}
 			// [CHECK]
-			//if(_child is ISceneObject)
+			//if(_child is SceneObject)
 			//{
-				removeContainerChildFromSceneSets(ISceneObject(_child), _scene);
+				removeContainerChildFromSceneSets(SceneObject(_child), _scene);
 			//} else {
 				//removeChildFromSceneSet(_child, _scene);
 			//}
 			_child.onRemovedFromScene.dispatch(_child, _scene);
 		}
 		
-		private static function removeContainerChildFromSceneSets(_container:ISceneObject, _scene:IScene):void
+		private static function removeContainerChildFromSceneSets(_container:SceneObject, _scene:IScene):void
 		{
-			removeChildFromSceneSet(ISceneObject(_container), _scene);
+			removeChildFromSceneSet(SceneObject(_container), _scene);
 			
 			if(s_childrenByContainer[_container])
 			{
 				var _childCount	:int			= s_childCountByContainer[_container];
-				var _child		:ISceneObject;
+				var _child		:SceneObject;
 				
 				for(var i:int = 0; i < _childCount; i++)
 				{
@@ -487,36 +487,36 @@ package com.yogurt3d.core.managers.scenetreemanager
 			}
 		}
 		
-		private static function addContainerChildsIntoSceneSets(_container:ISceneObject, _scene:IScene, index:int = -1):void
+		private static function addContainerChildsIntoSceneSets(_container:SceneObject, _scene:IScene, index:int = -1):void
 		{
-			addChildIntoSceneSet(ISceneObject(_container), _scene);
+			addChildIntoSceneSet(SceneObject(_container), _scene);
 			
 			if(s_childrenByContainer[_container])
 			{
 				var _childCount	:int			= s_childCountByContainer[_container];
-				var _child		:ISceneObject;
+				var _child		:SceneObject;
 				
 				for(var i:int = 0; i < _childCount; i++)
 				{
 					_child	= s_childrenByContainer[_container][i];
 					
-					if(_child is ISceneObjectRenderable)
+					if(_child is SceneObjectRenderable)
 					{
-						addRenderableChildIntoSceneSet(ISceneObjectRenderable(_child), _scene, index);
+						addRenderableChildIntoSceneSet(SceneObjectRenderable(_child), _scene, index);
 					}
 					
-					if(_child is ICamera)
+					if(_child is Camera)
 					{
-						addCameraChildIntoSceneSet(ICamera(_child), _scene);
+						addCameraChildIntoSceneSet(Camera(_child), _scene);
 					}
 					
 					if(_child is Light) {
 						addLightIntoSceneSet(Light(_child), _scene);
 					}
 					
-					//if(_child is ISceneObjectContainer)
+					//if(_child is SceneObjectContainer)
 					//{
-						addContainerChildsIntoSceneSets(ISceneObject(_child), _scene, index);
+						addContainerChildsIntoSceneSets(SceneObject(_child), _scene, index);
 					//} else {
 						//addChildIntoSceneSet(_child, _scene);
 					//}
@@ -572,18 +572,18 @@ package com.yogurt3d.core.managers.scenetreemanager
 				dict[_scene] = new Dictionary();
 			
 			if(dict[_scene][_light] == null)
-				dict[_scene][_light] = new Vector.<ISceneObjectRenderable>(1500);
+				dict[_scene][_light] = new Vector.<SceneObjectRenderable>(1500);
 			
 			
 		}
 		
-		private static  function addChildIntoSceneSet(_sceneObject:ISceneObject, _scene:IScene):void
+		private static  function addChildIntoSceneSet(_sceneObject:SceneObject, _scene:IScene):void
 		{
-			var _sceneObjectsByScene		:Vector.<ISceneObject>	= s_sceneObjectsByScene[_scene];
+			var _sceneObjectsByScene		:Vector.<SceneObject>	= s_sceneObjectsByScene[_scene];
 			_sceneObjectsByScene[_sceneObjectsByScene.length]		= _sceneObject;
 		}
 		
-		private static function addRenderableChildIntoSceneSet(_renderableChild:ISceneObjectRenderable, _scene:IScene,index:int = -1):void
+		private static function addRenderableChildIntoSceneSet(_renderableChild:SceneObjectRenderable, _scene:IScene,index:int = -1):void
 		{
 			if( s_sceneTreeManagerByScene[ _scene ] )
 			{
@@ -591,17 +591,17 @@ package com.yogurt3d.core.managers.scenetreemanager
 			}
 		}
 		
-		private static function addCameraChildIntoSceneSet(_cameraChild:ICamera, _scene:IScene):void
+		private static function addCameraChildIntoSceneSet(_cameraChild:Camera, _scene:IScene):void
 		{
-			var _camerasByScene	:Vector.<ICamera> = s_cameraObjectsByScene[_scene];
+			var _camerasByScene	:Vector.<Camera> = s_cameraObjectsByScene[_scene];
 			
 			if(!_camerasByScene)
 			{
-				_camerasByScene					= new Vector.<ICamera>();
+				_camerasByScene					= new Vector.<Camera>();
 				s_cameraObjectsByScene[_scene]	= _camerasByScene;
 			}
 			
-			_camerasByScene[_camerasByScene.length] = ICamera(_cameraChild);
+			_camerasByScene[_camerasByScene.length] = Camera(_cameraChild);
 			
 			var dict:Dictionary = IRenderableManager(s_sceneTreeManagerByScene[ _scene ]).getListOfVisibilityTesterByScene();
 			
@@ -612,14 +612,14 @@ package com.yogurt3d.core.managers.scenetreemanager
 				dict[_scene] = new Dictionary();
 			
 			if(dict[_scene][_cameraChild] == null)
-				dict[_scene][_cameraChild] = new Vector.<ISceneObjectRenderable>(1500);
+				dict[_scene][_cameraChild] = new Vector.<SceneObjectRenderable>(1500);
 			
 			
 		}
 		
-		private static  function removeChildFromSceneSet(_sceneObject:ISceneObject, _scene:IScene):void
+		private static  function removeChildFromSceneSet(_sceneObject:SceneObject, _scene:IScene):void
 		{
-			var _sceneObjectsByScene	:Vector.<ISceneObject>	= s_sceneObjectsByScene[_scene];
+			var _sceneObjectsByScene	:Vector.<SceneObject>	= s_sceneObjectsByScene[_scene];
 			var _index					:int					= _sceneObjectsByScene.indexOf(_sceneObject);
 			
 			if(_index != -1)
@@ -628,13 +628,13 @@ package com.yogurt3d.core.managers.scenetreemanager
 			}
 		}
 		
-		private static function removeRenderableChildFromSceneSet(_renderableChild:ISceneObjectRenderable, _scene:IScene):void
+		private static function removeRenderableChildFromSceneSet(_renderableChild:SceneObjectRenderable, _scene:IScene):void
 		{
 			if( s_sceneTreeManagerByScene[ _scene ] )
 			{
 				IRenderableManager(s_sceneTreeManagerByScene[ _scene ]).removeChildFromTree( _renderableChild, _scene );
 			}
-			/*var _renderableObjectsByScene 	:Vector.<ISceneObjectRenderable>	= s_renderableObjectsByScene[_scene];
+			/*var _renderableObjectsByScene 	:Vector.<SceneObjectRenderable>	= s_renderableObjectsByScene[_scene];
 			var _index						:int								= _renderableObjectsByScene.indexOf(_renderableChild);
 			
 			if(_index != -1)
@@ -695,9 +695,9 @@ package com.yogurt3d.core.managers.scenetreemanager
 			
 		}
 		
-		private static function removeCameraChildFromSceneSet(_cameraChild:ICamera, _scene:IScene):void
+		private static function removeCameraChildFromSceneSet(_cameraChild:Camera, _scene:IScene):void
 		{
-			var _camerasByScene	:Vector.<ICamera> 	= s_cameraObjectsByScene[_scene];
+			var _camerasByScene	:Vector.<Camera> 	= s_cameraObjectsByScene[_scene];
 			var _index			:int				= _camerasByScene.indexOf(_cameraChild);
 			
 			if(_index != -1)
@@ -721,14 +721,14 @@ package com.yogurt3d.core.managers.scenetreemanager
 			
 		}
 		
-		private static function initContainerDictionaries(_container:ISceneObject):void
+		private static function initContainerDictionaries(_container:SceneObject):void
 		{
-			s_childrenByContainer[_container]			= new Vector.<ISceneObject>;
+			s_childrenByContainer[_container]			= new Vector.<SceneObject>;
 			s_childBySystemIDByContainer[_container]	= new Dictionary();
 			s_childCountByContainer[_container]			= 0;
 		}
 		
-		private static function clearContainerDictionaries(_container:ISceneObject):void
+		private static function clearContainerDictionaries(_container:SceneObject):void
 		{
 			s_childrenByContainer[_container]			= null;
 			s_childBySystemIDByContainer[_container]	= null;

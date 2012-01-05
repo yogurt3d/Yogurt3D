@@ -18,7 +18,7 @@
 
 package com.yogurt3d {
 	import com.yogurt3d.core.cameras.Camera;
-	import com.yogurt3d.core.cameras.interfaces.ICamera;
+	import com.yogurt3d.core.cameras.Camera;
 	import com.yogurt3d.core.enums.EngineDefaults;
 	import com.yogurt3d.core.events.Yogurt3DEvent;
 	import com.yogurt3d.core.managers.contextmanager.Context;
@@ -156,7 +156,7 @@ package com.yogurt3d {
 		public function defaultSetup(_viewportWidth:int=800, _viewportHeight:int=600, x:Number = 0, y:Number = 0):void 
 		{
 			var _scene:IScene 			= new Scene();
-			var _camera:ICamera 		= new Camera();
+			var _camera:Camera 		= new Camera();
 			var _renderer:IRenderer 	= new MolehillRenderer();	
 			var _viewport:Viewport		= new Viewport();
 			_scene.addChild(_camera);
@@ -222,7 +222,7 @@ package com.yogurt3d {
 		/**
 		 * Returns the default camera which the defaultSetup method creates.
 		 */
-		public function get defaultCamera():ICamera
+		public function get defaultCamera():Camera
 		{
 			return m_defaultContext.camera;
 		}

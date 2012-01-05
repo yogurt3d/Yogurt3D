@@ -19,11 +19,13 @@
  
 package com.yogurt3d.core.sceneobjects.interfaces
 {
-	import com.yogurt3d.core.cameras.interfaces.ICamera;
+	import com.yogurt3d.core.cameras.Camera;
 	import com.yogurt3d.core.effects.Effect;
 	import com.yogurt3d.core.lights.Light;
 	import com.yogurt3d.core.materials.base.Color;
 	import com.yogurt3d.core.objects.interfaces.IEngineObject;
+	import com.yogurt3d.core.sceneobjects.SceneObject;
+	import com.yogurt3d.core.sceneobjects.SceneObjectRenderable;
 	import com.yogurt3d.core.sceneobjects.SkyBox;
 	
 	/**
@@ -39,38 +41,38 @@ package com.yogurt3d.core.sceneobjects.interfaces
 		 * (including hierarchical ones, children, grand children)
 		 * in a one dimensional (flattened) vector.
 		 * */
-		function get objectSet():Vector.<ISceneObject>;
+		function get objectSet():Vector.<SceneObject>;
 		
 		/**
-		 * <strong>ISceneObjectRenderable</strong>
+		 * <strong>SceneObjectRenderable</strong>
 		 * objects added to this <strong>IScene</strong> instance 
 		 * (including hierarchical ones, children, grand children)
 		 * in a one dimensional (flattened) vector.
 		 * */
-		function getRenderableSet(_camera:ICamera):Vector.<ISceneObjectRenderable>;
+		function getRenderableSet(_camera:Camera):Vector.<SceneObjectRenderable>;
 		
-		function getIlluminatorLightIndexes(_scene:IScene, _objectRenderable:ISceneObjectRenderable):Vector.<int>;
+		function getIlluminatorLightIndexes(_scene:IScene, _objectRenderable:SceneObjectRenderable):Vector.<int>;
 		
-		function clearIlluminatorLightIndexes(_scene:IScene, _objectRenderable:ISceneObjectRenderable):void;
+		function clearIlluminatorLightIndexes(_scene:IScene, _objectRenderable:SceneObjectRenderable):void;
 		
-		function getRenderableSetLight(_light:Light, _lightIndex:int):Vector.<ISceneObjectRenderable>;
+		function getRenderableSetLight(_light:Light, _lightIndex:int):Vector.<SceneObjectRenderable>;
 		
-		function getIntersectedLightsByCamera(_camera:ICamera):Vector.<Light>;
+		function getIntersectedLightsByCamera(_camera:Camera):Vector.<Light>;
 
 		
 		//function prepareSceneForNewFrame():void;
 		
-		function preRender(_activeCamera:ICamera):void;
+		function preRender(_activeCamera:Camera):void;
 		
 		function postRender():void;
 		
 		/**
-		 * <strong>ICamera</strong>
+		 * <strong>Camera</strong>
 		 * objects added to this <strong>IScene</strong> instance 
 		 * (including hierarchical ones, children, grand children)
 		 * in a one dimensional (flattened) vector.
 		 * */
-		function get cameraSet():Vector.<ICamera>;
+		function get cameraSet():Vector.<Camera>;
 		
 		function get lightSet():Vector.<Light>;
 		
@@ -80,7 +82,7 @@ package com.yogurt3d.core.sceneobjects.interfaces
 		 * Top level children objects contained in this
 		 * <strong>IScene</strong> instance 
 		 * */
-		function get children():Vector.<ISceneObject>;
+		function get children():Vector.<SceneObject>;
 		
 		function get triangleCount():int;
 		
@@ -88,13 +90,13 @@ package com.yogurt3d.core.sceneobjects.interfaces
 		 * Adds given child object into this
 		 * <strong>IScene</strong> instance 
 		 * */
-		function addChild(_value:ISceneObject):void;
+		function addChild(_value:SceneObject):void;
 		
 		/**
 		 * Removes given child object from this
 		 * <strong>IScene</strong> instance 
 		 * */
-		function removeChild(_value:ISceneObject):void;
+		function removeChild(_value:SceneObject):void;
 		
 		/**
 		 * Removes child object that has given
@@ -112,17 +114,17 @@ package com.yogurt3d.core.sceneobjects.interfaces
 		 * Returns child object that has
 		 * given systemID.
 		 * */
-		function getChildBySystemID(_value:String):ISceneObject;
+		function getChildBySystemID(_value:String):SceneObject;
 		
 		/**
 		 * Returns child object that has
 		 * given userID.
 		 * */
-		function getChildByUserID(_value:String):ISceneObject;
+		function getChildByUserID(_value:String):SceneObject;
 		
 		
 		/**
-		 * Determines whether the specified <strong>ISceneObject</strong>
+		 * Determines whether the specified <strong>SceneObject</strong>
 		 * instance is a child of the <strong>IScene</strong> instance.
 		 * 
 		 * @param _child Child to check.
@@ -131,7 +133,7 @@ package com.yogurt3d.core.sceneobjects.interfaces
 		 * the check only works for the highest hierarchy. If argument is set
 		 * <strong>true</strong> the check will work for all children containers.
 		 * */
-		function containsChild(_child:ISceneObject, _recursive:Boolean = false):Boolean;
+		function containsChild(_child:SceneObject, _recursive:Boolean = false):Boolean;
 		
 		function get sceneColor():Color;
 		

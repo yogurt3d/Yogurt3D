@@ -20,7 +20,7 @@
 package com.yogurt3d.presets.renderers.molehill
 {
 	import com.yogurt3d.Yogurt3D;
-	import com.yogurt3d.core.cameras.interfaces.ICamera;
+	import com.yogurt3d.core.cameras.Camera;
 	import com.yogurt3d.core.effects.Effect;
 	import com.yogurt3d.core.effects.filters.FilterBoxBlur;
 	import com.yogurt3d.core.geoms.interfaces.IMesh;
@@ -37,8 +37,8 @@ package com.yogurt3d.presets.renderers.molehill
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.objects.EngineObject;
 	import com.yogurt3d.core.renderers.interfaces.IRenderer;
+	import com.yogurt3d.core.sceneobjects.SceneObjectRenderable;
 	import com.yogurt3d.core.sceneobjects.interfaces.IScene;
-	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObjectRenderable;
 	import com.yogurt3d.core.sceneobjects.interfaces.ISelfRenderable;
 	import com.yogurt3d.core.texture.BackBuffer;
 	import com.yogurt3d.core.texture.RenderTextureTarget;
@@ -97,13 +97,13 @@ package com.yogurt3d.presets.renderers.molehill
 			super(_initInternals);			
 		}
 		
-		private final function renderLayerSort( _a:ISceneObjectRenderable, _b:ISceneObjectRenderable ):Number{
+		private final function renderLayerSort( _a:SceneObjectRenderable, _b:SceneObjectRenderable ):Number{
 			if(_a.renderLayer > _b.renderLayer ){return 1;}
 			else if( _a.renderLayer < _b.renderLayer ){return -1;}
 			else{return 0;}
 		}
 		
-		public function render (_scene:IScene, _camera:ICamera, _viewport:Viewport):void 
+		public function render (_scene:IScene, _camera:Camera, _viewport:Viewport):void 
 		{
 			Y3DCONFIG::DEBUG
 			{
@@ -116,13 +116,13 @@ package com.yogurt3d.presets.renderers.molehill
 			var program:Program3D;
 			
 			
-			var _renderableObject:ISceneObjectRenderable;
+			var _renderableObject:SceneObjectRenderable;
 			var _mesh:IMesh;
 			var _light:Light;
 			
 			
 			
-			var _renderableSet		:Vector.<ISceneObjectRenderable> 	= _scene.getRenderableSet(_camera);
+			var _renderableSet		:Vector.<SceneObjectRenderable> 	= _scene.getRenderableSet(_camera);
 			var _lights				:Vector.<Light>						= _scene.lightSet;
 
 			_context3d.clear(_scene.sceneColor.r,_scene.sceneColor.g,_scene.sceneColor.b,_scene.sceneColor.a);
@@ -219,10 +219,10 @@ package com.yogurt3d.presets.renderers.molehill
 		}	
 		
 		
-		private final function updateShadowMaps(_lights:Vector.<Light>, _scene:IScene, _camera:ICamera):void
+		private final function updateShadowMaps(_lights:Vector.<Light>, _scene:IScene, _camera:Camera):void
 		{
 			var k:int;
-			var _renderableObject:ISceneObjectRenderable;
+			var _renderableObject:SceneObjectRenderable;
 			var i:int;
 
 			if( _lights )
@@ -230,7 +230,7 @@ package com.yogurt3d.presets.renderers.molehill
 				for ( k = 0; k < _lights.length; k++) {
 					var _light:Light = _lights[k];
 					
-					var _lightRenderables:Vector.<ISceneObjectRenderable>
+					var _lightRenderables:Vector.<SceneObjectRenderable>
 					
 					if(_light.shadows != EShadowType.NONE)
 							_lightRenderables = _scene.getRenderableSetLight(_light, k);
@@ -323,9 +323,9 @@ package com.yogurt3d.presets.renderers.molehill
 			m_lastProgram = null;
 		}
 		
-		private final function drawShadowMap( _renderableSet:Vector.<ISceneObjectRenderable>, _light:Light):void{
+		private final function drawShadowMap( _renderableSet:Vector.<SceneObjectRenderable>, _light:Light):void{
 			
-			var _renderableObject:ISceneObjectRenderable;
+			var _renderableObject:SceneObjectRenderable;
 
 			var _params:ShaderParameters  = m_shadowDepthShader.params;
 			
@@ -369,12 +369,12 @@ package com.yogurt3d.presets.renderers.molehill
 			}
 		}
 		
-		private final function renderShadow(_renderableSet:Vector.<ISceneObjectRenderable>,  _lights:Vector.<Light>, _camera:ICamera, _scene:IScene):void
+		private final function renderShadow(_renderableSet:Vector.<SceneObjectRenderable>,  _lights:Vector.<Light>, _camera:Camera, _scene:IScene):void
 		{
 			
 			if(_lights)
 			{
-				var _renderableObject:ISceneObjectRenderable;
+				var _renderableObject:SceneObjectRenderable;
 				var _mesh:IMesh;
 				var i:int,j:int,k:int,l:int;
 				var len:uint; var subMeshIndex:int;
@@ -472,8 +472,8 @@ package com.yogurt3d.presets.renderers.molehill
 			
 		}
 
-		private final function renderSceneObjects(  _renderableSet :Vector.<ISceneObjectRenderable>,  _lights :Vector.<Light>, _camera:ICamera, _scene:IScene ):void{
-			var _renderableObject:ISceneObjectRenderable;
+		private final function renderSceneObjects(  _renderableSet :Vector.<SceneObjectRenderable>,  _lights :Vector.<Light>, _camera:Camera, _scene:IScene ):void{
+			var _renderableObject:SceneObjectRenderable;
 			var _mesh:IMesh;
 			var _light:Light;
 			var i:int,j:int,k:int,l:int;

@@ -1,11 +1,10 @@
 package com.yogurt3d.core.scenetree.simple
 {
-	import com.yogurt3d.core.cameras.interfaces.ICamera;
+	import com.yogurt3d.core.cameras.Camera;
 	import com.yogurt3d.core.lights.Light;
 	import com.yogurt3d.core.managers.scenetreemanager.SceneTreeManager;
+	import com.yogurt3d.core.sceneobjects.SceneObjectRenderable;
 	import com.yogurt3d.core.sceneobjects.interfaces.IScene;
-	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObject;
-	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObjectRenderable;
 	import com.yogurt3d.core.scenetree.IRenderableManager;
 	
 	import flash.utils.Dictionary;
@@ -22,13 +21,13 @@ package com.yogurt3d.core.scenetree.simple
 			}
 		}
 		
-		public function addChild(_child:ISceneObjectRenderable, _scene:IScene, index:int=-1):void
+		public function addChild(_child:SceneObjectRenderable, _scene:IScene, index:int=-1):void
 		{
-			var _renderableObjectsByScene :Vector.<ISceneObjectRenderable> = s_renderableObjectsByScene[_scene];
+			var _renderableObjectsByScene :Vector.<SceneObjectRenderable> = s_renderableObjectsByScene[_scene];
 			
 			if(!_renderableObjectsByScene)
 			{
-				_renderableObjectsByScene			= new Vector.<ISceneObjectRenderable>();
+				_renderableObjectsByScene			= new Vector.<SceneObjectRenderable>();
 				s_renderableObjectsByScene[_scene]	= _renderableObjectsByScene;
 				
 			}
@@ -40,9 +39,9 @@ package com.yogurt3d.core.scenetree.simple
 			}
 		}
 		
-		public function removeChildFromTree(_child:ISceneObjectRenderable, _scene:IScene):void
+		public function removeChildFromTree(_child:SceneObjectRenderable, _scene:IScene):void
 		{
-			var _renderableObjectsByScene 	:Vector.<ISceneObjectRenderable>	= s_renderableObjectsByScene[_scene];
+			var _renderableObjectsByScene 	:Vector.<SceneObjectRenderable>	= s_renderableObjectsByScene[_scene];
 			var _index						:int								= _renderableObjectsByScene.indexOf(_child);
 			
 			if(_index != -1)
@@ -56,23 +55,23 @@ package com.yogurt3d.core.scenetree.simple
 			}
 		}
 		
-		public function getSceneRenderableSet(_scene:IScene, _camera:ICamera):Vector.<ISceneObjectRenderable>
+		public function getSceneRenderableSet(_scene:IScene, _camera:Camera):Vector.<SceneObjectRenderable>
 		{
 			return s_renderableObjectsByScene[_scene];
 		}
 		
-		public function getSceneRenderableSetLight(_scene:IScene, _light:Light, lightIndex:int):Vector.<ISceneObjectRenderable>
+		public function getSceneRenderableSetLight(_scene:IScene, _light:Light, lightIndex:int):Vector.<SceneObjectRenderable>
 		{
 			return s_renderableObjectsByScene[_scene];
 		}
 		
 		
-		public function getIlluminatorLightIndexes(_scene:IScene, _objectRenderable:ISceneObjectRenderable):Vector.<int>
+		public function getIlluminatorLightIndexes(_scene:IScene, _objectRenderable:SceneObjectRenderable):Vector.<int>
 		{
 			return SceneTreeManager.s_sceneLightIndexes[_scene];
 		}
 		
-		public function clearIlluminatorLightIndexes(_scene:IScene, _objectRenderable:ISceneObjectRenderable):void
+		public function clearIlluminatorLightIndexes(_scene:IScene, _objectRenderable:SceneObjectRenderable):void
 		{
 		}
 		

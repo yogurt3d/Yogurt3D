@@ -18,7 +18,7 @@
 package com.yogurt3d.core.scenetree.quad
 {
 	import com.yogurt3d.core.helpers.boundingvolumes.*;
-	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObjectRenderable;
+	
 	
 	import flash.geom.Vector3D;
 	

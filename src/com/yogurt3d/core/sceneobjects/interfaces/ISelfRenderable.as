@@ -19,7 +19,7 @@
  
 package com.yogurt3d.core.sceneobjects.interfaces
 {
-	import com.yogurt3d.core.cameras.interfaces.ICamera;
+	import com.yogurt3d.core.cameras.Camera;
 	
 	import flash.display3D.Context3D;
 	import flash.geom.Matrix3D;
@@ -31,6 +31,6 @@ package com.yogurt3d.core.sceneobjects.interfaces
  	 **/
 	public interface ISelfRenderable
 	{
-		function render( _context:Context3D, _camera:ICamera ):void;
+		function render( _context:Context3D, _camera:Camera ):void;
 	}
 }

@@ -18,7 +18,7 @@
 package com.yogurt3d.core.scenetree.quad
 {
 	import com.yogurt3d.core.helpers.boundingvolumes.*;
-	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObjectRenderable;
+	import com.yogurt3d.core.sceneobjects.SceneObjectRenderable;
 	
 	import flash.geom.Vector3D;
 	
@@ -26,9 +26,9 @@ package com.yogurt3d.core.scenetree.quad
 	{
 		public var m_parentNode:QuadNode = null;
 		
-		public var sceneObject:ISceneObjectRenderable;
+		public var sceneObject:SceneObjectRenderable;
 		
-		public function Quadrant(sceneObject:ISceneObjectRenderable)
+		public function Quadrant(sceneObject:SceneObjectRenderable)
 		{
 			this.sceneObject = sceneObject;
 			

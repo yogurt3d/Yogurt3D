@@ -18,14 +18,14 @@
 package com.yogurt3d.core.scenetree.octree
 {
 	
-	import com.yogurt3d.core.cameras.interfaces.ICamera;
+	import com.yogurt3d.core.cameras.Camera;
 	import com.yogurt3d.core.frustum.Frustum;
 	import com.yogurt3d.core.helpers.boundingvolumes.AxisAlignedBoundingBox;
 	import com.yogurt3d.core.lights.Light;
 	import com.yogurt3d.core.managers.scenetreemanager.SceneTreeManager;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
+	import com.yogurt3d.core.sceneobjects.SceneObjectRenderable;
 	import com.yogurt3d.core.sceneobjects.interfaces.IScene;
-	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObjectRenderable;
 	
 	import flash.geom.Vector3D;
 	import flash.utils.Dictionary;
@@ -38,7 +38,7 @@ package com.yogurt3d.core.scenetree.octree
 		
 		public var m_maxDepth:int;
 		public var preAllocateNodes:Boolean;
-		public var list:Vector.<ISceneObjectRenderable>;
+		public var list:Vector.<SceneObjectRenderable>;
 		public var listlength:int = 0;
 		
 
@@ -80,7 +80,7 @@ package com.yogurt3d.core.scenetree.octree
 			
 		}
 		
-		public function insert( octant:ISceneObjectRenderable ):void
+		public function insert( octant:SceneObjectRenderable ):void
 		{
 			var oct:Octant = new Octant(octant);
 			sceneObjectToOctant[octant] = oct;
@@ -292,13 +292,13 @@ package com.yogurt3d.core.scenetree.octree
 		}
 		
 		
-		public function updateTree(childrenDynamic:Vector.<ISceneObjectRenderable> ):void
+		public function updateTree(childrenDynamic:Vector.<SceneObjectRenderable> ):void
 		{
 			var len:int = childrenDynamic.length;
 			var octant:Octant;
 			for(var i:int = 0; i < len; i++)
 			{
-				var scn:ISceneObjectRenderable = childrenDynamic.pop();
+				var scn:SceneObjectRenderable = childrenDynamic.pop();
 				scn.transformation.m_isAddedToSceneRefreshList = false;
 				octant = sceneObjectToOctant[scn];
 				
@@ -311,7 +311,7 @@ package com.yogurt3d.core.scenetree.octree
 		}
 		
 		
-		public function removeFromNode(sceneObject:ISceneObjectRenderable):void
+		public function removeFromNode(sceneObject:SceneObjectRenderable):void
 		{
 			var octant:Octant = sceneObjectToOctant[sceneObject];
 			if( octant )
@@ -332,7 +332,7 @@ package com.yogurt3d.core.scenetree.octree
 			
 		}
 		
-		public function visibilityProcess( camera:ICamera):void{
+		public function visibilityProcess( camera:Camera):void{
 			listlength = 0;
 			list.length = 0;
 			
@@ -354,7 +354,7 @@ package com.yogurt3d.core.scenetree.octree
 		{		
 			var i:int;
 			
-			var octantSceneObject:ISceneObjectRenderable;
+			var octantSceneObject:SceneObjectRenderable;
 			var axis:AxisAlignedBoundingBox;
 			
 			if(bTestChildren) 
@@ -460,7 +460,7 @@ package com.yogurt3d.core.scenetree.octree
 		{		
 			var i:int;
 			
-			var octantSceneObject:ISceneObjectRenderable;
+			var octantSceneObject:SceneObjectRenderable;
 			var axis:AxisAlignedBoundingBox;
 			
 			if(bTestChildren) 

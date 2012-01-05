@@ -29,8 +29,8 @@ package com.yogurt3d.core.frustum{
 	import flash.geom.Vector3D;
 
 	//import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
-	//import com.yogurt3d.core.sceneobjects.interfaces.ISceneObjectRenderable;
-	//import com.yogurt3d.core.sceneobjects.interfaces.ISceneObjectRenderable;
+	//
+	//
 	
 	use namespace YOGURT3D_INTERNAL;
 	

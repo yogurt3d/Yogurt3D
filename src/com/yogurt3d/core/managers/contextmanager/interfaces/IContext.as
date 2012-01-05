@@ -19,7 +19,7 @@
  
 package com.yogurt3d.core.managers.contextmanager.interfaces
 {
-	import com.yogurt3d.core.cameras.interfaces.ICamera;
+	import com.yogurt3d.core.cameras.Camera;
 	import com.yogurt3d.core.objects.interfaces.IEngineObject;
 	import com.yogurt3d.core.renderers.interfaces.IRenderer;
 	import com.yogurt3d.core.sceneobjects.interfaces.IScene;
@@ -48,13 +48,13 @@ package com.yogurt3d.core.managers.contextmanager.interfaces
 		/**
 		 * Camera assigned to this context
 		 * @return 
-		 * @see com.yogurt3d.core.cameras.interfaces.ICamera
+		 * @see com.yogurt3d.core.cameras.interfaces.Camera
 		 */
-		function get camera():ICamera;
+		function get camera():Camera;
 		/**
 		 * @private
 		 */
-		function set camera(_value:ICamera):void;
+		function set camera(_value:Camera):void;
 		
 		function get viewport():Viewport;
 		function set viewport(_value:Viewport):void;

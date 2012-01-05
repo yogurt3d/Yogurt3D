@@ -18,7 +18,7 @@
 package com.yogurt3d.core.scenetree.octree
 {
 	import com.yogurt3d.core.helpers.boundingvolumes.*;
-	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObjectRenderable;
+	import com.yogurt3d.core.sceneobjects.SceneObjectRenderable;
 	
 	import flash.geom.Vector3D;
 	
@@ -28,9 +28,9 @@ package com.yogurt3d.core.scenetree.octree
 
 		public var m_parentNode:OctNode = null;
 		
-		public var sceneObject:ISceneObjectRenderable;
+		public var sceneObject:SceneObjectRenderable;
 		
-		public function Octant(sceneObject:ISceneObjectRenderable)
+		public function Octant(sceneObject:SceneObjectRenderable)
 		{
 			this.sceneObject = sceneObject;
 		}

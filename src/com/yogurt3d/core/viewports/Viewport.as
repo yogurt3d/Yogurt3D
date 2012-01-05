@@ -19,7 +19,7 @@
 
 package com.yogurt3d.core.viewports {
 	import com.yogurt3d.Yogurt3D;
-	import com.yogurt3d.core.cameras.interfaces.ICamera;
+	import com.yogurt3d.core.cameras.Camera;
 	import com.yogurt3d.core.managers.idmanager.IDManager;
 	import com.yogurt3d.core.managers.mousemanager.PickManager;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
@@ -27,8 +27,8 @@ package com.yogurt3d.core.viewports {
 	import com.yogurt3d.core.sceneobjects.SceneObject;
 	import com.yogurt3d.core.sceneobjects.SceneObjectRenderable;
 	import com.yogurt3d.core.sceneobjects.interfaces.IScene;
-	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObject;
-	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObjectRenderable;
+	
+	
 	
 	import flash.display.Sprite;
 	import flash.display3D.Context3D;
@@ -49,26 +49,24 @@ package com.yogurt3d.core.viewports {
 		
 		use namespace YOGURT3D_INTERNAL;
 		
-		private static var viewports:Vector.<uint> = Vector.<uint>([0,1,2]);
+		private static var viewports			:Vector.<uint> = Vector.<uint>([0,1,2]);
 		
-		private var m_viewportID				: uint;
+		private var m_viewportID				:uint;
 		
-		private var m_x 						: Number	= 0;
-		private var m_y 						: Number	= 0;
-		private var m_width 					: Number	= 800;
-		private var m_height 					: Number	= 600;
+		private var m_x 						:Number	= 0;
+		private var m_y 						:Number	= 0;
+		private var m_width 					:Number	= 800;
+		private var m_height 					:Number	= 600;
 		
-		private var m_matrix 					: Matrix3D;
+		private var m_matrix 					:Matrix3D;
 		
-		private var m_viewportLayers 			: Vector.<ViewportLayer>;
+		private var m_layerDepthByViewportLayer	:Dictionary;
 		
-		private var m_layerDepthByViewportLayer	: Dictionary;
-		
-		private var m_pickingEnabled			: Boolean;
+		private var m_pickingEnabled			:Boolean;
 		
 		private var m_pickManager				:PickManager;
 		
-		private var m_antiAliasing				: uint = ViewportAntialiasing.HIGH_ALIASING;
+		private var m_antiAliasing				:EViewportAntialiasing = EViewportAntialiasing.HIGH_ALIASING;
 		
 		private var m_context:Context3D;
 		/**
@@ -83,19 +81,19 @@ package com.yogurt3d.core.viewports {
 			trackObject();
 		}
 		
-		public function get antiAliasing():uint
+		public function get antiAliasing():EViewportAntialiasing
 		{
 			return m_antiAliasing;
 		}
 		
-		public function set antiAliasing(value:uint):void
+		public function set antiAliasing(value:EViewportAntialiasing):void
 		{
 			if( value != m_antiAliasing )
 			{
 				m_antiAliasing = value;
 				
 				if( !(m_width == 0 || m_height == 0) && m_context )
-					m_context.configureBackBuffer(m_width, m_height, m_antiAliasing,true);
+					m_context.configureBackBuffer(m_width, m_height, m_antiAliasing.value,true);
 			}
 		}
 		
@@ -224,9 +222,7 @@ package com.yogurt3d.core.viewports {
 				
 				if( !hide )
 				{
-					if( !(_width == 0 || _height == 0) )
-						m_context.configureBackBuffer(_width, _height, m_antiAliasing,true);
-					
+					setBackBuffer(_width, _height);					
 				}else{
 					m_context.configureBackBuffer(50, 50, 0,true);
 				}
@@ -241,7 +237,7 @@ package com.yogurt3d.core.viewports {
 		
 		public function setBackBuffer( _width:uint, _height:uint ):void{
 			if( !(_width == 0 || _height == 0) && m_context )
-				m_context.configureBackBuffer(_width, _height, m_antiAliasing,true);
+				m_context.configureBackBuffer(_width, _height, m_antiAliasing.value,true);
 		}
 		
 		/**
@@ -441,7 +437,7 @@ package com.yogurt3d.core.viewports {
 		
 		Y3DCONFIG::DEBUG
 		{
-			private function drawWireFrame( _scn:ISceneObject, matrix:Matrix3D ):void{
+			private function drawWireFrame( _scn:SceneObject, matrix:Matrix3D ):void{
 				if( _scn is SceneObjectRenderable && SceneObjectRenderable(_scn).wireframe)
 				{
 					SceneObjectRenderable(_scn).YOGURT3D_INTERNAL::drawWireFrame(matrix,this );
@@ -462,10 +458,10 @@ package com.yogurt3d.core.viewports {
 			}
 		}
 		
-		public function update( _scene:IScene, _camera:ICamera ):void{
+		public function update( _scene:IScene, _camera:Camera ):void{
 			Y3DCONFIG::DEBUG
 			{
-				var renderable:Vector.<ISceneObject> = _scene.children;
+				var renderable:Vector.<SceneObject> = _scene.children;
 				if( renderable )
 				{
 					graphics.clear();
@@ -490,7 +486,7 @@ package com.yogurt3d.core.viewports {
 					matrix.invert();
 					matrix.append( _camera.frustum.projectionMatrix );
 					matrix.append( this.matrix );
-					drawWireFrame(_scene.YOGURT3D_INTERNAL::m_rootObject as ISceneObject, matrix);
+					drawWireFrame(_scene.YOGURT3D_INTERNAL::m_rootObject as SceneObject, matrix);
 				}
 			}
 			if( m_pickingEnabled )

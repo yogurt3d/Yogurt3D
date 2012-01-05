@@ -27,8 +27,8 @@ package com.yogurt3d.core.sceneobjects {
 	import com.yogurt3d.core.objects.EngineObject;
 	import com.yogurt3d.core.objects.interfaces.IEngineObject;
 	import com.yogurt3d.core.sceneobjects.interfaces.IScene;
-	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObject;
-	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObjectRenderable;
+	
+	
 	import com.yogurt3d.core.transformations.Transformation;
 	import com.yogurt3d.core.utils.MatrixUtils;
 	import com.yogurt3d.core.viewports.Viewport;
@@ -41,12 +41,12 @@ package com.yogurt3d.core.sceneobjects {
 	import org.osflash.signals.Signal;
 
 	/**
-	 * <strong>ISceneObject</strong> interface abstract type.
+	 * <strong>SceneObject</strong> interface abstract type.
 	 * 
  	 * @author Yogurt3D Engine Core Team
  	 * @company Yogurt3D Corp.
  	 **/
-	public class SceneObject extends EngineObject implements ISceneObject
+	public class SceneObject extends EngineObject
 	{
 		YOGURT3D_INTERNAL var m_transformation					: Transformation;
 		
@@ -107,67 +107,67 @@ package com.yogurt3d.core.sceneobjects {
 		/**
 		 * @inheritDoc 
 		 * @return 
-		 * @see com.yogurt3d.core.sceneobjects.interfaces.ISceneObject#onAddedToScene
+		 * @see com.yogurt3d.core.sceneobjects.interfaces.SceneObject#onAddedToScene
 		 */		
 		public function get onAddedToScene():Signal{	return YOGURT3D_INTERNAL::m_onAddedToScene; }
 		/**
 		 * @inheritDoc 
 		 * @return 
-		 * @see com.yogurt3d.core.sceneobjects.interfaces.ISceneObject#onRemovedFromScene
+		 * @see com.yogurt3d.core.sceneobjects.interfaces.SceneObject#onRemovedFromScene
 		 */	
 		public function get onRemovedFromScene():Signal{	return YOGURT3D_INTERNAL::m_onRemovedFromScene; }
 		/**
 		 * @inheritDoc 
 		 * @return 
-		 * @see com.yogurt3d.core.sceneobjects.interfaces.ISceneObject#onMouseUp
+		 * @see com.yogurt3d.core.sceneobjects.interfaces.SceneObject#onMouseUp
 		 */	
 		public function get onMouseUp():Signal{		return YOGURT3D_INTERNAL::m_onMouseUp;	}
 		/**
 		 * @inheritDoc 
 		 * @return 
-		 * @see com.yogurt3d.core.sceneobjects.interfaces.ISceneObject#onMouseDown
+		 * @see com.yogurt3d.core.sceneobjects.interfaces.SceneObject#onMouseDown
 		 */	
 		public function get onMouseDown():Signal{	return YOGURT3D_INTERNAL::m_onMouseDown;}
 		/**
 		 * @inheritDoc 
 		 * @return 
-		 * @see com.yogurt3d.core.sceneobjects.interfaces.ISceneObject#onMouseMove
+		 * @see com.yogurt3d.core.sceneobjects.interfaces.SceneObject#onMouseMove
 		 */	
 		public function get onMouseMove():Signal{	return YOGURT3D_INTERNAL::m_onMouseMove;}
 		/**
 		 * @inheritDoc 
 		 * @return 
-		 * @see com.yogurt3d.core.sceneobjects.interfaces.ISceneObject#onMouseOver
+		 * @see com.yogurt3d.core.sceneobjects.interfaces.SceneObject#onMouseOver
 		 */	
 		public function get onMouseOver():Signal{	return YOGURT3D_INTERNAL::m_onMouseOver;}
 		/**
 		 * @inheritDoc 
 		 * @return 
-		 * @see com.yogurt3d.core.sceneobjects.interfaces.ISceneObject#onMouseOut
+		 * @see com.yogurt3d.core.sceneobjects.interfaces.SceneObject#onMouseOut
 		 */	
 		public function get onMouseOut():Signal{	return YOGURT3D_INTERNAL::m_onMouseOut;}
 		/**
 		 * @inheritDoc 
 		 * @return 
-		 * @see com.yogurt3d.core.sceneobjects.interfaces.ISceneObject#onMouseClick
+		 * @see com.yogurt3d.core.sceneobjects.interfaces.SceneObject#onMouseClick
 		 */	
 		public function get onMouseClick():Signal{	return YOGURT3D_INTERNAL::m_onMouseClick;}
 		/**
 		 * @inheritDoc 
 		 * @return 
-		 * @see com.yogurt3d.core.sceneobjects.interfaces.ISceneObject#onMouseDoubleClick
+		 * @see com.yogurt3d.core.sceneobjects.interfaces.SceneObject#onMouseDoubleClick
 		 */	
 		public function get onMouseDoubleClick():Signal{	return YOGURT3D_INTERNAL::m_onMouseDoubleClick;}
 		/**
 		 * @inheritDoc 
 		 * @return 
-		 * @see com.yogurt3d.core.sceneobjects.interfaces.ISceneObject#onStaticChanged
+		 * @see com.yogurt3d.core.sceneobjects.interfaces.SceneObject#onStaticChanged
 		 */	
 		public function get onStaticChanged():Signal{	return m_onStaticChanged;}
 		/**
 		 * @inheritDoc 
 		 * @return 
-		 * @see com.yogurt3d.core.sceneobjects.interfaces.ISceneObject#onRenderLayerChanged
+		 * @see com.yogurt3d.core.sceneobjects.interfaces.SceneObject#onRenderLayerChanged
 		 */	
 		public function get onRenderLayerChanged():Signal{	return m_onRenderLayerChanged;}
 
@@ -185,7 +185,7 @@ package com.yogurt3d.core.sceneobjects {
 		 * 
 		 */		
 		public function set visible(_value:Boolean):void {
-			var _children:Vector.<ISceneObject> = SceneTreeManager.getChildren(this);
+			var _children:Vector.<SceneObject> = SceneTreeManager.getChildren(this);
 			if(_children != null){
 				var _numChildren : int = _children.length;
 				for ( var i : int = 0; i < _numChildren; i++) {
@@ -200,9 +200,9 @@ package com.yogurt3d.core.sceneobjects {
 		}
 		
 		/*private function internalListener(_event:MouseEvent3D):void {
-			_event.target3d = _event.target as ISceneObjectRenderable;
+			_event.target3d = _event.target as SceneObjectRenderable;
 			_event.currentTarget3d = this;
-			var _parent:ISceneObject;
+			var _parent:SceneObject;
 		
 			dispatchEvent(_event);			
 		}*/
@@ -264,7 +264,7 @@ package com.yogurt3d.core.sceneobjects {
 		/**
 		 * @inheritDoc
 		 * */
-		public function get parent():ISceneObject
+		public function get parent():SceneObject
 		{
 			return SceneTreeManager.getParent(this);
 		}
@@ -272,7 +272,7 @@ package com.yogurt3d.core.sceneobjects {
 		/**
 		 * @inheritDoc
 		 * */
-		public function get root():ISceneObject
+		public function get root():SceneObject
 		{
 			return SceneTreeManager.getRoot(this);
 		}
@@ -288,7 +288,7 @@ package com.yogurt3d.core.sceneobjects {
 		/**
 		 * @inheritDoc
 		 * */
-		public function get children():Vector.<ISceneObject>
+		public function get children():Vector.<SceneObject>
 		{
 			return SceneTreeManager.getChildren(this);
 		}
@@ -297,7 +297,7 @@ package com.yogurt3d.core.sceneobjects {
 		 * @inheritDoc
 		 * @internal Yogurt3D Corp. Core Team
 		 * */
-		public function addChild(_value:ISceneObject):void
+		public function addChild(_value:SceneObject):void
 		{
 			if (_value == null) {
 				throw new Error("Child can not be null");
@@ -320,7 +320,7 @@ package com.yogurt3d.core.sceneobjects {
 		/**
 		 * @inheritDoc
 		 * */
-		public function removeChild(_value:ISceneObject):void
+		public function removeChild(_value:SceneObject):void
 		{
 			SceneTreeManager.removeChild(_value, this);
 			m_reinitboundingVolumes = true;
@@ -346,7 +346,7 @@ package com.yogurt3d.core.sceneobjects {
 		/**
 		 * @inheritDoc
 		 * */
-		public function getChildBySystemID(_value:String):ISceneObject
+		public function getChildBySystemID(_value:String):SceneObject
 		{
 			return SceneTreeManager.getChildBySystemID(_value, this);
 		}
@@ -354,7 +354,7 @@ package com.yogurt3d.core.sceneobjects {
 		/**
 		 * @inheritDoc
 		 * */
-		public function getChildByUserID(_value:String):ISceneObject
+		public function getChildByUserID(_value:String):SceneObject
 		{
 			return SceneTreeManager.getChildByUserID(_value, this);
 		}
@@ -362,7 +362,7 @@ package com.yogurt3d.core.sceneobjects {
 		/**
 		 * @inheritDoc
 		 * */
-		public function containsChild(_child:ISceneObject, _recursive:Boolean = false):Boolean
+		public function containsChild(_child:SceneObject, _recursive:Boolean = false):Boolean
 		{
 			return SceneTreeManager.contains(_child, this, _recursive); 
 		}
@@ -393,9 +393,9 @@ package com.yogurt3d.core.sceneobjects {
 			MatrixUtils.TEMP_MATRIX.identity();
 			
 			
-			if( this is ISceneObjectRenderable )
+			if( this is SceneObjectRenderable )
 			{
-				var obj:ISceneObjectRenderable = ISceneObjectRenderable(this);
+				var obj:SceneObjectRenderable = SceneObjectRenderable(this);
 				// setup aabb on identity
 				obj.geometry.axisAlignedBoundingBox.update( MatrixUtils.TEMP_MATRIX );
 				// get geometry aabb min max values
@@ -419,10 +419,10 @@ package com.yogurt3d.core.sceneobjects {
 				// add each child
 				for(var i:int; i < len; i++)
 				{
-					var child:ISceneObject = children[i];
-					if( child is ISceneObjectRenderable )
+					var child:SceneObject = children[i];
+					if( child is SceneObjectRenderable )
 					{
-						var aarr:AxisAlignedBoundingBox = ISceneObjectRenderable(child).axisAlignedBoundingBox.update( ISceneObjectRenderable(child).transformation.matrixGlobal );
+						var aarr:AxisAlignedBoundingBox = SceneObjectRenderable(child).axisAlignedBoundingBox.update( SceneObjectRenderable(child).transformation.matrixGlobal );
 						m_aabb.merge( aarr );
 						
 					}
@@ -509,8 +509,8 @@ package com.yogurt3d.core.sceneobjects {
 		override protected function initInternals():void
 		{
 			super.initInternals();
-			m_onStaticChanged 		= new Signal(ISceneObject);
-			m_onRenderLayerChanged  = new Signal(ISceneObject);
+			m_onStaticChanged 		= new Signal(SceneObject);
+			m_onRenderLayerChanged  = new Signal(SceneObject);
 			m_transformation		= new Transformation(this);
 			
 			m_transformation.onChange.add( onTransformationChange );
@@ -523,8 +523,8 @@ package com.yogurt3d.core.sceneobjects {
 			m_onMouseOver			= new Signal(MouseEvent3D);
 			m_onMouseUp				= new Signal(MouseEvent3D);
 			
-			m_onRemovedFromScene	= new Signal( ISceneObject, IScene );
-			m_onAddedToScene		= new Signal( ISceneObject, IScene );
+			m_onRemovedFromScene	= new Signal( SceneObject, IScene );
+			m_onAddedToScene		= new Signal( SceneObject, IScene );
 		}
 		
 		override public function clone():IEngineObject {
@@ -532,7 +532,7 @@ package com.yogurt3d.core.sceneobjects {
 			_newContainer.m_transformation = Transformation(transformation.clone());
 			_newContainer.m_transformation.m_ownerSceneObject = _newContainer;
 			
-			var _children:Vector.<ISceneObject> = SceneTreeManager.getChildren(this);
+			var _children:Vector.<SceneObject> = SceneTreeManager.getChildren(this);
 			if(_children != null){
 				var _numChildren : int = _children.length;
 				for ( var i : int = 0; i < _numChildren; i++) {

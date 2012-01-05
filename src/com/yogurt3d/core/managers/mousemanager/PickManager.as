@@ -19,12 +19,12 @@
  
 package com.yogurt3d.core.managers.mousemanager
 {
-	import com.yogurt3d.core.cameras.interfaces.ICamera;
+	import com.yogurt3d.core.cameras.Camera;
 	import com.yogurt3d.core.events.MouseEvent3D;
 	import com.yogurt3d.core.managers.tickmanager.TickManager;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
+	import com.yogurt3d.core.sceneobjects.SceneObjectRenderable;
 	import com.yogurt3d.core.sceneobjects.interfaces.IScene;
-	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObjectRenderable;
 	import com.yogurt3d.core.viewports.Viewport;
 	import com.yogurt3d.presets.renderers.molehill.PickRenderer;
 	
@@ -48,13 +48,13 @@ package com.yogurt3d.core.managers.mousemanager
 		
 		private static var m_pickRenderer:PickRenderer;
 		
-		YOGURT3D_INTERNAL var m_lastObject:ISceneObjectRenderable;
+		YOGURT3D_INTERNAL var m_lastObject:SceneObjectRenderable;
 		
-		YOGURT3D_INTERNAL var m_currentObject:ISceneObjectRenderable;
+		YOGURT3D_INTERNAL var m_currentObject:SceneObjectRenderable;
 		
 		YOGURT3D_INTERNAL var m_currentIntersection:Vector3D;
 		
-		YOGURT3D_INTERNAL var m_downObject:ISceneObjectRenderable;
+		YOGURT3D_INTERNAL var m_downObject:SceneObjectRenderable;
 		
 		private var m_viewport:Viewport;
 		
@@ -135,7 +135,7 @@ package com.yogurt3d.core.managers.mousemanager
 			}
 		}
 		
-		public function update( _scene:IScene, _camera:ICamera ):void
+		public function update( _scene:IScene, _camera:Camera ):void
 		{
 			if( TickManager.LATEST_SYSTEM_TIME - m_lastUpdateTime >= updateTime )
 			{

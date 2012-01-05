@@ -22,7 +22,7 @@ package com.yogurt3d.core.effects.filters
 {
 	import com.adobe.utils.AGALMiniAssembler;
 	import com.yogurt3d.core.cameras.Camera;
-	import com.yogurt3d.core.cameras.interfaces.ICamera;
+	import com.yogurt3d.core.cameras.Camera;
 	import com.yogurt3d.core.lights.ELightType;
 	import com.yogurt3d.core.utils.MathUtils;
 	import com.yogurt3d.core.utils.ShaderUtils;
@@ -155,7 +155,7 @@ package com.yogurt3d.core.effects.filters
 				//	trace(this.width , this.height);
 				m_leftTextureDict[_context3d] = _context3d.createTexture(m_width, m_height, Context3DTextureFormat.BGRA, true );
 			}
-			_context3d.setRenderToTexture(m_leftTextureDict[_context3d], true, _viewport.antiAliasing);
+			_context3d.setRenderToTexture(m_leftTextureDict[_context3d], true, _viewport.antiAliasing.value);
 			_context3d.clear();
 		}
 		
@@ -167,7 +167,7 @@ package com.yogurt3d.core.effects.filters
 				//	trace(this.width , this.height);
 				m_rightTextureDict[_context3d] = _context3d.createTexture(m_width, m_height, Context3DTextureFormat.BGRA, true );
 			}
-			_context3d.setRenderToTexture(m_rightTextureDict[_context3d], true, _viewport.antiAliasing);
+			_context3d.setRenderToTexture(m_rightTextureDict[_context3d], true, _viewport.antiAliasing.value);
 			_context3d.clear();
 		}
 		
@@ -196,9 +196,9 @@ package com.yogurt3d.core.effects.filters
 			m_camera.transformation.matrixLocal.copyFrom(	m_originalCameraLocalMatrix );
 		}
 		
-		public function saveCameraCentralPosition(_camera:ICamera):void
+		public function saveCameraCentralPosition(_camera:Camera):void
 		{
-			m_camera = Camera(_camera);
+			m_camera = _camera;
 			m_originalCameraLocalMatrix.copyFrom( m_camera.transformation.matrixLocal );
 		}
 		

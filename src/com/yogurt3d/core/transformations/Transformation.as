@@ -22,7 +22,8 @@ package com.yogurt3d.core.transformations {
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.objects.EngineObject;
 	import com.yogurt3d.core.objects.interfaces.IEngineObject;
-	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObject;
+	import com.yogurt3d.core.sceneobjects.SceneObject;
+	
 	import com.yogurt3d.core.utils.MathUtils;
 	import com.yogurt3d.core.utils.MatrixUtils;
 	
@@ -42,7 +43,7 @@ package com.yogurt3d.core.transformations {
 	{
 		use namespace YOGURT3D_INTERNAL;
 		
-		YOGURT3D_INTERNAL var m_ownerSceneObject					:ISceneObject;
+		YOGURT3D_INTERNAL var m_ownerSceneObject					:SceneObject;
 		YOGURT3D_INTERNAL var m_parentGlobalMatrix					:Matrix3D;
 		
 		YOGURT3D_INTERNAL var m_isLocalDirty						:Boolean;
@@ -69,7 +70,7 @@ package com.yogurt3d.core.transformations {
 		/**
 		 * 
 		 */
-		public function Transformation(_owner:ISceneObject)
+		public function Transformation(_owner:SceneObject)
 		{
 			super(true);
 			
@@ -147,7 +148,7 @@ package com.yogurt3d.core.transformations {
 		YOGURT3D_INTERNAL function invalidateChildren():void {
 			if ( !m_ownerSceneObject ) return;
 			
-			var _children		:Vector.<ISceneObject>	= m_ownerSceneObject.children;
+			var _children		:Vector.<SceneObject>	= m_ownerSceneObject.children;
 			if ( !_children ) return;
 			
 			var _childrenCount	:int					= _children.length;

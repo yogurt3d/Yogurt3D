@@ -19,7 +19,7 @@
 
 package com.yogurt3d.core.lights
 {
-	import com.yogurt3d.core.cameras.interfaces.ICamera;
+	import com.yogurt3d.core.cameras.Camera;
 	import com.yogurt3d.core.frustum.Frustum;
 	import com.yogurt3d.core.helpers.ProjectionUtils;
 	import com.yogurt3d.core.helpers.boundingvolumes.BoundingSphere;
@@ -30,7 +30,6 @@ package com.yogurt3d.core.lights
 	import com.yogurt3d.core.sceneobjects.SceneObject;
 	import com.yogurt3d.core.sceneobjects.SceneObjectContainer;
 	import com.yogurt3d.core.sceneobjects.interfaces.IScene;
-	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObject;
 	import com.yogurt3d.core.texture.RenderTextureTarget;
 	import com.yogurt3d.core.transformations.Transformation;
 	import com.yogurt3d.core.utils.Enum;
@@ -381,7 +380,7 @@ package com.yogurt3d.core.lights
 		
 		
 		
-		private function onAddedToSceneEvent( obj:ISceneObject, scene:IScene ):void{
+		private function onAddedToSceneEvent( obj:SceneObject, scene:IScene ):void{
 			setProjection();
 		}
 		

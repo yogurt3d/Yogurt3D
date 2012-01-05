@@ -19,13 +19,15 @@
  
 package com.yogurt3d.presets.renderers.helper
 {
-	import com.yogurt3d.core.cameras.interfaces.ICamera;
+	import com.yogurt3d.core.cameras.Camera;
+	import com.yogurt3d.core.cameras.Camera;
 	import com.yogurt3d.core.geoms.SubMesh;
 	import com.yogurt3d.core.lights.Light;
 	import com.yogurt3d.core.materials.shaders.renderstate.ShaderParameters;
-	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObjectRenderable;
+	import com.yogurt3d.core.sceneobjects.SceneObjectRenderable;
 	
 	import flash.display3D.Context3D;
+
 /**
 	 * 
 	 * 
@@ -40,7 +42,7 @@ package com.yogurt3d.presets.renderers.helper
 		 */
 		function endScene():void;
 		
-		function beginScene(_camera:ICamera=null):void;
+		function beginScene(_camera:Camera=null):void;
 		
 		
 		/**
@@ -60,6 +62,6 @@ package com.yogurt3d.presets.renderers.helper
 		 * @param _subMesh Currently parsed SubMesh of the renderable object's geometry
 		 * 
 		 */
-		function setProgramConstants(_context3d:Context3D, _params:ShaderParameters, _light:Light=null, _camera:ICamera=null, _object:ISceneObjectRenderable=null, _subMesh:SubMesh = null):Boolean
+		function setProgramConstants(_context3d:Context3D, _params:ShaderParameters, _light:Light=null, _camera:Camera=null, _object:SceneObjectRenderable=null, _subMesh:SubMesh = null):Boolean
 	}
 }

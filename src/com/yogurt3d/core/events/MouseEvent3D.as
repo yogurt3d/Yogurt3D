@@ -16,8 +16,9 @@
  * License along with this library. If not, see <http://www.yogurt3d.com/yogurt3d/downloads/yogurt3d-click-through-agreement.html>. 
  */
 package com.yogurt3d.core.events {
-	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObject;
-	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObjectRenderable;
+	
+	import com.yogurt3d.core.sceneobjects.SceneObject;
+	import com.yogurt3d.core.sceneobjects.SceneObjectRenderable;
 	
 	import flash.events.Event;
 	import flash.geom.Vector3D;
@@ -53,9 +54,9 @@ package com.yogurt3d.core.events {
 		 */
 		public var v					: Number;		
 		
-		public var target3d				: ISceneObjectRenderable;
+		public var target3d				: SceneObjectRenderable;
 		
-		public var currentTarget3d		: ISceneObject;
+		public var currentTarget3d		: SceneObject;
 		
 		/**
 		 * 

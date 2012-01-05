@@ -1,6 +1,6 @@
 package com.yogurt3d.core.scenetree.octree
 {
-	import com.yogurt3d.core.cameras.interfaces.ICamera;
+	import com.yogurt3d.core.cameras.Camera;
 	import com.yogurt3d.core.frustum.Frustum;
 	import com.yogurt3d.core.helpers.boundingvolumes.AxisAlignedBoundingBox;
 	import com.yogurt3d.core.lights.ELightType;
@@ -11,8 +11,8 @@ package com.yogurt3d.core.scenetree.octree
 	import com.yogurt3d.core.sceneobjects.SceneObject;
 	import com.yogurt3d.core.sceneobjects.SceneObjectRenderable;
 	import com.yogurt3d.core.sceneobjects.interfaces.IScene;
-	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObject;
-	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObjectRenderable;
+	
+	
 	import com.yogurt3d.core.scenetree.IRenderableManager;
 	import com.yogurt3d.core.transformations.Transformation;
 	
@@ -32,7 +32,7 @@ package com.yogurt3d.core.scenetree.octree
 		//the list for storing recursive "visibilityProcess" results for the testers like camera or light
 		public var listOfVisibilityTesterByScene:Dictionary;
 		
-		private var s_transformedDynamicChildren:Vector.<ISceneObjectRenderable> = new Vector.<ISceneObjectRenderable>();
+		private var s_transformedDynamicChildren:Vector.<SceneObjectRenderable> = new Vector.<SceneObjectRenderable>();
 		private var s_marktransformedDynamicChildren:Dictionary = new Dictionary();
 		
 		public function OcTreeSceneTreeManager()
@@ -48,7 +48,7 @@ package com.yogurt3d.core.scenetree.octree
 			}
 		}
 		
-		public function addChild(_child:ISceneObjectRenderable, _scene:IScene, index:int=-1):void
+		public function addChild(_child:SceneObjectRenderable, _scene:IScene, index:int=-1):void
 		{
 			SceneTreeManager.initRenSetIlluminatorLightIndexes(_scene, _child);
 			
@@ -108,12 +108,12 @@ package com.yogurt3d.core.scenetree.octree
 			
 			if( s_staticChildrenByScene[_scene] == null )
 			{
-				s_staticChildrenByScene[_scene] = new Vector.<ISceneObjectRenderable>();
+				s_staticChildrenByScene[_scene] = new Vector.<SceneObjectRenderable>();
 			}
 			
 			if( s_dynamicChildrenByScene[_scene] == null )
 			{
-				s_dynamicChildrenByScene[_scene] = new Vector.<ISceneObjectRenderable>();
+				s_dynamicChildrenByScene[_scene] = new Vector.<SceneObjectRenderable>();
 			}
 			
 			
@@ -121,7 +121,7 @@ package com.yogurt3d.core.scenetree.octree
 			{
 				//if( s_staticChildrenByScene[_scene] == null )
 				//{
-					//s_staticChildrenByScene[_scene] = new Vector.<ISceneObjectRenderable>();
+					//s_staticChildrenByScene[_scene] = new Vector.<SceneObjectRenderable>();
 				//}
 				s_staticChildrenByScene[_scene].push(_child);
 			}
@@ -129,7 +129,7 @@ package com.yogurt3d.core.scenetree.octree
 			{
 /*				if( s_dynamicChildrenByScene[_scene] == null )
 				{
-					s_dynamicChildrenByScene[_scene] = new Vector.<ISceneObjectRenderable>();
+					s_dynamicChildrenByScene[_scene] = new Vector.<SceneObjectRenderable>();
 				}*/
 				s_dynamicChildrenByScene[_scene].push( _child );
 				
@@ -145,7 +145,7 @@ package com.yogurt3d.core.scenetree.octree
 		private function onChildTransChanged(tras:Transformation):void{
 			if( tras.m_isAddedToSceneRefreshList == false)
 			{
-				s_transformedDynamicChildren[s_transformedDynamicChildren.length] = ISceneObjectRenderable(tras.m_ownerSceneObject);
+				s_transformedDynamicChildren[s_transformedDynamicChildren.length] = SceneObjectRenderable(tras.m_ownerSceneObject);
 				tras.m_isAddedToSceneRefreshList = true;
 			}
 		}
@@ -156,7 +156,7 @@ package com.yogurt3d.core.scenetree.octree
 		
 		
 		private function onStaticChange( _scn:SceneObject ):void{
-			var _child:ISceneObjectRenderable = _scn as ISceneObjectRenderable;
+			var _child:SceneObjectRenderable = _scn as SceneObjectRenderable;
 			
 			if( _child.isStatic )
 			{
@@ -177,10 +177,10 @@ package com.yogurt3d.core.scenetree.octree
 			}
 		}
 		
-		private function _removeChildFromDynamicList( _child:ISceneObjectRenderable, _scene:IScene ):void{
+		private function _removeChildFromDynamicList( _child:SceneObjectRenderable, _scene:IScene ):void{
 			if( s_dynamicChildrenByScene[_scene ] )
 			{
-				var _renderableObjectsByScene 	:Vector.<ISceneObjectRenderable>	= s_dynamicChildrenByScene[_scene];
+				var _renderableObjectsByScene 	:Vector.<SceneObjectRenderable>	= s_dynamicChildrenByScene[_scene];
 				var _index						:int								= _renderableObjectsByScene.indexOf(_child);
 				
 				if(_index != -1)
@@ -197,10 +197,10 @@ package com.yogurt3d.core.scenetree.octree
 		}
 		
 		
-		private function _removeChildFromStaticList( _child:ISceneObjectRenderable, _scene:IScene ):void{
+		private function _removeChildFromStaticList( _child:SceneObjectRenderable, _scene:IScene ):void{
 			if( s_dynamicChildrenByScene[_scene ] )
 			{
-				var _renderableObjectsByScene 	:Vector.<ISceneObjectRenderable>	= s_staticChildrenByScene[_scene];
+				var _renderableObjectsByScene 	:Vector.<SceneObjectRenderable>	= s_staticChildrenByScene[_scene];
 				var _index						:int								= _renderableObjectsByScene.indexOf(_child);
 				
 				if(_index != -1)
@@ -217,9 +217,9 @@ package com.yogurt3d.core.scenetree.octree
 		}
 		
 		
-		public function getSceneRenderableSet(_scene:IScene, _camera:ICamera):Vector.<ISceneObjectRenderable>
+		public function getSceneRenderableSet(_scene:IScene, _camera:Camera):Vector.<SceneObjectRenderable>
 		{
-			var camera:ICamera =  _camera;
+			var camera:Camera =  _camera;
 
 			if( s_octantByScene[_scene] )
 			{
@@ -239,7 +239,7 @@ package com.yogurt3d.core.scenetree.octree
 			return null;
 		}
 		
-		public function getSceneRenderableSetLight(_scene:IScene, _light:Light, lightIndex:int):Vector.<ISceneObjectRenderable>
+		public function getSceneRenderableSetLight(_scene:IScene, _light:Light, lightIndex:int):Vector.<SceneObjectRenderable>
 		{
 			if(_light.type == ELightType.DIRECTIONAL)
 			{
@@ -266,9 +266,9 @@ package com.yogurt3d.core.scenetree.octree
 			return null;
 		}
 		
-		public function removeChildFromTree(_child:ISceneObjectRenderable, _scene:IScene):void
+		public function removeChildFromTree(_child:SceneObjectRenderable, _scene:IScene):void
 		{
-			var _renderableObjectsByScene 	:Vector.<ISceneObjectRenderable>;
+			var _renderableObjectsByScene 	:Vector.<SceneObjectRenderable>;
 			var _index						:int;
 			var _dictionary                 :Dictionary;
 			
@@ -303,12 +303,12 @@ package com.yogurt3d.core.scenetree.octree
 		
 		}
 		
-		public function getIlluminatorLightIndexes(_scene:IScene, _objectRenderable:ISceneObjectRenderable):Vector.<int>
+		public function getIlluminatorLightIndexes(_scene:IScene, _objectRenderable:SceneObjectRenderable):Vector.<int>
 		{
 			return SceneTreeManager.s_renSetIlluminatorLightIndexes[_scene][_objectRenderable].concat(SceneTreeManager.s_sceneDirectionalLightIndexes[_scene]);
 		}
 		
-		public function clearIlluminatorLightIndexes(_scene:IScene, _objectRenderable:ISceneObjectRenderable):void
+		public function clearIlluminatorLightIndexes(_scene:IScene, _objectRenderable:SceneObjectRenderable):void
 		{
 			SceneTreeManager.s_renSetIlluminatorLightIndexes[_scene][_objectRenderable].length = 0;
 		}

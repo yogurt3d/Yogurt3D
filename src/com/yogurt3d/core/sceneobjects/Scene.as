@@ -20,7 +20,7 @@ package com.yogurt3d.core.sceneobjects
 {
 	import com.yogurt3d.Yogurt3D;
 	import com.yogurt3d.core.cameras.Camera;
-	import com.yogurt3d.core.cameras.interfaces.ICamera;
+	import com.yogurt3d.core.cameras.Camera;
 	import com.yogurt3d.core.effects.Effect;
 	import com.yogurt3d.core.lights.Light;
 	import com.yogurt3d.core.managers.idmanager.IDManager;
@@ -29,8 +29,8 @@ package com.yogurt3d.core.sceneobjects
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.objects.EngineObject;
 	import com.yogurt3d.core.sceneobjects.interfaces.IScene;
-	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObject;
-	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObjectRenderable;
+	
+	
 	import com.yogurt3d.core.lights.ELightType;
 	
 	/**
@@ -44,7 +44,7 @@ package com.yogurt3d.core.sceneobjects
 		public static const QUAD_SCENE:String = "QuadSceneTreeManagerDriver";
 		public static const OCTREE_SCENE:String = "OcTreeSceneTreeManagerDriver";
 		
-		YOGURT3D_INTERNAL var m_rootObject		:ISceneObject;
+		YOGURT3D_INTERNAL var m_rootObject		:SceneObject;
 		YOGURT3D_INTERNAL var m_args			:Object;
 		
 		YOGURT3D_INTERNAL var m_driver:String;
@@ -75,7 +75,7 @@ package com.yogurt3d.core.sceneobjects
 		/**
 		 * @inheritDoc
 		 * */
-		public function get objectSet():Vector.<ISceneObject>
+		public function get objectSet():Vector.<SceneObject>
 		{
 			return SceneTreeManager.getSceneObjectSet(this);
 		}
@@ -83,27 +83,27 @@ package com.yogurt3d.core.sceneobjects
 		/**
 		 * @inheritDoc
 		 * */
-		public function getRenderableSet(_camera:ICamera):Vector.<ISceneObjectRenderable>
+		public function getRenderableSet(_camera:Camera):Vector.<SceneObjectRenderable>
 		{
 			return SceneTreeManager.getSceneRenderableSet(this,_camera);
 		}
 		
-		public function getIlluminatorLightIndexes(_scene:IScene, _objectRenderable:ISceneObjectRenderable):Vector.<int>
+		public function getIlluminatorLightIndexes(_scene:IScene, _objectRenderable:SceneObjectRenderable):Vector.<int>
 		{
 			return SceneTreeManager.getIlluminatorLightIndexes(this,_objectRenderable);
 		}
 		
-		public function clearIlluminatorLightIndexes(_scene:IScene, _objectRenderable:ISceneObjectRenderable):void
+		public function clearIlluminatorLightIndexes(_scene:IScene, _objectRenderable:SceneObjectRenderable):void
 		{
 			return SceneTreeManager.clearIlluminatorLightIndexes(this,_objectRenderable);
 		}
 		
-		public function getRenderableSetLight(_light:Light, _lightIndex:int):Vector.<ISceneObjectRenderable>
+		public function getRenderableSetLight(_light:Light, _lightIndex:int):Vector.<SceneObjectRenderable>
 		{
 			return SceneTreeManager.getSceneRenderableSetLight(this, _light, _lightIndex);
 		}
 		
-		public function preRender(_activeCamera:ICamera):void
+		public function preRender(_activeCamera:Camera):void
 		{
 			SceneTreeManager.clearSceneFrameData( this, _activeCamera);
 			getRenderableSet(_activeCamera);
@@ -118,7 +118,7 @@ package com.yogurt3d.core.sceneobjects
 		/**
 		 * @inheritDoc
 		 * */
-		public function get cameraSet():Vector.<ICamera>
+		public function get cameraSet():Vector.<Camera>
 		{
 			return SceneTreeManager.getSceneCameraSet(this);
 		}
@@ -128,7 +128,7 @@ package com.yogurt3d.core.sceneobjects
 			return SceneTreeManager.getSceneLightSet(this);
 		}
 		
-		public function getIntersectedLightsByCamera(_camera:ICamera):Vector.<Light>
+		public function getIntersectedLightsByCamera(_camera:Camera):Vector.<Light>
 		{
 			return SceneTreeManager.s_intersectedLightsByCamera[_camera];
 		}
@@ -136,14 +136,14 @@ package com.yogurt3d.core.sceneobjects
 		/**
 		 * @inheritDoc
 		 * */
-		public function get children():Vector.<ISceneObject>
+		public function get children():Vector.<SceneObject>
 		{
 			return SceneTreeManager.getChildren(m_rootObject);
 		}
 		
 		public function get triangleCount():int
 		{
-			var _renderableSet		:Vector.<ISceneObjectRenderable>	= SceneTreeManager.getSceneRenderableSet(this, null);
+			var _renderableSet		:Vector.<SceneObjectRenderable>	= SceneTreeManager.getSceneRenderableSet(this, null);
 			var _renderableCount	:int								= _renderableSet.length;
 			var _triangleCount		:int								= 0;
 			
@@ -156,7 +156,7 @@ package com.yogurt3d.core.sceneobjects
 		/**
 		 * @inheritDoc
 		 * */
-		public function addChild(_value:ISceneObject):void {
+		public function addChild(_value:SceneObject):void {
 			if (_value == null) {
 				throw new Error("Child can not be null");
 				return;
@@ -167,7 +167,7 @@ package com.yogurt3d.core.sceneobjects
 		/**
 		 * @inheritDoc
 		 * */
-		public function removeChild(_value:ISceneObject):void
+		public function removeChild(_value:SceneObject):void
 		{
 			SceneTreeManager.removeChild(_value, m_rootObject);
 		}
@@ -191,7 +191,7 @@ package com.yogurt3d.core.sceneobjects
 		/**
 		 * @inheritDoc
 		 * */
-		public function getChildBySystemID(_value:String):ISceneObject
+		public function getChildBySystemID(_value:String):SceneObject
 		{
 			return SceneTreeManager.getChildBySystemID(_value, m_rootObject);
 		}
@@ -199,7 +199,7 @@ package com.yogurt3d.core.sceneobjects
 		/**
 		 * @inheritDoc
 		 * */
-		public function getChildByUserID(_value:String):ISceneObject
+		public function getChildByUserID(_value:String):SceneObject
 		{
 			return SceneTreeManager.getChildByUserID(_value, m_rootObject);
 		}
@@ -207,7 +207,7 @@ package com.yogurt3d.core.sceneobjects
 		/**
 		 * @inheritDoc
 		 * */
-		public function containsChild(_child:ISceneObject, _recursive:Boolean = false):Boolean
+		public function containsChild(_child:SceneObject, _recursive:Boolean = false):Boolean
 		{
 			return SceneTreeManager.contains(_child, m_rootObject, _recursive); 
 		}
@@ -227,7 +227,7 @@ package com.yogurt3d.core.sceneobjects
 			
 			m_postEffects = new Vector.<Effect>();
 			
-			SceneTreeManager.setSceneRootObject(ISceneObject(m_rootObject), this);
+			SceneTreeManager.setSceneRootObject(SceneObject(m_rootObject), this);
 		}
 		
 		public function get sceneColor():Color

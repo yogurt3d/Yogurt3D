@@ -19,10 +19,11 @@
  
 package com.yogurt3d.core.renderers.interfaces
 {
-	import com.yogurt3d.core.cameras.interfaces.ICamera;
+	import com.yogurt3d.core.cameras.Camera;
 	import com.yogurt3d.core.objects.interfaces.IEngineObject;
 	import com.yogurt3d.core.sceneobjects.interfaces.IScene;
 	import com.yogurt3d.core.viewports.Viewport;
+
 	/**
 	 * 
 	 * 
@@ -31,6 +32,6 @@ package com.yogurt3d.core.renderers.interfaces
  	 **/
 	public interface IRenderer extends IEngineObject
 	{
-		function render (_scene:IScene, _camera:ICamera, _viewport:Viewport):void;
+		function render (_scene:IScene, _camera:Camera, _viewport:Viewport):void;
 	}
 }

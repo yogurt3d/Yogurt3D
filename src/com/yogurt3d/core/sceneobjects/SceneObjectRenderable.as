@@ -28,7 +28,7 @@ package com.yogurt3d.core.sceneobjects {
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.objects.interfaces.IEngineObject;
 	import com.yogurt3d.core.sceneobjects.interfaces.IScene;
-	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObjectRenderable;
+	
 	import com.yogurt3d.core.transformations.Transformation;
 	import com.yogurt3d.core.utils.MatrixUtils;
 	import com.yogurt3d.core.viewports.Viewport;
@@ -41,13 +41,13 @@ package com.yogurt3d.core.sceneobjects {
 	import flash.geom.Vector3D;
 
 	/**
-	 * <strong>ISceneObjectRenderable</strong> interface abstract type.
+	 * <strong>SceneObjectRenderable</strong> interface abstract type.
  	 * 
  	 * 
   	 * @author Yogurt3D Engine Core Team
   	 * @company Yogurt3D Corp.
   	 **/
-	public class SceneObjectRenderable extends SceneObject implements ISceneObjectRenderable
+	public class SceneObjectRenderable extends SceneObject
 	{
 		YOGURT3D_INTERNAL var m_geometry			:IMesh;
 		YOGURT3D_INTERNAL var m_material			:Material;

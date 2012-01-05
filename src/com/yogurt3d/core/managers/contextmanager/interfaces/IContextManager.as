@@ -19,7 +19,7 @@
  
 package com.yogurt3d.core.managers.contextmanager.interfaces
 {
-	import com.yogurt3d.core.cameras.interfaces.ICamera;
+	import com.yogurt3d.core.cameras.Camera;
 	import com.yogurt3d.core.objects.interfaces.IEngineObject;
 	import com.yogurt3d.core.renderers.interfaces.IRenderer;
 	import com.yogurt3d.core.sceneobjects.interfaces.IScene;
@@ -56,7 +56,7 @@ package com.yogurt3d.core.managers.contextmanager.interfaces
 		 * @return 
 		 * 
 		 */
-		function get cameras():Vector.<ICamera>;
+		function get cameras():Vector.<Camera>;
 		/**
 		 * Returns the registered contexts
 		 * @return 
@@ -86,10 +86,10 @@ package com.yogurt3d.core.managers.contextmanager.interfaces
 		 * @return 
 		 * 
 		 * @see com.yogurt3d.core.sceneobjects.interfaces.IScene
-		 * @see com.yogurt3d.core.cameras.interfaces.ICamera
+		 * @see com.yogurt3d.core.cameras.interfaces.Camera
 		 * @see com.yogurt3d.core.renderers.interfaces.IRenderer
 		 */
-		function addNewContext(_scene:IScene, _camera:ICamera, _viewport:Viewport, _renderer:IRenderer):String;
+		function addNewContext(_scene:IScene, _camera:Camera, _viewport:Viewport, _renderer:IRenderer):String;
 		
 		/**
 		 * Unregisters a <code>Context</code> 
@@ -150,10 +150,10 @@ package com.yogurt3d.core.managers.contextmanager.interfaces
 		 */
 		function removeAllRelatedToScene(_value:IScene):void;
 		/**
-		 * Unregisters the <code>Context</code> object allocated to the <code>ICamera</code> 
+		 * Unregisters the <code>Context</code> object allocated to the <code>Camera</code> 
 		 * @param _value
-		 * @see com.yogurt3d.core.cameras.interfaces.ICamera
+		 * @see com.yogurt3d.core.cameras.interfaces.Camera
 		 */
-		function removeAllRelatedToCamera(_value:ICamera):void;
+		function removeAllRelatedToCamera(_value:Camera):void;
 	}
 }

@@ -20,7 +20,7 @@
 package com.yogurt3d.core.lights
 {
 	import com.yogurt3d.core.materials.MaterialFill;
-	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObjectRenderable;
+	import com.yogurt3d.core.sceneobjects.SceneObjectRenderable;
 	import com.yogurt3d.core.utils.MathUtils;
 	import com.yogurt3d.presets.primitives.sceneobjects.ConeSceneObject;
 	import com.yogurt3d.presets.primitives.sceneobjects.SphereSceneObject;
@@ -33,7 +33,7 @@ package com.yogurt3d.core.lights
  	 **/
 	public class RenderableLight extends Light
 	{
-		public var sceneObject:ISceneObjectRenderable;
+		public var sceneObject:SceneObjectRenderable;
 		
 		public function RenderableLight(_type:ELightType = null, _color:uint = 0xFFFFFF, _radius:Number = 0.2, _initInternals:Boolean=true)
 		{

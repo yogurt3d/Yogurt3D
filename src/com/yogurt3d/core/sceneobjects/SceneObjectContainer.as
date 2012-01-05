@@ -25,15 +25,15 @@ package com.yogurt3d.core.sceneobjects {
 	import com.yogurt3d.core.managers.scenetreemanager.SceneTreeManager;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.objects.interfaces.IEngineObject;
-	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObject;
-	import com.yogurt3d.core.sceneobjects.interfaces.ISceneObjectRenderable;
+	
+	
 	import com.yogurt3d.core.transformations.Transformation;
 	
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
 
 	/**
-	 * <strong>ISceneObjectContainer</strong> interface abstract type.
+	 * <strong>SceneObjectContainer</strong> interface abstract type.
 	 * 
  	 * @author Yogurt3D Engine Core Team
  	 * @company Yogurt3D Corp.
