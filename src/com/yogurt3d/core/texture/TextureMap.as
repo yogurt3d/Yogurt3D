@@ -350,12 +350,12 @@ package com.yogurt3d.core.texture
 			{
 				if( m_tempBitmap!= null )
 					m_tempBitmap.dispose();
-				m_tempBitmap = new BitmapData( m_width, m_height, true, 0x00000000 );
+				m_tempBitmap = new BitmapData( m_width, m_height, true, 0x00FFFFFF );
 			}
 			// draw the displayObject onto a bitmapData
-			if( transparent )
+			//if( transparent )
 			{
-				m_tempBitmap.fillRect( m_tempBitmap.rect, 0x00000000 );
+				m_tempBitmap.fillRect( m_tempBitmap.rect, 0x00FFFFFF );
 			}
 			m_tempBitmap.draw( m_displayObject, null,null,null,m_tempBitmap.rect, false );	
 			

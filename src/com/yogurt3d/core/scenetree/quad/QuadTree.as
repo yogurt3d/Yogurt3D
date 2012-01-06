@@ -325,7 +325,7 @@ package com.yogurt3d.core.scenetree.quad
 							for(i = 0; i < lena; i++)
 							{
 								quadrantSceneObject = node.children[i].sceneObject;
-								quadrantSceneObject.isInFrustum = true;
+								quadrantSceneObject.m_isInFrustum = true;
 								list[listlength] = quadrantSceneObject;
 								listlength++;
 							}
@@ -350,7 +350,7 @@ package com.yogurt3d.core.scenetree.quad
 								{
 									continue;
 								}
-								quadrantSceneObject.isInFrustum = true;
+								quadrantSceneObject.m_isInFrustum = true;
 								list[listlength] = quadrantSceneObject;
 								listlength++;
 							}
@@ -366,7 +366,7 @@ package com.yogurt3d.core.scenetree.quad
 					for(i = 0; i < lenb; i++)
 					{
 						quadrantSceneObject = node.children[i].sceneObject;
-						quadrantSceneObject.isInFrustum = true;
+						quadrantSceneObject.m_isInFrustum = true;
 						
 						list[listlength] = quadrantSceneObject;
 						listlength++;
@@ -424,7 +424,7 @@ package com.yogurt3d.core.scenetree.quad
 							for(i = 0; i < lena; i++)
 							{
 								quadrantSceneObject = node.children[i].sceneObject;
-								if(quadrantSceneObject.isInFrustum)
+								if(quadrantSceneObject.m_isInFrustum)
 									SceneTreeManager.s_renSetIlluminatorLightIndexes[_scene][quadrantSceneObject].push(lightIndex);
 								
 								list[listlength] = quadrantSceneObject;
@@ -455,7 +455,7 @@ package com.yogurt3d.core.scenetree.quad
 										continue;
 								}
 								
-								if(quadrantSceneObject.isInFrustum)
+								if(quadrantSceneObject.m_isInFrustum)
 									SceneTreeManager.s_renSetIlluminatorLightIndexes[_scene][quadrantSceneObject].push(lightIndex);
 								
 								list[listlength] = quadrantSceneObject;
@@ -474,7 +474,7 @@ package com.yogurt3d.core.scenetree.quad
 					for(i = 0; i < lenb; i++)
 					{
 						quadrantSceneObject = node.children[i].sceneObject;
-						if(quadrantSceneObject.isInFrustum)
+						if(quadrantSceneObject.m_isInFrustum)
 							SceneTreeManager.s_renSetIlluminatorLightIndexes[_scene][quadrantSceneObject].push(lightIndex);
 						
 						list[listlength] = quadrantSceneObject;

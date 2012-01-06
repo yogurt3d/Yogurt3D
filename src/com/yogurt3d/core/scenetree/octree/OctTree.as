@@ -373,7 +373,7 @@ package com.yogurt3d.core.scenetree.octree
 							for(i = 0; i < lena; i++)
 							{
 								octantSceneObject = node.children[i].sceneObject;
-								octantSceneObject.isInFrustum = true;
+								octantSceneObject.m_isInFrustum = true;
 								list[listlength] = octantSceneObject;
 								listlength++;
 							}
@@ -398,7 +398,7 @@ package com.yogurt3d.core.scenetree.octree
 								{
 									continue;
 								}
-								octantSceneObject.isInFrustum = true;
+								octantSceneObject.m_isInFrustum = true;
 								list[listlength] = octantSceneObject;
 								listlength++;
 							}
@@ -414,7 +414,7 @@ package com.yogurt3d.core.scenetree.octree
 					for(i = 0; i < lenb; i++)
 					{
 						octantSceneObject = node.children[i].sceneObject;
-						octantSceneObject.isInFrustum = true;
+						octantSceneObject.m_isInFrustum = true;
 						
 						list[listlength] = octantSceneObject;
 						listlength++;
@@ -483,7 +483,7 @@ package com.yogurt3d.core.scenetree.octree
 							for(i = 0; i < lena; i++)
 							{
 								octantSceneObject = node.children[i].sceneObject;
-								if(octantSceneObject.isInFrustum)
+								if(octantSceneObject.m_isInFrustum)
 									SceneTreeManager.s_renSetIlluminatorLightIndexes[_scene][octantSceneObject].push(lightIndex);
 								
 								list[listlength] = octantSceneObject;
@@ -514,7 +514,7 @@ package com.yogurt3d.core.scenetree.octree
 										continue;
 								}
 								
-								if(octantSceneObject.isInFrustum)
+								if(octantSceneObject.m_isInFrustum)
 									SceneTreeManager.s_renSetIlluminatorLightIndexes[_scene][octantSceneObject].push(lightIndex);
 								
 								list[listlength] = octantSceneObject;
@@ -533,7 +533,7 @@ package com.yogurt3d.core.scenetree.octree
 					for(i = 0; i < lenb; i++)
 					{
 						octantSceneObject = node.children[i].sceneObject;
-						if(octantSceneObject.isInFrustum)
+						if(octantSceneObject.m_isInFrustum)
 							SceneTreeManager.s_renSetIlluminatorLightIndexes[_scene][octantSceneObject].push(lightIndex);
 						
 						list[listlength] = octantSceneObject;

@@ -405,7 +405,7 @@ package com.yogurt3d.presets.renderers.molehill
 					if( !_renderableObject.receiveShadows || !_renderableObject.visible ) 
 					{
 						_scene.clearIlluminatorLightIndexes(_scene, _renderableObject); 
-						_renderableObject.isInFrustum = false;
+						_renderableObject.m_isInFrustum = false;
 						continue;
 					}
 					
@@ -420,7 +420,7 @@ package com.yogurt3d.presets.renderers.molehill
 						if(_light.shadows == EShadowType.NONE)
 						{
 							_scene.clearIlluminatorLightIndexes(_scene, _renderableObject); 
-							_renderableObject.isInFrustum = false;
+							_renderableObject.m_isInFrustum = false;
 							continue;
 						}
 						
@@ -462,7 +462,7 @@ package com.yogurt3d.presets.renderers.molehill
 					}
 					_scene.clearIlluminatorLightIndexes(_scene, _renderableObject); 
 					//lightIndexes.length = 0;
-					_renderableObject.isInFrustum = false;
+					_renderableObject.m_isInFrustum = false;
 					
 					
 				}

@@ -147,6 +147,8 @@ package com.yogurt3d.presets.renderers.molehill
 				{
 					_viewport.stage.stage3Ds[3].addEventListener( Event.CONTEXT3D_CREATE, initHandler );
 					_viewport.stage.stage3Ds[3].requestContext3D();	
+					_viewport.stage.stage3Ds[3].x = -50;
+					_viewport.stage.stage3Ds[3].y = -50;
 					return;
 				}else{
 					_context3d = Yogurt3D.CONTEXT3D[3];
