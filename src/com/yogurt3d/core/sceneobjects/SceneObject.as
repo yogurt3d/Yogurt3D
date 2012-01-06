@@ -189,11 +189,7 @@ package com.yogurt3d.core.sceneobjects {
 			if(_children != null){
 				var _numChildren : int = _children.length;
 				for ( var i : int = 0; i < _numChildren; i++) {
-					if ( _children[i] is SceneObjectRenderable ) {
-						SceneObjectRenderable( _children[i] ).visible = _value;
-					} else if (  _children[i] is SceneObjectContainer ) {
-						SceneObjectContainer( _children[i] ).visible = _value;
-					}
+					_children[i].visible = _value;
 				}
 			}
 			m_visible = _value;
@@ -376,11 +372,11 @@ package com.yogurt3d.core.sceneobjects {
 			}
 			if( m_boundingVolumesDirty )
 			{
-				m_aabb.update( transformation.matrixGlobal );
 				m_boundingSphere.center = transformation.globalPosition;
 				
 				m_boundingVolumesDirty = false;
 			}
+			m_aabb.update( transformation.matrixGlobal );
 			return m_aabb;
 		}
 		
@@ -422,7 +418,7 @@ package com.yogurt3d.core.sceneobjects {
 					var child:SceneObject = children[i];
 					if( child is SceneObjectRenderable )
 					{
-						var aarr:AxisAlignedBoundingBox = SceneObjectRenderable(child).axisAlignedBoundingBox.update( SceneObjectRenderable(child).transformation.matrixGlobal );
+						var aarr:AxisAlignedBoundingBox = SceneObjectRenderable(child).axisAlignedBoundingBox.update( SceneObjectRenderable(child).transformation.matrixLocal );
 						m_aabb.merge( aarr );
 						
 					}
@@ -452,10 +448,6 @@ package com.yogurt3d.core.sceneobjects {
 			YOGURT3D_INTERNAL function drawAABBWireFrame( _matrix:Matrix3D, _viewport:Viewport ):void{
 				if( m_drawAABBWireFrame )
 				{	
-					var matrix:Matrix3D = MatrixUtils.TEMP_MATRIX;
-					matrix.copyFrom( _matrix );
-					matrix.prepend( transformation.matrixGlobal );
-					axisAlignedBoundingBox.update( transformation.matrixGlobal );
 					var corners:Vector.<Vector3D> = axisAlignedBoundingBox.corners;
 					var c0:Vector3D = Utils3D.projectVector( _matrix, corners[0] );
 					var c1:Vector3D = Utils3D.projectVector( _matrix, corners[1] );

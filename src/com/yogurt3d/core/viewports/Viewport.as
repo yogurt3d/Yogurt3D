@@ -442,11 +442,8 @@ package com.yogurt3d.core.viewports {
 				{
 					SceneObjectRenderable(_scn).YOGURT3D_INTERNAL::drawWireFrame(matrix,this );
 				}
-				else if(_scn is SceneObjectRenderable && SceneObjectRenderable(_scn).aabbWireframe){
-					SceneObjectRenderable(_scn).YOGURT3D_INTERNAL::drawAABBWireFrame( matrix, this );
-				}
-				else if(_scn is SceneObject && SceneObject(_scn).aabbWireframe){
-					SceneObject(_scn).YOGURT3D_INTERNAL::drawAABBWireFrame( matrix, this );
+				if( _scn.aabbWireframe ){
+					_scn.YOGURT3D_INTERNAL::drawAABBWireFrame( matrix, this );
 				}
 				if( _scn.children && _scn.children.length>0 )
 				{

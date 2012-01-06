@@ -302,7 +302,7 @@ package com.yogurt3d.core.scenetree.octree
 				scn.transformation.m_isAddedToSceneRefreshList = false;
 				octant = sceneObjectToOctant[scn];
 				
-				if(!octant.isInParent())
+				if(octant && !octant.isInParent())
 				{
 					removeFromNode( scn );
 					_insert(octant, m_root);

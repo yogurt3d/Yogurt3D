@@ -20,8 +20,8 @@ package com.yogurt3d.core.sceneobjects
 {
 	import com.yogurt3d.Yogurt3D;
 	import com.yogurt3d.core.cameras.Camera;
-	import com.yogurt3d.core.cameras.Camera;
 	import com.yogurt3d.core.effects.Effect;
+	import com.yogurt3d.core.lights.ELightType;
 	import com.yogurt3d.core.lights.Light;
 	import com.yogurt3d.core.managers.idmanager.IDManager;
 	import com.yogurt3d.core.managers.scenetreemanager.SceneTreeManager;
@@ -29,9 +29,6 @@ package com.yogurt3d.core.sceneobjects
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.objects.EngineObject;
 	import com.yogurt3d.core.sceneobjects.interfaces.IScene;
-	
-	
-	import com.yogurt3d.core.lights.ELightType;
 	
 	/**
 	 * <strong>IScene</strong> interface abstract type.
@@ -221,7 +218,7 @@ package com.yogurt3d.core.sceneobjects
 		{
 			super.initInternals();
 			
-			m_rootObject 		= new SceneObjectContainer();
+			m_rootObject 		= new SceneObject();
 			
 			m_sceneColor = new Color(1,1,1,1);
 			
