@@ -467,7 +467,7 @@ package com.yogurt3d.core.geoms
 			m_tangents			= null;
 		}
 		
-		public function disposeGPU():void{
+		public override function disposeGPU():void{
 			disposeIndiceBuffer();
 			disposePositionBuffer();
 			disposeUVBuffer();

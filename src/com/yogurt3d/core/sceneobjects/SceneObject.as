@@ -51,8 +51,6 @@ package com.yogurt3d.core.sceneobjects {
 	{
 		YOGURT3D_INTERNAL var m_transformation					: Transformation;
 		
-		YOGURT3D_INTERNAL var m_dispacther 						: EventDispatcher;
-		
 		YOGURT3D_INTERNAL var m_renderLayer						: int = 0;
 		
 		YOGURT3D_INTERNAL var m_isStatic						: Boolean;
@@ -604,6 +602,18 @@ package com.yogurt3d.core.sceneobjects {
 		
 		override public function dispose():void {
 			
+			if( m_aabb )
+			{
+				m_aabb.dispose();
+				m_aabb = null;
+			}
+			
+			if( m_boundingSphere )
+			{
+				m_boundingSphere.dispose();
+				m_boundingSphere = null;
+			}
+			
 			m_onStaticChanged.removeAll();
 			m_onStaticChanged = null;
 			
@@ -635,6 +645,25 @@ package com.yogurt3d.core.sceneobjects {
 			m_onMouseUp = null;
 			
 			super.dispose();
+		}
+		
+		public function disposeDeep():void {
+			var _children:Vector.<SceneObject> = children.concat();
+			for( var i:int = 0; i < _children.length; i++ )
+			{
+				removeChild( _children[i] );
+				
+				_children[i].disposeDeep();
+			}
+			dispose();
+		}
+		
+		public override function disposeGPU():void {
+			var _children:Vector.<SceneObject> = children;
+			for( var i:int = 0; i < _children.length; i++ )
+			{
+				_children[i].disposeGPU();
+			}
 		}
 		
 		

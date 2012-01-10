@@ -155,6 +155,10 @@ package com.yogurt3d.core.viewports {
 			
 		}
 		
+		public function disposeGPU():void{
+			dispose();
+		}
+		
 		/**
 		 * 
 		 * @param _x

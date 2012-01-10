@@ -18,6 +18,8 @@
  
  
 package com.yogurt3d.core.objects {
+	import avmplus.getQualifiedClassName;
+	
 	import com.yogurt3d.core.managers.idmanager.IDManager;
 	import com.yogurt3d.core.objects.interfaces.IEngineObject;
 	
@@ -106,6 +108,18 @@ package com.yogurt3d.core.objects {
 		public function dispose():void
 		{
 			IDManager.removeObject(this);
+		}
+		
+		public function disposeGPU():void
+		{
+			Y3DCONFIG::DEBUG
+			{
+				Y3DCONFIG::TRACE
+				{
+					trace("This class has not implemented a disposeGPU function", getQualifiedClassName(this) );
+				}
+			}
+			
 		}
 		/**
 		 * Starts the tracking of the object 

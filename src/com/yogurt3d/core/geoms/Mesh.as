@@ -145,7 +145,7 @@ package com.yogurt3d.core.geoms {
 			super.dispose();
 		}
 		
-		public function disposeGPU():void{
+		public override function disposeGPU():void{
 			for( var i:int = 0; i < subMeshList.length; i++ )
 			{
 				subMeshList[i].disposeGPU();

@@ -17,7 +17,9 @@
  */
 package com.yogurt3d.core.texture
 {
+	import com.yogurt3d.core.managers.idmanager.IDManager;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
+	import com.yogurt3d.core.objects.EngineObject;
 	import com.yogurt3d.core.texture.base.ITexture;
 	import com.yogurt3d.core.utils.MathUtils;
 	import com.yogurt3d.core.utils.MipmapGenerator;
@@ -43,7 +45,7 @@ package com.yogurt3d.core.texture
 	 * @author Yogurt3D Engine Core Team
 	 * @company Yogurt3D Corp.
 	 **/
-	public class TextureMap implements ITexture
+	public class TextureMap extends EngineObject implements ITexture
 	{
 		public static const ATF_COMP:String			= "ATF_COMPRESSED";
 		public static const ATF:String				= "ATF";
@@ -323,20 +325,6 @@ package com.yogurt3d.core.texture
 			}
 		}
 		
-//		public function fixMipmap(_mipmap:Boolean):Boolean{
-//		
-//			if(_mipmap != m_mipmap){
-//			
-//				if(type == BITMAP){
-//					m_mipmap = _mipmap;
-//				}else if(type == DISPLAY){
-//					m_mipmap = _mipmap;
-//				}else if(type == ATF || type == ATF_COMP){
-//					_mipmap = m_mipmap;
-//				}
-//			}
-//			return m_mipmap;
-//		}
 
 		/**
 		 * @private
@@ -444,7 +432,29 @@ package com.yogurt3d.core.texture
 			return m_context3DMap[ _context3D ] as Texture;
 		}
 		
-		public function dispose():void{
+		override public function dispose():void{
+			for each( var _texture:TextureBase in m_context3DMap )
+			{
+				_texture.dispose();
+			}
+			m_context3DMap = null;
+			
+			if( m_displayObject )
+			{
+				m_displayObject = null;
+			}
+			if( m_byteArray )
+			{
+				m_byteArray = null;
+			}
+			if( m_bitmapData )
+			{
+				m_bitmapData.dispose();
+				m_bitmapData = null;
+			}
+		}
+		
+		public override function disposeGPU():void{
 			for each( var _texture:TextureBase in m_context3DMap )
 			{
 				_texture.dispose();
@@ -452,6 +462,10 @@ package com.yogurt3d.core.texture
 			m_context3DMap = null;
 		}
 		
+		override protected function trackObject():void
+		{
+			IDManager.trackObject(this, TextureMap);
+		}
 		
 	}
 }

@@ -67,7 +67,7 @@ package com.yogurt3d.core.sceneobjects {
 		
 		private 		  var projectedUV			:Vector.<Number>;
 		
-		private 		  var m_drawWireFrame					:Boolean	= false;
+		private 		  var m_drawWireFrame		:Boolean	= false;
 		
 		
 		public function SceneObjectRenderable(_initInternals:Boolean = true)
@@ -264,9 +264,32 @@ package com.yogurt3d.core.sceneobjects {
 		}
 		
 		public override function dispose():void{
-			super.dispose();
 			m_geometry = null;
 			m_material = null;
+			
+			super.dispose();
+		}
+		
+		public override function disposeDeep():void{
+			if( m_geometry )
+			{
+				m_geometry.dispose();
+				m_geometry = null;
+			}
+			if( m_material )
+			{
+				m_material = null;
+				m_material.dispose();
+			}
+			super.disposeDeep();
+		}
+		
+		public override function disposeGPU():void{
+			
+			m_geometry.disposeGPU()
+			m_material.disposeGPU();
+			
+			super.disposeGPU();
 		}
 		
 		public override function get axisAlignedBoundingBox():AxisAlignedBoundingBox
