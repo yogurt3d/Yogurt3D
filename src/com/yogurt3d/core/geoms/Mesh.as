@@ -126,9 +126,29 @@ package com.yogurt3d.core.geoms {
 		}
 		
 		public override function dispose():void{
+			var len:uint = subMeshList.length;
+			for( var i:int = 0; i < len; i++ )
+			{
+				subMeshList.pop().dispose();
+			}
+			if( m_boundingSphere )
+			{
+				m_boundingSphere.dispose();
+				m_boundingSphere = null;
+			}
+			if( m_aabb )
+			{
+				m_aabb.dispose();
+				m_aabb = null;
+					
+			}
+			super.dispose();
+		}
+		
+		public function disposeGPU():void{
 			for( var i:int = 0; i < subMeshList.length; i++ )
 			{
-				subMeshList[i].dispose();
+				subMeshList[i].disposeGPU();
 			}
 		}
 		
