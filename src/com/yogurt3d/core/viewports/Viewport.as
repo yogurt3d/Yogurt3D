@@ -442,14 +442,46 @@ package com.yogurt3d.core.viewports {
 				{
 					SceneObjectRenderable(_scn).YOGURT3D_INTERNAL::drawWireFrame(matrix,this );
 				}
-				if( _scn.aabbWireframe ){
-					_scn.YOGURT3D_INTERNAL::drawAABBWireFrame( matrix, this );
-				}
-				if( _scn.children && _scn.children.length>0 )
+				if(_scn is SceneObjectRenderable )
 				{
-					for( var i:int = 0; i < _scn.children.length; i++ )
+					var rend:SceneObjectRenderable = _scn as SceneObjectRenderable;
+					var len:uint = (rend.children)?rend.children.length:0;
+					
+					if( rend.aabbWireframe == EAabbDrawMode.BOTH_CUM_AND_STR)
 					{
-						drawWireFrame(_scn.children[i], matrix);
+						if(len)
+							rend.YOGURT3D_INTERNAL::drawAABBWireFrame( matrix, this, EAabbDrawMode.CUMULATIVE);
+						
+						rend.YOGURT3D_INTERNAL::drawAABBWireFrame( matrix, this, EAabbDrawMode.STRAIGHT );
+					}else if(rend.aabbWireframe != EAabbDrawMode.NONE)
+					{
+						//if(rend.aabbWireframe != EAabbDrawMode.)
+						rend.YOGURT3D_INTERNAL::drawAABBWireFrame( matrix, this, rend.aabbWireframe);
+					}
+					
+					for( var i:int = 0; i < len; i++ )
+					{
+						drawWireFrame(rend.children[i], matrix);
+					}
+					
+				}
+				else if( _scn.aabbWireframe){
+					
+					var len:uint = (_scn.children)?_scn.children.length:0;
+					
+					if( _scn.aabbWireframe == EAabbDrawMode.BOTH_CUM_AND_STR)
+					{
+						if(len)
+							_scn.YOGURT3D_INTERNAL::drawAABBWireFrame( matrix, this, EAabbDrawMode.CUMULATIVE);
+						
+						_scn.YOGURT3D_INTERNAL::drawAABBWireFrame( matrix, this, EAabbDrawMode.STRAIGHT );
+					}else if(_scn.aabbWireframe != EAabbDrawMode.NONE)
+					{
+						_scn.YOGURT3D_INTERNAL::drawAABBWireFrame( matrix, this, _scn.aabbWireframe);
+					}
+					for( var i:int = 0; i < len; i++ )
+					{
+							drawWireFrame(_scn.children[i], matrix);
 					}
 				}
 			}
@@ -483,7 +515,8 @@ package com.yogurt3d.core.viewports {
 					matrix.invert();
 					matrix.append( _camera.frustum.projectionMatrix );
 					matrix.append( this.matrix );
-					drawWireFrame(_scene.YOGURT3D_INTERNAL::m_rootObject as SceneObject, matrix);
+					
+					drawWireFrame(_scene.YOGURT3D_INTERNAL::m_rootObject, matrix);
 				}
 			}
 			if( m_pickingEnabled )

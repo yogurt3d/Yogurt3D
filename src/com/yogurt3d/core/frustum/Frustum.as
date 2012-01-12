@@ -430,7 +430,7 @@ package com.yogurt3d.core.frustum{
 			var iTotalIn:int = 0;
 			var _testPointCount:uint = 8;
 			
-			var _cornersOfBox:Vector.<Vector3D> = _box.corners;
+			var _cornersOfBox:Vector.<Vector3D> = _box.cornersGlobal;
 			for(var p:int = 0; p < 6 ; p++) 
 			{
 				var iInCount:int  = _testPointCount;

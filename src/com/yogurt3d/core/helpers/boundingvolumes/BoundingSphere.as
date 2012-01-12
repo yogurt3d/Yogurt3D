@@ -38,10 +38,10 @@ package com.yogurt3d.core.helpers.boundingvolumes
 		YOGURT3D_INTERNAL var m_radiusSqr	:Number;
 		YOGURT3D_INTERNAL var m_center		:Vector3D;
 		
-		public function set center(value:Vector3D):void
+/*		public function set center(value:Vector3D):void
 		{
 			YOGURT3D_INTERNAL::m_center = value;
-		}
+		}*/
 
 		override public function clone():IEngineObject{
 			return new BoundingSphere(m_radiusSqr, m_center);
@@ -71,6 +71,21 @@ package com.yogurt3d.core.helpers.boundingvolumes
 		public function get center():Vector3D
 		{
 			return m_center;
+		}
+		
+		public function set radius(_value:Number):void
+		{
+			m_radius = _value;
+		}
+		
+		public function set radiusSqr(_value:Number):void
+		{
+			m_radiusSqr = _value;
+		}
+		
+		public function set center(_value:Vector3D):void
+		{
+			m_center = _value;
 		}
 		
 		public function intersectTestSphere(other:BoundingSphere):Boolean
@@ -125,6 +140,7 @@ package com.yogurt3d.core.helpers.boundingvolumes
 			else
 				return 2;//intersect or in
 		}
+
 
 	}
 }

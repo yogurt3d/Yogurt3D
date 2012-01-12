@@ -298,41 +298,37 @@ package com.yogurt3d.presets.renderers.molehill
 				{
 					_submesh = _renderableObject.geometry.subMeshList[subMeshIndex];
 					
-					_submesh.axisAlignedBoundingBox.update( new Matrix3D() );
+					//_submesh.axisAlignedBoundingBox.update( new Matrix3D() );
 					
 					if( subMeshIndex == 0 )
 					{
-						max.x = _submesh.axisAlignedBoundingBox.max.x;
-						max.y = _submesh.axisAlignedBoundingBox.max.y;
-						max.z = _submesh.axisAlignedBoundingBox.max.z;
+						max.copyFrom( _submesh.axisAlignedBoundingBox.maxGlobal );
 						
-						min.x = _submesh.axisAlignedBoundingBox.min.x;
-						min.y = _submesh.axisAlignedBoundingBox.min.y;
-						min.z = _submesh.axisAlignedBoundingBox.min.z;
+						min.copyFrom(_submesh.axisAlignedBoundingBox.minGlobal);
 					}else{
-						if( _submesh.axisAlignedBoundingBox.max.x > max.x )
+						if( _submesh.axisAlignedBoundingBox.maxGlobal.x > max.x )
 						{
-							max.x = _submesh.axisAlignedBoundingBox.max.x
+							max.x = _submesh.axisAlignedBoundingBox.maxGlobal.x
 						}
-						if( _submesh.axisAlignedBoundingBox.max.y > max.y )
+						if( _submesh.axisAlignedBoundingBox.maxGlobal.y > max.y )
 						{
-							max.y = _submesh.axisAlignedBoundingBox.max.y
+							max.y = _submesh.axisAlignedBoundingBox.maxGlobal.y
 						}
-						if( _submesh.axisAlignedBoundingBox.max.z > max.z )
+						if( _submesh.axisAlignedBoundingBox.maxGlobal.z > max.z )
 						{
-							max.z = _submesh.axisAlignedBoundingBox.max.z
+							max.z = _submesh.axisAlignedBoundingBox.maxGlobal.z
 						}
-						if( _submesh.axisAlignedBoundingBox.min.x < min.x )
+						if( _submesh.axisAlignedBoundingBox.minGlobal.x < min.x )
 						{
-							min.x = _submesh.axisAlignedBoundingBox.min.x
+							min.x = _submesh.axisAlignedBoundingBox.minGlobal.x
 						}
-						if( _submesh.axisAlignedBoundingBox.min.y < min.y )
+						if( _submesh.axisAlignedBoundingBox.minGlobal.y < min.y )
 						{
-							min.y = _submesh.axisAlignedBoundingBox.min.y
+							min.y = _submesh.axisAlignedBoundingBox.minGlobal.y
 						}
-						if( _submesh.axisAlignedBoundingBox.min.z < min.z )
+						if( _submesh.axisAlignedBoundingBox.minGlobal.z < min.z )
 						{
-							min.z = _submesh.axisAlignedBoundingBox.min.z
+							min.z = _submesh.axisAlignedBoundingBox.minGlobal.z
 						}
 					}
 				}

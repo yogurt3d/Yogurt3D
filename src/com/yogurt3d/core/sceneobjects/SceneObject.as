@@ -18,19 +18,20 @@
  
  
 package com.yogurt3d.core.sceneobjects {
+	import com.yogurt3d.core.cameras.Camera;
 	import com.yogurt3d.core.events.MouseEvent3D;
 	import com.yogurt3d.core.helpers.boundingvolumes.AxisAlignedBoundingBox;
 	import com.yogurt3d.core.helpers.boundingvolumes.BoundingSphere;
+	import com.yogurt3d.core.lights.Light;
 	import com.yogurt3d.core.managers.idmanager.IDManager;
 	import com.yogurt3d.core.managers.scenetreemanager.SceneTreeManager;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.objects.EngineObject;
 	import com.yogurt3d.core.objects.interfaces.IEngineObject;
 	import com.yogurt3d.core.sceneobjects.interfaces.IScene;
-	
-	
 	import com.yogurt3d.core.transformations.Transformation;
 	import com.yogurt3d.core.utils.MatrixUtils;
+	import com.yogurt3d.core.viewports.EAabbDrawMode;
 	import com.yogurt3d.core.viewports.Viewport;
 	
 	import flash.events.EventDispatcher;
@@ -58,14 +59,21 @@ package com.yogurt3d.core.sceneobjects {
 		
 		YOGURT3D_INTERNAL var m_aabb							:AxisAlignedBoundingBox;
 		
+		YOGURT3D_INTERNAL var m_aabbCumulative					:AxisAlignedBoundingBox;
+		
 		YOGURT3D_INTERNAL var m_boundingSphere					:BoundingSphere;
 		
-		YOGURT3D_INTERNAL var m_boundingVolumesDirty			:Boolean;
-		YOGURT3D_INTERNAL var m_reinitboundingVolumes			:Boolean;
+		YOGURT3D_INTERNAL var m_boundingSphereCumulative		:BoundingSphere;
+	
+		
+		/**
+		 * This flag indicates that the bounding volumes have to be re initialized after a child transformation change 
+		 */		
+		YOGURT3D_INTERNAL var m_reinitboundingVolumes			:Boolean = true;
 		
 		YOGURT3D_INTERNAL var m_visible							:Boolean = true;
 		
-		YOGURT3D_INTERNAL var m_drawAABBWireFrame				:Boolean = false;
+		YOGURT3D_INTERNAL var m_drawAABBWireFrame				:EAabbDrawMode = EAabbDrawMode.NONE;
 		
 		// SIGNALS BEGIN
 		YOGURT3D_INTERNAL var m_onStaticChanged					: Signal;
@@ -101,7 +109,28 @@ package com.yogurt3d.core.sceneobjects {
 
 		public function get boundingSphere():BoundingSphere
 		{
-			return YOGURT3D_INTERNAL::m_boundingSphere;
+			if(!m_boundingSphere)
+				m_boundingSphere = new BoundingSphere(axisAlignedBoundingBox.halfSizeGlobal.lengthSquared, axisAlignedBoundingBox.centerGlobal);
+			else
+			{
+				m_boundingSphere.center = axisAlignedBoundingBox.centerGlobal;
+				m_boundingSphere.radius = axisAlignedBoundingBox.halfSizeGlobal.length;
+				m_boundingSphere.radiusSqr = axisAlignedBoundingBox.halfSizeGlobal.lengthSquared;
+			}
+			return m_boundingSphere;
+		}
+		
+		public function get cumulativeBoundingSphere():BoundingSphere
+		{
+			if(!m_boundingSphereCumulative)
+				m_boundingSphereCumulative = new BoundingSphere(cumulativeAxisAlignedBoundingBox.halfSizeGlobal.lengthSquared, cumulativeAxisAlignedBoundingBox.centerGlobal);
+			else
+			{
+				m_boundingSphereCumulative.center = cumulativeAxisAlignedBoundingBox.centerGlobal;
+				m_boundingSphereCumulative.radius = cumulativeAxisAlignedBoundingBox.halfSizeGlobal.length;
+				m_boundingSphereCumulative.radiusSqr = cumulativeAxisAlignedBoundingBox.halfSizeGlobal.lengthSquared;
+			}
+			return m_boundingSphereCumulative;
 		}
 
 		/**
@@ -189,7 +218,11 @@ package com.yogurt3d.core.sceneobjects {
 			if(_children != null){
 				var _numChildren : int = _children.length;
 				for ( var i : int = 0; i < _numChildren; i++) {
-					_children[i].visible = _value;
+					if ( _children[i] is SceneObjectRenderable ) {
+						SceneObjectRenderable( _children[i] ).visible = _value;
+					} else if (  _children[i] is SceneObjectContainer ) {
+						SceneObjectContainer( _children[i] ).visible = _value;
+					}
 				}
 			}
 			m_visible = _value;
@@ -306,11 +339,39 @@ package com.yogurt3d.core.sceneobjects {
 			m_aabb = null;
 			m_boundingSphere = null;
 			
+			
+			m_reinitboundingVolumes = true;
+			
+			var _curParent:SceneObject = parent;
+			
+			while(_curParent)
+			{
+				_curParent.m_reinitboundingVolumes = true;
+				_curParent = _curParent.parent;
+			}
+			
 			//_value.viewportLayer = m_viewportLayer;
 		}
-		
+		/**
+		 * Called when some childrens' tramsformation has changed 
+		 * @param _trans
+		 * 
+		 */		
 		private function seekChildTransformationChange( _trans:Transformation ):void{
-			m_reinitboundingVolumes = true;
+			
+			if(_trans.m_isLocalDirty)
+			{
+				m_reinitboundingVolumes = true;
+				
+				var _curParent:SceneObject = parent;
+				
+				while(_curParent)
+				{
+					_curParent.m_reinitboundingVolumes = true;
+					_curParent = _curParent.parent;
+				}
+			}
+			
 		}
 		
 		/**
@@ -318,9 +379,12 @@ package com.yogurt3d.core.sceneobjects {
 		 * */
 		public function removeChild(_value:SceneObject):void
 		{
-			SceneTreeManager.removeChild(_value, this);
-			m_reinitboundingVolumes = true;
 			_value.transformation.onChange.remove( seekChildTransformationChange );
+
+			SceneTreeManager.removeChild(_value, this);
+			
+			m_reinitboundingVolumes = true;
+			
 		}
 		
 		/**
@@ -365,90 +429,89 @@ package com.yogurt3d.core.sceneobjects {
 		
 		public function get axisAlignedBoundingBox():AxisAlignedBoundingBox
 		{
-			if(m_aabb == null || m_reinitboundingVolumes)
+			if(!m_aabb)
 			{
-				calculateBoundingVolumes();
-				m_reinitboundingVolumes = false;
+				m_aabb = new AxisAlignedBoundingBox(new Vector3D(), new Vector3D(), transformation);
+
 			}
-			if( m_boundingVolumesDirty )
-			{
-				m_boundingSphere.center = transformation.globalPosition;
-				
-				m_boundingVolumesDirty = false;
-			}
-			m_aabb.update( transformation.matrixGlobal );
-			return m_aabb;
+			return m_aabb;			
 		}
 		
-		public function calculateBoundingVolumes():void{
-			var _min :Vector3D = new Vector3D(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
-			var _max :Vector3D = new Vector3D(Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
-
+		
+		public function get cumulativeAxisAlignedBoundingBox():AxisAlignedBoundingBox
+		{
 			var len:uint = (children)?children.length:0;
 			
-			MatrixUtils.TEMP_MATRIX.identity();
-			
-			
-			if( this is SceneObjectRenderable )
+			if( len  )
 			{
-				var obj:SceneObjectRenderable = SceneObjectRenderable(this);
-				// setup aabb on identity
-				obj.geometry.axisAlignedBoundingBox.update( MatrixUtils.TEMP_MATRIX );
-				// get geometry aabb min max values
-				_min = obj.geometry.axisAlignedBoundingBox.min;
-				_max = obj.geometry.axisAlignedBoundingBox.max;
-			}else if( len == 0 )
-			{
-				_min = new Vector3D(0,0,0);
-				_max = new Vector3D(0,0,0);
-			}
-			
-			if( !m_aabb )
-			{
-				m_aabb = new AxisAlignedBoundingBox(_min, _max);
-			}else{
-				m_aabb.recalculateFor( _min, _max );
-			}
-			
-			if( len > 0 )
-			{
-				// add each child
-				for(var i:int; i < len; i++)
+				// if container needs re initialization of cumulative bounding volumes
+				if(m_reinitboundingVolumes)
 				{
-					var child:SceneObject = children[i];
-					if( child is SceneObjectRenderable )
+					if(!m_aabbCumulative)
 					{
-						var aarr:AxisAlignedBoundingBox = SceneObjectRenderable(child).axisAlignedBoundingBox.update( SceneObjectRenderable(child).transformation.matrixLocal );
-						m_aabb.merge( aarr );
-						
+						m_aabbCumulative = new AxisAlignedBoundingBox(new Vector3D(), new Vector3D(), transformation);
+						//m_aabbCumulative.update();
 					}
+					else
+						m_aabbCumulative.setInitialMinMax(new Vector3D(), new Vector3D(), transformation);
+					
+					for(var i:int = 0; i < len; i++)
+					{
+						var child:SceneObject = children[i];
+						if( child is Camera || child is Light ) continue;
+						m_aabbCumulative.merge( child.cumulativeAxisAlignedBoundingBox );	
+					}
+					
+					m_reinitboundingVolumes = false;
+					
 				}
 				
+				return m_aabbCumulative;
+				
+			}else
+			{
+				if( m_reinitboundingVolumes )
+				{
+					if( m_aabbCumulative )
+					{
+						m_aabbCumulative.dispose();
+					}
+					m_aabbCumulative = null;
+					m_reinitboundingVolumes = false;
+				}
+				
+				return axisAlignedBoundingBox;
 			}
-			
-			
-			var temp:Vector3D = m_aabb.max.subtract(m_aabb.min);
-			var _radiusSqr :Number = temp.x*temp.x + temp.y*temp.y + temp.z*temp.z;
-			var _center :Vector3D = m_aabb.max.add(m_aabb.min);
-			_center.scaleBy( .5 );
-			m_boundingSphere = new BoundingSphere( _radiusSqr, _center );
-			
-			m_boundingVolumesDirty = true;
 		}
+
 		
-		public function get aabbWireframe():Boolean{
+		
+
+		
+		
+		public function get aabbWireframe():EAabbDrawMode{
 			return m_drawAABBWireFrame;
 		}
-		public function set aabbWireframe( _value:Boolean ):void{
+		public function set aabbWireframe( _value:EAabbDrawMode ):void{
 			m_drawAABBWireFrame = _value;
 		}
 		
 		Y3DCONFIG::DEBUG
 		{
-			YOGURT3D_INTERNAL function drawAABBWireFrame( _matrix:Matrix3D, _viewport:Viewport ):void{
-				if( m_drawAABBWireFrame )
+			YOGURT3D_INTERNAL function drawAABBWireFrame( _matrix:Matrix3D, _viewport:Viewport, _mode:EAabbDrawMode):void{
+				
+				var corners:Vector.<Vector3D>;
+				if( _mode ==  EAabbDrawMode.CUMULATIVE)
 				{	
-					var corners:Vector.<Vector3D> = axisAlignedBoundingBox.corners;
+					//var matrix:Matrix3D = MatrixUtils.TEMP_MATRIX;
+					//matrix.copyFrom( _matrix );
+					//matrix.prepend( transformation.matrixGlobal );
+					//axisAlignedBoundingBox.update( transformation.matrixGlobal );
+					corners = cumulativeAxisAlignedBoundingBox.cornersGlobal;
+				}else if( _mode ==  EAabbDrawMode.STRAIGHT)
+				{
+					corners = axisAlignedBoundingBox.cornersGlobal;
+				}
 					var c0:Vector3D = Utils3D.projectVector( _matrix, corners[0] );
 					var c1:Vector3D = Utils3D.projectVector( _matrix, corners[1] );
 					var c2:Vector3D = Utils3D.projectVector( _matrix, corners[2] );
@@ -458,7 +521,14 @@ package com.yogurt3d.core.sceneobjects {
 					var c6:Vector3D = Utils3D.projectVector( _matrix, corners[6] );
 					var c7:Vector3D = Utils3D.projectVector( _matrix, corners[7] );
 					
-					_viewport.graphics.lineStyle(1,0x00FF00);
+					if( _mode ==  EAabbDrawMode.CUMULATIVE)
+					{	
+						_viewport.graphics.lineStyle(1,0x0000FF);
+					}else if( _mode ==  EAabbDrawMode.STRAIGHT)
+					{
+						_viewport.graphics.lineStyle(1,0x00FF00);
+					}
+					
 					
 					
 					_viewport.graphics.moveTo( c0.x, c0.y ); // sol alt
@@ -485,7 +555,7 @@ package com.yogurt3d.core.sceneobjects {
 					
 					_viewport.graphics.moveTo( c5.x, c5.y  ); // sag alt geri
 					_viewport.graphics.lineTo( c2.x, c2.y  ); // sag geri ust
-				}
+			
 			}
 		}
 			
@@ -494,28 +564,24 @@ package com.yogurt3d.core.sceneobjects {
 			IDManager.trackObject(this, SceneObject);
 		}
 		
-		protected function onTransformationChange( _trans:Transformation ):void{
-			m_boundingVolumesDirty = true;
-		}
+
 		
 		override protected function initInternals():void
 		{
 			super.initInternals();
 			m_onStaticChanged 		= new Signal(SceneObject);
-			m_onRenderLayerChanged  = new Signal(SceneObject);
+			m_onRenderLayerChanged  	= new Signal(SceneObject);
 			m_transformation		= new Transformation(this);
 			
-			m_transformation.onChange.add( onTransformationChange );
-			
 			m_onMouseClick			= new Signal(MouseEvent3D);
-			m_onMouseDoubleClick	= new Signal(MouseEvent3D);
+			m_onMouseDoubleClick		= new Signal(MouseEvent3D);
 			m_onMouseDown			= new Signal(MouseEvent3D);
 			m_onMouseMove			= new Signal(MouseEvent3D);
 			m_onMouseOut			= new Signal(MouseEvent3D);
 			m_onMouseOver			= new Signal(MouseEvent3D);
-			m_onMouseUp				= new Signal(MouseEvent3D);
+			m_onMouseUp			= new Signal(MouseEvent3D);
 			
-			m_onRemovedFromScene	= new Signal( SceneObject, IScene );
+			m_onRemovedFromScene		= new Signal( SceneObject, IScene );
 			m_onAddedToScene		= new Signal( SceneObject, IScene );
 		}
 		
