@@ -82,7 +82,57 @@ package com.yogurt3d.core.sceneobjects {
 		public function set wireframe( _value:Boolean ):void{
 			m_drawWireFrame = _value;
 		}
-		
+
+		Y3DCONFIG::DEBUG
+		{
+			YOGURT3D_INTERNAL function drawWireFrame(_matrix:Matrix3D, _viewport:Viewport):void{
+				
+				if( m_drawWireFrame )
+				{
+					var matrix:Matrix3D = MatrixUtils.TEMP_MATRIX;
+					matrix.copyFrom( _matrix );
+					matrix.prepend( transformation.matrixGlobal );
+					
+					if( projectedVectices == null || projectedVectices.length != geometry.subMeshList[0].vertexCount * 2)
+					{
+						projectedVectices = new Vector.<Number>(geometry.subMeshList[0].vertexCount * 2);
+					}
+					
+					if( projectedUV == null || projectedUV.length != geometry.subMeshList[0].vertexCount * 3)
+					{
+						projectedUV = new Vector.<Number>(geometry.subMeshList[0].vertexCount * 3);
+					}
+					
+					Utils3D.projectVectors( matrix, geometry.subMeshList[0].vertices,projectedVectices,projectedUV);
+					
+					_viewport.graphics.lineStyle(1,0xff0000);
+					
+					for( var i:int = 0 ; i < geometry.subMeshList[0].triangleCount; i++ )
+					{
+						var i1:uint = geometry.subMeshList[0].indices[ i * 3 + 0 ];
+						var i2:uint = geometry.subMeshList[0].indices[ i * 3 + 1 ];
+						var i3:uint = geometry.subMeshList[0].indices[ i * 3 + 2 ];
+						
+						var x1:Number = projectedVectices[i1*2];
+						var y1:Number = projectedVectices[i1*2+1];
+						
+						var x2:Number = projectedVectices[i2*2];
+						var y2:Number = projectedVectices[i2*2+1];
+						
+						var x3:Number = projectedVectices[i3*2];
+						var y3:Number = projectedVectices[i3*2+1];
+						
+						_viewport.graphics.moveTo( x1, y1 );
+						_viewport.graphics.lineTo( x2, y2 );
+						_viewport.graphics.lineTo( x3, y3 );
+						_viewport.graphics.lineTo( x1, y1 );
+					}
+				}
+								
+					
+				
+			}
+		}
 		/**
 		 * @inheritDoc
 		 * */
@@ -139,57 +189,6 @@ package com.yogurt3d.core.sceneobjects {
 		public function set culling(_value : String) : void {
 			m_culling = _value;
 		}
-
-		Y3DCONFIG::DEBUG
-		{
-			YOGURT3D_INTERNAL final function drawWireFrame(_matrix:Matrix3D, _viewport:Viewport):void{
-				
-				if( m_drawWireFrame )
-				{
-					var matrix:Matrix3D = MatrixUtils.TEMP_MATRIX;
-					matrix.copyFrom( _matrix );
-					matrix.prepend( transformation.matrixGlobal );
-					
-					if( projectedVectices == null || projectedVectices.length != geometry.subMeshList[0].vertexCount * 2)
-					{
-						projectedVectices = new Vector.<Number>(geometry.subMeshList[0].vertexCount * 2);
-					}
-					
-					if( projectedUV == null || projectedUV.length != geometry.subMeshList[0].vertexCount * 3)
-					{
-						projectedUV = new Vector.<Number>(geometry.subMeshList[0].vertexCount * 3);
-					}
-					
-					Utils3D.projectVectors( matrix, geometry.subMeshList[0].vertices,projectedVectices,projectedUV);
-					
-					_viewport.graphics.lineStyle(1,0xff0000);
-					
-					for( var i:int = 0 ; i < geometry.subMeshList[0].triangleCount; i++ )
-					{
-						var i1:uint = geometry.subMeshList[0].indices[ i * 3 + 0 ];
-						var i2:uint = geometry.subMeshList[0].indices[ i * 3 + 1 ];
-						var i3:uint = geometry.subMeshList[0].indices[ i * 3 + 2 ];
-						
-						var x1:Number = projectedVectices[i1*2];
-						var y1:Number = projectedVectices[i1*2+1];
-						
-						var x2:Number = projectedVectices[i2*2];
-						var y2:Number = projectedVectices[i2*2+1];
-						
-						var x3:Number = projectedVectices[i3*2];
-						var y3:Number = projectedVectices[i3*2+1];
-						
-						_viewport.graphics.moveTo( x1, y1 );
-						_viewport.graphics.lineTo( x2, y2 );
-						_viewport.graphics.lineTo( x3, y3 );
-						_viewport.graphics.lineTo( x1, y1 );
-					}
-				}
-								
-					
-				
-			}
-		}
 		
 		/**
 		 * renderLayers:
@@ -231,11 +230,11 @@ package com.yogurt3d.core.sceneobjects {
 		
 		override public function instance():*
 		{
-			var _sceneObjectCopy:SceneObjectRenderable 	= new SceneObjectRenderable();
+			var _sceneObjectCopy:SceneObjectRenderable 		= new SceneObjectRenderable();
 			
-			_sceneObjectCopy.geometry	 				= m_geometry;
-			_sceneObjectCopy.m_material					= m_material;
-			_sceneObjectCopy.visible 					= visible;
+			_sceneObjectCopy.geometry	 			= m_geometry;
+			_sceneObjectCopy.m_material				= m_material;
+			_sceneObjectCopy.visible 				= visible;
 			_sceneObjectCopy.interactive 				= interactive;
 			_sceneObjectCopy.pickEnabled 				= pickEnabled;
 			
@@ -248,10 +247,10 @@ package com.yogurt3d.core.sceneobjects {
 			return _sceneObjectCopy;
 		}
 		override public function clone():IEngineObject {			
-			var _sceneObjectCopy:SceneObjectRenderable 	= new SceneObjectRenderable();
-			_sceneObjectCopy.geometry	 				= geometry;
-			_sceneObjectCopy.m_material					= m_material;
-			_sceneObjectCopy.visible 					= visible;
+			var _sceneObjectCopy:SceneObjectRenderable 		= new SceneObjectRenderable();
+			_sceneObjectCopy.geometry	 			= geometry;
+			_sceneObjectCopy.m_material				= m_material;
+			_sceneObjectCopy.visible 				= visible;
 			_sceneObjectCopy.interactive 				= interactive;
 			_sceneObjectCopy.pickEnabled 				= pickEnabled;
 			
@@ -264,16 +263,65 @@ package com.yogurt3d.core.sceneobjects {
 			return _sceneObjectCopy;
 		}
 		
-		public function updateAABB():AxisAlignedBoundingBox {
-			var _aabb:AxisAlignedBoundingBox = geometry.axisAlignedBoundingBox;
-			_aabb.update(transformation.matrixGlobal);
-			return _aabb;
-		}
-		
 		public override function dispose():void{
 			super.dispose();
 			m_geometry = null;
 			m_material = null;
+		}
+		
+		public override function get axisAlignedBoundingBox():AxisAlignedBoundingBox
+		{
+			if(!m_aabb)
+			{
+				//AxisAlignedBoundingBox(geomBox.m_minInitial, geomBox.m_maxInitial, transformation); geometry.axisAlignedBoundingBox.clone() as AxisAlignedBoundingBox
+				m_aabb = new AxisAlignedBoundingBox(geometry.axisAlignedBoundingBox.m_minInitial.clone(), geometry.axisAlignedBoundingBox.m_maxInitial.clone(), transformation);;
+			}
+			return m_aabb;
+		}
+		public override function get cumulativeAxisAlignedBoundingBox():AxisAlignedBoundingBox
+		{
+			var len:uint = (children)?children.length:0;
+			
+			if( len )
+			{
+				if(m_reinitboundingVolumes)
+				{
+					var geomBox:AxisAlignedBoundingBox = geometry.axisAlignedBoundingBox;
+					if(!m_aabbCumulative)
+					{
+						m_aabbCumulative = new AxisAlignedBoundingBox(geomBox.m_minInitial.clone(), geomBox.m_maxInitial.clone(), transformation);
+						//m_aabbCumulative.update();
+					}
+					else	
+						m_aabbCumulative.setInitialMinMax(geomBox.m_minInitial.clone(), geomBox.m_maxInitial.clone(),transformation);
+					
+					for(var i:int; i < len; i++)
+					{
+						var child:SceneObject = children[i];
+						
+						m_aabbCumulative.merge( child.cumulativeAxisAlignedBoundingBox );	
+					}
+					
+					m_reinitboundingVolumes = false;
+					
+				}
+				return m_aabbCumulative;
+				
+			}else
+			{
+				if( m_reinitboundingVolumes )
+				{
+					if( m_aabbCumulative )
+					{
+						m_aabbCumulative.dispose();
+					}
+					m_aabbCumulative = null;
+					m_reinitboundingVolumes = false;
+				}
+				return axisAlignedBoundingBox;	
+				
+			}
+			
 		}
 	}
 }

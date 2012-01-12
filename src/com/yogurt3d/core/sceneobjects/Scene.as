@@ -224,7 +224,7 @@ package com.yogurt3d.core.sceneobjects
 			
 			m_postEffects = new Vector.<Effect>();
 			
-			SceneTreeManager.setSceneRootObject(SceneObject(m_rootObject), this);
+			SceneTreeManager.setSceneRootObject( m_rootObject, this);
 		}
 		
 		public function get sceneColor():Color

@@ -51,13 +51,13 @@ package com.yogurt3d.core.scenetree.quad
 			
 			m_maxDepth = _maxDepth;
 			
-			m_root.m_min = _bound.min;
+			m_root.m_min = _bound.minGlobal;
 			
-			m_root.m_max = _bound.max;
+			m_root.m_max = _bound.maxGlobal;
 			
-			m_root.m_looseMin = _bound.min;
+			m_root.m_looseMin = _bound.minGlobal;
 			
-			m_root.m_looseMax = _bound.max;
+			m_root.m_looseMax = _bound.maxGlobal;
 			
 			m_root.m_center = m_root.m_max.add( m_root.m_min );
 			
@@ -162,7 +162,7 @@ package com.yogurt3d.core.scenetree.quad
 				var indexZ:int = 0;
 				
 				var nodeBoxCenter:Vector3D = node.m_center;
-				var quadrantBoxCenter:Vector3D = quadrant.sceneObject.axisAlignedBoundingBox.center;
+				var quadrantBoxCenter:Vector3D = quadrant.sceneObject.axisAlignedBoundingBox.centerGlobal;
 				
 				//get indexes
 				if ( quadrantBoxCenter.x > nodeBoxCenter.x )
@@ -346,7 +346,7 @@ package com.yogurt3d.core.scenetree.quad
 								
 								//if(!frustum.boundingSphere.intersectTestSphereParam(axis.center, oct.sceneObject.boundingSphere.m_radius))
 									//continue;
-								if( frustum.containmentTestOctant(axis.halfSize, axis.center) == 0 /*Frustum.OUT */)
+								if( frustum.containmentTestOctant(axis.halfSizeGlobal, axis.centerGlobal) == 0 /*Frustum.OUT */)
 								{
 									continue;
 								}
@@ -445,13 +445,13 @@ package com.yogurt3d.core.scenetree.quad
 								axis = quadrantSceneObject.axisAlignedBoundingBox;
 								if(frustum.sphereCheck)
 								{
-									if(frustum.boundingSphere.intersectTestAABB(axis.m_min, axis.m_max) == Frustum.OUT)
+									if(frustum.boundingSphere.intersectTestAABB(axis.minGlobal, axis.maxGlobal) == Frustum.OUT)
 										continue;
 									
 								}
 								else
 								{
-									if(frustum.containmentTestOctant(axis.halfSize, axis.center) == Frustum.OUT)
+									if(frustum.containmentTestOctant(axis.halfSizeGlobal, axis.centerGlobal) == Frustum.OUT)
 										continue;
 								}
 								

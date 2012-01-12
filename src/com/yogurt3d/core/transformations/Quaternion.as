@@ -207,7 +207,7 @@ package com.yogurt3d.core.transformations
 			
 			return new Quaternion(w+_quaterion.w,x+_quaterion.x,y+_quaterion.y,z+_quaterion.z);
 		}
-		//-----------------------------------------------------------------------
+		
 		public function sub (_quaterion:Quaternion) :Quaternion
 		{
 			return new Quaternion(w-_quaterion.w,x-_quaterion.x,y-_quaterion.y,z-_quaterion.z);

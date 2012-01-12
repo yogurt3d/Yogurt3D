@@ -101,13 +101,13 @@ package com.yogurt3d.core.geoms {
 			var len:uint = m_subMeshList.length;
 			if( len == 1 )
 			{
-				_min = m_subMeshList[0].axisAlignedBoundingBox.min;
-				_max = m_subMeshList[0].axisAlignedBoundingBox.max;
+				_min = m_subMeshList[0].axisAlignedBoundingBox.minGlobal;
+				_max = m_subMeshList[0].axisAlignedBoundingBox.maxGlobal;
 			}else{
 				for(var i:int; i < len; i++)
 				{
-					resolatedMax = m_subMeshList[i].axisAlignedBoundingBox.max;
-					resolatedMin = m_subMeshList[i].axisAlignedBoundingBox.min;
+					resolatedMax = m_subMeshList[i].axisAlignedBoundingBox.maxGlobal;
+					resolatedMin = m_subMeshList[i].axisAlignedBoundingBox.minGlobal;
 					if(resolatedMax.x > _max.x) _max.x = resolatedMax.x;
 					if(resolatedMin.x < _min.x) _min.x = resolatedMin.x;
 					if(resolatedMax.y > _max.y) _max.y = resolatedMax.y;
@@ -118,11 +118,11 @@ package com.yogurt3d.core.geoms {
 			}
 			m_aabb = new AxisAlignedBoundingBox(_min, _max);
 
-			var temp:Vector3D = _max.subtract(_min);
-			var _radiusSqr :Number = temp.x*temp.x + temp.y*temp.y + temp.z*temp.z;
-			var _center :Vector3D = _max.add( _min);
-			_center.scaleBy( .5 );
-			m_boundingSphere = new BoundingSphere( _radiusSqr, _center );
+			//var temp:Vector3D = _max.subtract(_min);
+			//var _radiusSqr :Number = temp.x*temp.x + temp.y*temp.y + temp.z*temp.z;
+			//var _center :Vector3D = _max.add( _min);
+			//_center.scaleBy( .5 );
+			//m_boundingSphere = new BoundingSphere( _radiusSqr, _center );
 		}
 		
 		public override function dispose():void{

@@ -51,13 +51,13 @@ package com.yogurt3d.core.scenetree.octree
 			
 			m_maxDepth = _maxDepth;
 			
-			m_root.m_min = _bound.min;
+			m_root.m_min = _bound.minGlobal;
 			
-			m_root.m_max = _bound.max;
+			m_root.m_max = _bound.maxGlobal;
 			
-			m_root.m_looseMin = _bound.min;
+			m_root.m_looseMin = _bound.minGlobal;
 			
-			m_root.m_looseMax = _bound.max;
+			m_root.m_looseMax = _bound.maxGlobal;
 			
 			m_root.m_center = m_root.m_max.add( m_root.m_min );
 			
@@ -199,7 +199,7 @@ package com.yogurt3d.core.scenetree.octree
 				var indexZ:int = 0;
 				
 				var nodeBoxCenter:Vector3D = node.m_center;
-				var octantBoxCenter:Vector3D = octant.sceneObject.axisAlignedBoundingBox.center;
+				var octantBoxCenter:Vector3D = octant.sceneObject.axisAlignedBoundingBox.centerGlobal;
 				
 				//get indexes
 				if ( octantBoxCenter.x > nodeBoxCenter.x )
@@ -394,7 +394,7 @@ package com.yogurt3d.core.scenetree.octree
 								
 								//if(!frustum.boundingSphere.intersectTestSphereParam(axis.center, oct.sceneObject.boundingSphere.m_radius))
 									//continue;
-								if( frustum.containmentTestOctant(axis.halfSize, axis.center) == 0 /*Frustum.OUT */)
+								if( frustum.containmentTestOctant(axis.halfSizeGlobal, axis.centerGlobal) == 0 /*Frustum.OUT */)
 								{
 									continue;
 								}
@@ -504,13 +504,13 @@ package com.yogurt3d.core.scenetree.octree
 								axis = octantSceneObject.axisAlignedBoundingBox;
 								if(frustum.sphereCheck)
 								{
-									if(frustum.boundingSphere.intersectTestAABB(axis.m_min, axis.m_max) == Frustum.OUT)
+									if(frustum.boundingSphere.intersectTestAABB(axis.minGlobal, axis.maxGlobal) == Frustum.OUT)
 										continue;
 									
 								}
 								else
 								{
-									if(frustum.containmentTestOctant(axis.halfSize, axis.center) == Frustum.OUT)
+									if(frustum.containmentTestOctant(axis.halfSizeGlobal, axis.centerGlobal) == Frustum.OUT)
 										continue;
 								}
 								

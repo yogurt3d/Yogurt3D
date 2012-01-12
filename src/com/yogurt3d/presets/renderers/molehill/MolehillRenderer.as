@@ -329,8 +329,7 @@ package com.yogurt3d.presets.renderers.molehill
 
 			var _params:ShaderParameters  = m_shadowDepthShader.params;
 			
-			if( _light.type == ELightType.DIRECTIONAL )
-			_light.updateProjectionDirectional(); //can be bind to "rotational dirty" state  
+			_light.setProjection();
 		
 
 			
@@ -341,7 +340,10 @@ package com.yogurt3d.presets.renderers.molehill
 				_renderableObject = _renderableSet[i];				
 
 				// don't render if not cast or receive shadows
-				if(!_renderableObject.visible || _renderableObject is ISelfRenderable || !(_renderableObject.castShadows || _renderableObject.receiveShadows)){
+				if(!_renderableObject.visible || 
+					_renderableObject is ISelfRenderable ||
+					!(_renderableObject.castShadows||(_renderableObject.receiveShadows&&_light.shadows == EShadowType.SOFT))
+				){
 					continue;
 				}
 				

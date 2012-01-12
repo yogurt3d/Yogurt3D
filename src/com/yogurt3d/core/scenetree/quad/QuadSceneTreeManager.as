@@ -251,7 +251,8 @@ package com.yogurt3d.core.scenetree.quad
 			if( s_quadTreeByScene[_scene] )
 			{
 				
-				_light.frustum.extractPlanes(_light.transformation);
+				if(_light.type != ELightType.POINT)
+					_light.frustum.extractPlanes(_light.transformation);
 				
 				_light.frustum.boundingSphere.YOGURT3D_INTERNAL::m_center = _light.transformation.matrixGlobal.transformVector(_light.frustum.m_bSCenterOrginal);
 				

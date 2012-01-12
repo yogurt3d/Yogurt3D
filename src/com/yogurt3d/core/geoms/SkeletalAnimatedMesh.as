@@ -77,59 +77,16 @@ package com.yogurt3d.core.geoms
 		
 		public function get axisAlignedBoundingBox():AxisAlignedBoundingBox
 		{
-			if(m_aabb == null)
-			{
-				updateBoundingVolumes();
-			}
-			return m_aabb;
+			return m_base.axisAlignedBoundingBox;
 		}
 		
 		public function get boundingSphere():BoundingSphere
 		{
-			if(m_boundingSphere == null)
-			{
-				updateBoundingVolumes();
-			}
-			return m_boundingSphere;
+			return m_base.boundingSphere;
 		}
 
 		
-		public function updateBoundingVolumes():void{
-			var _min :Vector3D = new Vector3D(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
-			var _max :Vector3D = new Vector3D(Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
-			var resolatedMax:Vector3D;
-			var resolatedMin:Vector3D;
-			var len:uint = m_subMeshList.length;
-			if( len == 1 )
-			{
-				m_subMeshList[0].axisAlignedBoundingBox.update(new Matrix3D());
-				m_aabb =m_subMeshList[0].axisAlignedBoundingBox.clone() as AxisAlignedBoundingBox;
-				_min = m_subMeshList[0].axisAlignedBoundingBox.min;
-				_max = m_subMeshList[0].axisAlignedBoundingBox.max;
-			}else{
-				for(var i:int; i < len; i++)
-				{
-					m_subMeshList[i].axisAlignedBoundingBox.update(new Matrix3D());
-					
-					resolatedMax = m_subMeshList[i].axisAlignedBoundingBox.max;
-					resolatedMin = m_subMeshList[i].axisAlignedBoundingBox.min;
-					if(resolatedMax.x > _max.x) _max.x = resolatedMax.x;
-					if(resolatedMin.x < _min.x) _min.x = resolatedMin.x;
-					if(resolatedMax.y > _max.y) _max.y = resolatedMax.y;
-					if(resolatedMin.y < _min.y) _min.y = resolatedMin.y;
-					if(resolatedMax.z > _max.z) _max.z = resolatedMax.z;
-					if(resolatedMin.z < _min.z) _min.z = resolatedMin.z;
-				}
-				m_aabb = new AxisAlignedBoundingBox(_min, _max);
-			}
-			
-			
-			var temp:Vector3D = _max.subtract(_min);
-			var _radiusSqr :Number = temp.x*temp.x + temp.y*temp.y + temp.z*temp.z;
-			var _center :Vector3D = _max.add( _min);
-			_center.scaleBy( .5 );
-			m_boundingSphere = new BoundingSphere( _radiusSqr, _center );
-		}
+		
 		
 		public function get base():SkeletalAnimatedMeshBase
 		{

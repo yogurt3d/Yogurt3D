@@ -62,7 +62,7 @@ package com.yogurt3d.core.scenetree.quad
 		
 		public function isTwiceSize( boxOfOctant:AxisAlignedBoundingBox ):Boolean
 		{
-			var boxSize:Vector3D = boxOfOctant.size;
+			var boxSize:Vector3D = boxOfOctant.sizeGlobal;
 			
 			return ((boxSize.x <= m_halfSizeVector.x) && (boxSize.z <= m_halfSizeVector.z));
 		}

@@ -120,10 +120,10 @@ package com.yogurt3d.core.transformations {
 			
 			if (!m_ownerSceneObject.parent) {
 				// if owner is not in a container, then global matrix equals to matrix local 
-				m_matrixGlobal.rawData = matrixLocal.rawData;
+				m_matrixGlobal.copyFrom( matrixLocal );
 			} else {
 				// if owner is in a container, prepend container's transformation to local transformation matrix
-				m_matrixGlobal.rawData = m_ownerSceneObject.parent.transformation.matrixGlobal.rawData;
+				m_matrixGlobal.copyFrom( m_ownerSceneObject.parent.transformation.matrixGlobal );
 				m_matrixGlobal.prepend( matrixLocal );
 			}
 			

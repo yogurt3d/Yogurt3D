@@ -252,6 +252,7 @@ package com.yogurt3d.core.scenetree.octree
 			if( s_octantByScene[_scene] )
 			{
 				
+				if(_light.type != ELightType.POINT)
 				_light.frustum.extractPlanes(_light.transformation);
 				
 				_light.frustum.boundingSphere.YOGURT3D_INTERNAL::m_center = _light.transformation.matrixGlobal.transformVector(_light.frustum.m_bSCenterOrginal);

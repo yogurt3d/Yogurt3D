@@ -41,8 +41,8 @@ package com.yogurt3d.core.scenetree.octree
 			var parentNodeMax:Vector3D =  m_parentNode.m_looseMax;
 			var parentNodeMin:Vector3D =  m_parentNode.m_looseMin;
 			
-			var octantMax:Vector3D =  sceneObject.axisAlignedBoundingBox.max;
-			var octantMin:Vector3D =  sceneObject.axisAlignedBoundingBox.min;
+			var octantMax:Vector3D =  sceneObject.axisAlignedBoundingBox.maxGlobal;
+			var octantMin:Vector3D =  sceneObject.axisAlignedBoundingBox.maxGlobal;
 			
 			if ( (  
 					parentNodeMax.x > octantMax.x && 
