@@ -659,10 +659,13 @@ package com.yogurt3d.core.sceneobjects {
 		}
 		
 		public override function disposeGPU():void {
-			var _children:Vector.<SceneObject> = children;
-			for( var i:int = 0; i < _children.length; i++ )
+			if( children )
 			{
-				_children[i].disposeGPU();
+				var _children:Vector.<SceneObject> = children;
+				for( var i:int = 0; i < _children.length; i++ )
+				{
+					_children[i].disposeGPU();
+				}
 			}
 		}
 		

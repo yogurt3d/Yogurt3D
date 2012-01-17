@@ -286,7 +286,7 @@ package com.yogurt3d.core.sceneobjects {
 		
 		public override function disposeGPU():void{
 			
-			m_geometry.disposeGPU()
+			m_geometry.disposeGPU();
 			m_material.disposeGPU();
 			
 			super.disposeGPU();
