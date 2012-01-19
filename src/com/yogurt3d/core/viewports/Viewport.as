@@ -64,7 +64,7 @@ package com.yogurt3d.core.viewports {
 		
 		private var m_pickingEnabled			:Boolean;
 		
-		private var m_pickManager				:PickManager;
+		YOGURT3D_INTERNAL var m_pickManager				:PickManager;
 		
 		private var m_antiAliasing				:EViewportAntialiasing = EViewportAntialiasing.HIGH_ALIASING;
 		

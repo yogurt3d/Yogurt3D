@@ -145,7 +145,6 @@ package com.yogurt3d.core.managers.mousemanager
 				{
 					m_pickRenderer.mouseCoordX = m_viewport.mouseX;
 					m_pickRenderer.mouseCoordY = m_viewport.mouseY;
-					
 					m_pickRenderer.render( _scene, _camera, m_viewport );
 					
 					m_lastObject = m_currentObject;

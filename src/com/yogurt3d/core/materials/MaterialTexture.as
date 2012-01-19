@@ -68,6 +68,13 @@ package com.yogurt3d.core.materials
 			decalShader.lightMap = _value;
 		}
 		
+		public function get textureChannel():uint{
+			return decalShader.textureChannel;
+		}
+		public function set textureChannel(_value:uint):void{
+			decalShader.textureChannel = _value;
+		}
+		
 		public function get shadowAndLightMapChannel():uint{
 			return decalShader.shadowAndLightMapUVChannel;
 		}

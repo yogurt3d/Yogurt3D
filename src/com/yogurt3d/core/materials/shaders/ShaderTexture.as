@@ -55,6 +55,7 @@ package com.yogurt3d.core.materials.shaders
 		private var vaUV2:uint = 1;
 		
 		private var m_lightMapChannel:uint = 0;
+		private var m_textureChannel:uint = 0;
 		
 		private var vcModelToWorld:uint = 1;
 		private var vcProjection:uint   = 5;
@@ -123,7 +124,22 @@ package com.yogurt3d.core.materials.shaders
 				}
 			}
 		}
+		public function get textureChannel(  ):uint{
+			return m_textureChannel;
+		}
 		
+		public function set textureChannel( channel:uint ):void{
+			if( m_textureChannel != channel )
+			{
+				m_textureChannel = channel;
+				if( channel == 1 ) {
+					attributes.splice(1,1,EVertexAttribute.UV_2);
+				}else{
+					attributes.splice(1,1,EVertexAttribute.UV);
+				}
+				disposeShaders();
+			}
+		}
 		public function get shadowAndLightMapUVChannel(  ):uint{
 			return m_lightMapChannel;
 		}

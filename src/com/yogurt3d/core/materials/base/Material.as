@@ -165,6 +165,7 @@ package com.yogurt3d.core.materials.base {
 				m_shaders[i].disposeShaders();
 			}
 			m_shaders.length = 0;
+			super.dispose();
 		}
 
 		public function get shaders():Vector.<Shader>

@@ -33,12 +33,12 @@ package com.yogurt3d.presets.cameras
 			if( _viewport.stage )
 			{
 				_viewport.stage.addEventListener(KeyboardEvent.KEY_DOWN, 	onKeyDown);
-				_viewport.stage.addEventListener(KeyboardEvent.KEY_UP, 	onKeyUp );
+				_viewport.stage.addEventListener(KeyboardEvent.KEY_UP, 		onKeyUp );
 			}else{
 				_viewport.addEventListener(Event.ADDED_TO_STAGE, function( _e:Event ):void{
-					_e.target.removeEventListener( Event.ADDED_TO_STAGE, arguments.callee );
+					_e.target.removeEventListener( 	 Event.ADDED_TO_STAGE, 		arguments.callee );
 					_e.target.stage.addEventListener(KeyboardEvent.KEY_DOWN, 	onKeyDown);
-					_e.target.stage.addEventListener(KeyboardEvent.KEY_UP, 	onKeyUp );
+					_e.target.stage.addEventListener(KeyboardEvent.KEY_UP, 		onKeyUp );
 				});
 			}
 			_viewport.addEventListener(MouseEvent.MOUSE_MOVE, 	onMouseMoveEvent );
