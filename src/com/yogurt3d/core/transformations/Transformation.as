@@ -18,12 +18,10 @@
  
  
 package com.yogurt3d.core.transformations {
-	import com.yogurt3d.Yogurt3D;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.objects.EngineObject;
 	import com.yogurt3d.core.objects.interfaces.IEngineObject;
 	import com.yogurt3d.core.sceneobjects.SceneObject;
-	
 	import com.yogurt3d.core.utils.MathUtils;
 	import com.yogurt3d.core.utils.MatrixUtils;
 	
@@ -503,12 +501,21 @@ package com.yogurt3d.core.transformations {
 		 */
 		override public function clone():IEngineObject {
 			var _transformation : Transformation = new Transformation(null);
-			_transformation.m_matrixGlobal = matrixGlobal.clone();
-			_transformation.m_matrixLocal = matrixLocal.clone();
+			_transformation.m_matrixGlobal.copyFrom( matrixGlobal );
+			_transformation.m_matrixLocal.copyFrom( matrixLocal );
 			_transformation.setPropertiesFromMatrix();
 			_transformation.m_isGlobalDirty = true;
 			_transformation.m_isLocalDirty = true;
 			return _transformation;
+		}
+		
+		public function copyTo(trans:Transformation):Transformation {
+			trans.m_matrixGlobal.copyFrom( matrixGlobal );
+			trans.m_matrixLocal.copyFrom( matrixLocal );
+			trans.setPropertiesFromMatrix();
+			trans.m_isGlobalDirty = true;
+			trans.m_isLocalDirty = true;
+			return trans;
 		}
 		
 		/**

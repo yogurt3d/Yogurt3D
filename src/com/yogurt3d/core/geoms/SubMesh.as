@@ -20,6 +20,7 @@ package com.yogurt3d.core.geoms
 {
 	import com.yogurt3d.core.helpers.boundingvolumes.AxisAlignedBoundingBox;
 	import com.yogurt3d.core.helpers.boundingvolumes.BoundingSphere;
+	import com.yogurt3d.core.managers.idmanager.IDManager;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.objects.EngineObject;
 	import com.yogurt3d.core.objects.interfaces.IEngineObject;
@@ -456,7 +457,7 @@ package com.yogurt3d.core.geoms
 			if( m_aabb ) 			m_aabb.dispose();
 			if( m_boundingSphere )	m_boundingSphere.dispose();
 			
-			disposeAllBuffers();
+			disposeGPU();
 			
 			m_vertices			= null;
 			m_indices			= null;
@@ -466,9 +467,8 @@ package com.yogurt3d.core.geoms
 			m_tangents			= null;
 		}
 		
-		public function disposeAllBuffers():void{
+		public override function disposeGPU():void{
 			disposeIndiceBuffer();
-			
 			disposePositionBuffer();
 			disposeUVBuffer();
 			disposeUV2Buffer();
@@ -479,7 +479,8 @@ package com.yogurt3d.core.geoms
 		public function disposeIndiceBuffer():void{
 			if( m_indexBuffersByContext3D )	
 			{
-				for each (var inBuf:IndexBuffer3D in m_indexBuffersByContext3D) {inBuf.dispose();}				
+				for each (var inBuf:IndexBuffer3D in m_indexBuffersByContext3D) {inBuf.dispose();}		
+				m_indexBuffersByContext3D = new Dictionary();
 			}
 		}
 		
@@ -518,6 +519,12 @@ package com.yogurt3d.core.geoms
 				m_tangentBuffersByContext3D = new Dictionary();
 			}
 		}
+		
+		override protected function trackObject():void
+		{
+			IDManager.trackObject(this, SubMesh);
+		}
+		
 		override protected function initInternals():void {
 			m_indexBuffersByContext3D 		= new Dictionary();
 			m_vertexBuffersByContext3D		= new Dictionary();

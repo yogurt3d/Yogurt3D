@@ -54,6 +54,27 @@ package com.yogurt3d.core.geoms
 			m_boneDataBuffersByContext3D = new Dictionary();
 		}
 		
+		public override function dispose():void{
+			indicesMap = null;
+			vertexList = null;
+			originalBoneIndex = null;
+			bones = null;
+			boneIndies = null;
+			boneWeights = null;
+			
+			super.dispose();
+		}
+		
+		public override function disposeGPU():void{
+			super.disposeGPU();
+			
+			if( m_boneDataBuffersByContext3D )	
+			{
+				for each (var inBuf:VertexBuffer3D in m_boneDataBuffersByContext3D) {inBuf.dispose();}		
+				m_boneDataBuffersByContext3D = new Dictionary();
+			}
+		}
+		
 		public override function get type():String{
 			return "SkinnedMesh";
 		}
