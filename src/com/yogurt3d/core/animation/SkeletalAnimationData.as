@@ -17,6 +17,7 @@
  */
 package com.yogurt3d.core.animation
 {
+	import com.yogurt3d.core.managers.idmanager.IDManager;
 	import com.yogurt3d.core.objects.EngineObject;
 	import com.yogurt3d.core.transformations.Quaternion;
 	
@@ -56,6 +57,10 @@ package com.yogurt3d.core.animation
 			}
 
 			frameData[frame][boneName] = {translation:_translation, rotation:_rotation, scale:_scale};
+		}
+		protected override function trackObject():void
+		{
+			IDManager.trackObject(this, SkeletalAnimationData);
 		}
 	}
 }

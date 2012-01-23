@@ -214,6 +214,58 @@ package com.yogurt3d.core.sceneobjects
 			IDManager.trackObject(this, Scene);
 		}
 		
+		override public function dispose():void{
+			if( m_rootObject )
+			{
+				m_rootObject.dispose();
+			}
+			m_rootObject = null;
+			
+			m_sceneColor = null;
+			
+			m_postEffects = null;
+			if( skyBox )
+			{
+				skyBox.dispose();
+				skyBox = null;
+			}
+			
+			super.dispose();
+		}
+		
+		override public function disposeGPU():void{
+			m_rootObject.disposeGPU();
+			if( skyBox )
+			{
+				skyBox.disposeGPU();
+			}
+		}
+		
+		override public function disposeDeep():void{
+			if( skyBox )
+			{
+				skyBox.dispose();
+				skyBox = null;
+			}
+			
+			m_rootObject.disposeDeep();
+			
+			m_rootObject = null;
+			
+			m_sceneColor = null;
+			
+			if( m_postEffects )
+			{
+				for( var i:int = 0; i < m_postEffects.length; i++ )
+				{
+					m_postEffects[i].dispose();
+				}
+			}
+			m_postEffects = null;
+			
+			super.dispose();
+		}
+		
 		override protected function initInternals():void
 		{
 			super.initInternals();
@@ -249,7 +301,8 @@ package com.yogurt3d.core.sceneobjects
 				removeChild( m_skyBox );
 			}
 			m_skyBox = _value;
-			SceneTreeManager.addChild( m_skyBox, m_rootObject );
+			if( m_skyBox )
+				SceneTreeManager.addChild( m_skyBox, m_rootObject );
 		}
 		
 		public function addPostEffect( _effect:Effect ):void{

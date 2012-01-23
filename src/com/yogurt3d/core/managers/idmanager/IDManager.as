@@ -55,6 +55,25 @@ package com.yogurt3d.core.managers.idmanager
 			s_systemIDByObject[_object]		= _systemID;
 		}
 		
+		public static function listObjectsByType(_indexType:Class):Array{
+			var list:Array = [];
+			var id:String;
+			if( _indexType != null )
+				for each( id in s_objectBySystemID )
+				{
+					if( s_objectBySystemID[id] is _indexType )
+					{
+						list.push( s_objectBySystemID[id] );
+					}
+				}
+			else
+				for( id in s_objectBySystemID )
+				{
+					list.push( s_objectBySystemID[id] );
+				}
+			return list;
+		}
+		
 		/**
 		 * 
 		 * @param _userID

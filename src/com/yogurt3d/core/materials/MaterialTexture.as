@@ -18,6 +18,7 @@
  
 package com.yogurt3d.core.materials
 {
+	import com.yogurt3d.core.managers.idmanager.IDManager;
 	import com.yogurt3d.core.materials.base.Material;
 	import com.yogurt3d.core.materials.shaders.ShaderTexture;
 	import com.yogurt3d.core.texture.TextureMap;
@@ -80,6 +81,35 @@ package com.yogurt3d.core.materials
 		}
 		public function set shadowAndLightMapChannel(_value:uint):void{
 			decalShader.shadowAndLightMapUVChannel = _value;
+		}
+		
+		public override function dispose():void{
+			texture = null;
+			lightMap = null;
+			super.dispose();
+		}
+		
+		public override function disposeDeep():void{
+			if( texture )
+			{
+				texture.dispose();
+			}
+			if( lightMap )
+			{
+				lightMap.dispose();
+			}
+			super.dispose();
+		}
+		
+		public override function disposeGPU():void{
+			if(texture)
+				texture.disposeGPU();
+			if(lightMap)
+				lightMap.disposeGPU();
+		}
+		protected override function trackObject():void
+		{
+			IDManager.trackObject(this, MaterialTexture);
 		}
 		
 	}

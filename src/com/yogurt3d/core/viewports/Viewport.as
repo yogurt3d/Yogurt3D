@@ -28,8 +28,6 @@ package com.yogurt3d.core.viewports {
 	import com.yogurt3d.core.sceneobjects.SceneObjectRenderable;
 	import com.yogurt3d.core.sceneobjects.interfaces.IScene;
 	
-	
-	
 	import flash.display.Sprite;
 	import flash.display3D.Context3D;
 	import flash.events.Event;
@@ -145,7 +143,10 @@ package com.yogurt3d.core.viewports {
 			
 			IDManager.removeObject(this);
 			
-			Yogurt3D.CONTEXT3D[m_viewportID].dispose();
+			if( Yogurt3D.CONTEXT3D[m_viewportID] )
+			{
+				Yogurt3D.CONTEXT3D[m_viewportID].dispose();
+			}
 			
 			delete Yogurt3D.CONTEXT3D[m_viewportID];
 			
@@ -153,10 +154,19 @@ package com.yogurt3d.core.viewports {
 			
 			viewports.push( m_viewportID  );
 			
+			m_viewportID = NaN;
+			
+		}
+		
+		public function disposeDeep():void{
+			dispose();
 		}
 		
 		public function disposeGPU():void{
 			dispose();
+			
+			addEventListener( Event.ADDED_TO_STAGE, onAddedToStage );
+			addEventListener( Event.REMOVED_FROM_STAGE, onRemovedFromStage );
 		}
 		
 		/**
@@ -323,6 +333,16 @@ package com.yogurt3d.core.viewports {
 		
 		private function onAddedToStage( _e:Event ):void
 		{
+			if( isNaN(m_viewportID) )
+			{
+				if( viewports.length > 0 )
+				{
+					// get an empty stage3d index
+					m_viewportID = viewports.shift();
+				}else{
+					throw new Error("Maximum 3 viewports are supported. You must dispose before creating a new one.");
+				}
+			}
 			removeEventListener( Event.ADDED_TO_STAGE, onAddedToStage );
 			
 			if( Yogurt3D.CONTEXT3D[m_viewportID] == null )
@@ -442,6 +462,9 @@ package com.yogurt3d.core.viewports {
 		Y3DCONFIG::DEBUG
 		{
 			private function drawWireFrame( _scn:SceneObject, matrix:Matrix3D ):void{
+				var len:uint;
+				var i:int;
+				
 				if( _scn is SceneObjectRenderable && SceneObjectRenderable(_scn).wireframe)
 				{
 					SceneObjectRenderable(_scn).YOGURT3D_INTERNAL::drawWireFrame(matrix,this );
@@ -449,7 +472,7 @@ package com.yogurt3d.core.viewports {
 				if(_scn is SceneObjectRenderable )
 				{
 					var rend:SceneObjectRenderable = _scn as SceneObjectRenderable;
-					var len:uint = (rend.children)?rend.children.length:0;
+					len = (rend.children)?rend.children.length:0;
 					
 					if( rend.aabbWireframe == EAabbDrawMode.BOTH_CUM_AND_STR)
 					{
@@ -463,7 +486,7 @@ package com.yogurt3d.core.viewports {
 						rend.YOGURT3D_INTERNAL::drawAABBWireFrame( matrix, this, rend.aabbWireframe);
 					}
 					
-					for( var i:int = 0; i < len; i++ )
+					for( i = 0; i < len; i++ )
 					{
 						drawWireFrame(rend.children[i], matrix);
 					}
@@ -471,7 +494,7 @@ package com.yogurt3d.core.viewports {
 				}
 				else if( _scn.aabbWireframe){
 					
-					var len:uint = (_scn.children)?_scn.children.length:0;
+					len = (_scn.children)?_scn.children.length:0;
 					
 					if( _scn.aabbWireframe == EAabbDrawMode.BOTH_CUM_AND_STR)
 					{
@@ -483,7 +506,7 @@ package com.yogurt3d.core.viewports {
 					{
 						_scn.YOGURT3D_INTERNAL::drawAABBWireFrame( matrix, this, _scn.aabbWireframe);
 					}
-					for( var i:int = 0; i < len; i++ )
+					for( i = 0; i < len; i++ )
 					{
 							drawWireFrame(_scn.children[i], matrix);
 					}
@@ -494,6 +517,7 @@ package com.yogurt3d.core.viewports {
 		public function update( _scene:IScene, _camera:Camera ):void{
 			Y3DCONFIG::DEBUG
 			{
+				var matrix:Matrix3D;
 				var renderable:Vector.<SceneObject> = _scene.children;
 				if( renderable )
 				{
@@ -501,7 +525,7 @@ package com.yogurt3d.core.viewports {
 					graphics.beginFill(0xFF0000, 0 );
 					graphics.drawRect( 0,0, m_width, m_height );
 					graphics.endFill();
-					var matrix:Matrix3D = new Matrix3D();
+					matrix = new Matrix3D();
 					matrix.copyFrom( _camera.transformation.matrixGlobal );
 					matrix.invert();
 					matrix.append( _camera.frustum.projectionMatrix );
@@ -514,7 +538,7 @@ package com.yogurt3d.core.viewports {
 				}
 				if( _scene.YOGURT3D_INTERNAL::m_rootObject.aabbWireframe )
 				{
-					var matrix:Matrix3D = new Matrix3D();
+					matrix = new Matrix3D();
 					matrix.copyFrom( _camera.transformation.matrixGlobal );
 					matrix.invert();
 					matrix.append( _camera.frustum.projectionMatrix );

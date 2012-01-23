@@ -671,10 +671,9 @@ package com.yogurt3d.core.managers.scenetreemanager
 				{
 					if(indexes[i] == _index)
 						indexes.splice(indexes[i], 1);
-					
-					if(indexes.length == 0)
-						indexes = null;
 				}
+				if(indexes.length == 0)
+					indexes = null;
 			}
 			
 			if(_sceneLights.length == 0)

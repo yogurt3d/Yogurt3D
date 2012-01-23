@@ -44,6 +44,11 @@ package com.yogurt3d.core.objects.interfaces
 		 */ 
 		function dispose():void;
 		
+		/**
+		 * Removes all external referances and clears internals.
+		 */ 
+		function disposeDeep():void;
+		
 		function disposeGPU():void;
 		
 		/**

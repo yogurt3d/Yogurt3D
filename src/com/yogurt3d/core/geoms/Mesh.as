@@ -124,7 +124,9 @@ package com.yogurt3d.core.geoms {
 			//_center.scaleBy( .5 );
 			//m_boundingSphere = new BoundingSphere( _radiusSqr, _center );
 		}
-		
+		public override function disposeDeep():void{
+			dispose();
+		}
 		public override function dispose():void{
 			var len:uint = subMeshList.length;
 			for( var i:int = 0; i < len; i++ )

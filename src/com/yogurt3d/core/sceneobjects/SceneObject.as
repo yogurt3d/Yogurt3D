@@ -614,46 +614,59 @@ package com.yogurt3d.core.sceneobjects {
 				m_boundingSphere = null;
 			}
 			
-			m_onStaticChanged.removeAll();
+			if( m_onStaticChanged )
+				m_onStaticChanged.removeAll();
 			m_onStaticChanged = null;
 			
-			m_onRenderLayerChanged.removeAll();
+			if( m_onRenderLayerChanged )
+				m_onRenderLayerChanged.removeAll();
 			m_onRenderLayerChanged = null;
 			
-			m_transformation.dispose();
+			if( m_transformation )
+				m_transformation.dispose();
 			m_transformation = null;
 			
-			m_onMouseClick.removeAll();
+			if( m_onMouseClick )
+				m_onMouseClick.removeAll();
 			m_onMouseClick = null;
 			
-			m_onMouseDoubleClick.removeAll();
+			if( m_onMouseDoubleClick )
+				m_onMouseDoubleClick.removeAll();
 			m_onMouseDoubleClick = null;
 			
-			m_onMouseDown.removeAll();
+			if( m_onMouseDown )
+				m_onMouseDown.removeAll();
 			m_onMouseDown = null;
 			
-			m_onMouseMove.removeAll();
+			if( m_onMouseMove )
+				m_onMouseMove.removeAll();
 			m_onMouseMove = null;
 			
-			m_onMouseOut.removeAll();
+			if( m_onMouseOut )
+				m_onMouseOut.removeAll();
 			m_onMouseOut = null;
 			
-			m_onMouseOver.removeAll();
+			if( m_onMouseOver )
+				m_onMouseOver.removeAll();
 			m_onMouseOver = null;
 			
-			m_onMouseUp.removeAll();
+			if( m_onMouseUp )
+				m_onMouseUp.removeAll();
 			m_onMouseUp = null;
 			
 			super.dispose();
 		}
 		
-		public function disposeDeep():void {
-			var _children:Vector.<SceneObject> = children.concat();
-			for( var i:int = 0; i < _children.length; i++ )
+		public override function disposeDeep():void {
+			if( children )
 			{
-				removeChild( _children[i] );
-				
-				_children[i].disposeDeep();
+				var _children:Vector.<SceneObject> = children.concat();
+				for( var i:int = 0; i < _children.length; i++ )
+				{
+					removeChild( _children[i] );
+					
+					_children[i].disposeDeep();
+				}
 			}
 			dispose();
 		}

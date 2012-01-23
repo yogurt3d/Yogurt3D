@@ -423,5 +423,9 @@ package com.yogurt3d.core.geoms {
 			_newBone.invTranslation = invTranslation.clone();
 			return _newBone;
 		}
+		
+		public function dispose():void{
+			//TODO: Implementation
+		}
 	}
 }

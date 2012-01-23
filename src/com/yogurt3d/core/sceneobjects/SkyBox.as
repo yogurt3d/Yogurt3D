@@ -83,7 +83,14 @@ package com.yogurt3d.core.sceneobjects
 
 		
 		public override function dispose():void{
-			
+			m_texture = null;
+			super.dispose();
+		}
+		public override function disposeDeep():void{
+			super.disposeDeep();
+		}
+		public override function disposeGPU():void{
+			super.disposeGPU();
 		}
 
 	}

@@ -26,14 +26,14 @@ package com.yogurt3d.core.scenetree.octree
 	public class OcTreeSceneTreeManager implements IRenderableManager
 	{
 		YOGURT3D_INTERNAL static var s_octantByScene:Dictionary;
-		private  var s_staticChildrenByScene:Dictionary;
+		private static var s_staticChildrenByScene:Dictionary;
 		
-		private  var s_dynamicChildrenByScene:Dictionary;
+		private static var s_dynamicChildrenByScene:Dictionary;
 		//the list for storing recursive "visibilityProcess" results for the testers like camera or light
-		public var listOfVisibilityTesterByScene:Dictionary;
+		private static var listOfVisibilityTesterByScene:Dictionary;
 		
-		private var s_transformedDynamicChildren:Vector.<SceneObjectRenderable> = new Vector.<SceneObjectRenderable>();
-		private var s_marktransformedDynamicChildren:Dictionary = new Dictionary();
+		private static var s_transformedDynamicChildren:Vector.<SceneObjectRenderable> = new Vector.<SceneObjectRenderable>();
+		private static var s_marktransformedDynamicChildren:Dictionary = new Dictionary();
 		
 		public function OcTreeSceneTreeManager()
 		{

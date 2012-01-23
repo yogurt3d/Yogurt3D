@@ -95,5 +95,36 @@ package com.yogurt3d.core.materials
 			super.opacity = value;
 			m_ambientShader.opacity = value;
 		}
+		
+		public override function dispose():void{
+			super.dispose();
+			
+			normalMap = null
+			texture = null;
+		}
+		
+		public override function disposeDeep():void{
+			if( normalMap )
+			{
+				normalMap.disposeDeep();
+			}
+			if( texture )
+			{
+				texture.disposeDeep();
+			}
+			dispose();
+		}
+		public override function disposeGPU():void{
+			if( normalMap )
+			{
+				normalMap.disposeGPU();
+			}
+			if( texture )
+			{
+				texture.disposeGPU();
+			}
+			super.disposeGPU();
+		}
+		
 	}
 }

@@ -110,6 +110,20 @@ package com.yogurt3d.core.objects {
 			IDManager.removeObject(this);
 		}
 		
+		public function disposeDeep():void
+		{
+			IDManager.removeObject(this);
+			
+			Y3DCONFIG::DEBUG
+			{
+				Y3DCONFIG::TRACE
+				{
+					trace("This class has not implemented a disposeDeep function", getQualifiedClassName(this) );
+				}
+			}
+			
+		}
+		
 		public function disposeGPU():void
 		{
 			Y3DCONFIG::DEBUG

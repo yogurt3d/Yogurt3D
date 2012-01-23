@@ -432,12 +432,12 @@ package com.yogurt3d.core.texture
 			return m_context3DMap[ _context3D ] as Texture;
 		}
 		
+		override public function disposeDeep():void{
+			dispose();
+		}
+		
 		override public function dispose():void{
-			for each( var _texture:TextureBase in m_context3DMap )
-			{
-				_texture.dispose();
-			}
-			m_context3DMap = null;
+			disposeGPU();
 			
 			if( m_displayObject )
 			{
@@ -452,6 +452,8 @@ package com.yogurt3d.core.texture
 				m_bitmapData.dispose();
 				m_bitmapData = null;
 			}
+			
+			super.dispose();
 		}
 		
 		public override function disposeGPU():void{
@@ -459,7 +461,7 @@ package com.yogurt3d.core.texture
 			{
 				_texture.dispose();
 			}
-			m_context3DMap = null;
+			m_context3DMap = new Dictionary();;
 		}
 		
 		override protected function trackObject():void

@@ -26,5 +26,12 @@ package com.yogurt3d.core.effects
 		public function removeFilter( filter:Filter ):void{
 			m_filters.splice( m_filters.indexOf( filter ), 1 );
 		}
+		
+		public function dispose():void{
+			for( var i:int = 0; i < m_filters.length; i++ )
+			{
+				m_filters[i].dispose();
+			}
+		}
 	}
 }

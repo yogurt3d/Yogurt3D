@@ -18,6 +18,7 @@
  
  
 package com.yogurt3d.core.transformations {
+	import com.yogurt3d.core.managers.idmanager.IDManager;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.objects.EngineObject;
 	import com.yogurt3d.core.objects.interfaces.IEngineObject;
@@ -547,6 +548,11 @@ package com.yogurt3d.core.transformations {
 			m_matrixLocal.copyFrom(_matrixLocal);
 			this.setPropertiesFromMatrix();
 			this.invalidate();
+		}
+		
+		protected override function trackObject():void
+		{
+			IDManager.trackObject(this, Transformation);
 		}
 	}
 }

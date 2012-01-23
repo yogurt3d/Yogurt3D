@@ -273,13 +273,13 @@ package com.yogurt3d.core.sceneobjects {
 		public override function disposeDeep():void{
 			if( m_geometry )
 			{
-				m_geometry.dispose();
+				m_geometry.disposeDeep();
 				m_geometry = null;
 			}
 			if( m_material )
 			{
+				m_material.disposeDeep();
 				m_material = null;
-				m_material.dispose();
 			}
 			super.disposeDeep();
 		}

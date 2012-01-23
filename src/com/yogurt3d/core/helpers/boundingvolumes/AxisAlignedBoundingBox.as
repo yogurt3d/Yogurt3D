@@ -18,6 +18,7 @@
  
  
 package com.yogurt3d.core.helpers.boundingvolumes {
+	import com.yogurt3d.core.managers.idmanager.IDManager;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.objects.EngineObject;
 	import com.yogurt3d.core.objects.interfaces.IEngineObject;
@@ -219,20 +220,16 @@ package com.yogurt3d.core.helpers.boundingvolumes {
 		{
 			m_minInitial.setTo(_min.x, _min.y, _min.z);
 			m_maxInitial.setTo(_max.x, _max.y, _max.z);
-			m_sceneObjectTransformation = _trans;
-/*			m_minMaxDirtyLocal = true;
-			m_minMaxDirtyGlobal = true;
-			
-			m_centerHalfDirtyLocal = true;
-			m_centerHalfDirtyGlobal = true;
-			
-			m_cornersDirtyLocal = true;
-			m_cornersDirtyGlobal = true;*/
-			
+			m_sceneObjectTransformation = _trans;			
 		}
 		
 		public function updateCenterHalf(_updateGlobally:Boolean = true):void
 		{
+			var tempCe:Vector3D;
+			var tempHa:Vector3D;
+			var tempSi:Vector3D;
+			var raw:Vector.<Number>;
+			
 			if(!m_centerInitial)
 			{
 				m_centerInitial = m_maxInitial.add( m_minInitial );
@@ -240,9 +237,6 @@ package com.yogurt3d.core.helpers.boundingvolumes {
 				
 				m_sizeInitial = m_maxInitial.subtract( m_minInitial );
 				m_halfSizeInitial = new Vector3D(m_sizeInitial.x*0.5, m_sizeInitial.y*0.5, m_sizeInitial.z*0.5);
-				//m_center = m_centerInitial.clone();
-				//m_halfSize = m_halfSizeInitial.clone();
-				//m_size = m_sizeInitial.clone();
 			}
 			
 			if(_updateGlobally)
@@ -262,11 +256,7 @@ package com.yogurt3d.core.helpers.boundingvolumes {
 					m_centerHalfDirtyGlobal = false;
 					return;
 				}
-				
-				var tempCe:Vector3D = m_centerGlobal;
-				var tempHa:Vector3D = m_halfSizeGlobal;
-				var tempSi:Vector3D = m_sizeGlobal;
-				var raw:Vector.<Number> = m_sceneObjectTransformation.matrixGlobal.rawData;
+
 				m_centerHalfDirtyGlobal = false;
 			}else
 			{
@@ -279,9 +269,6 @@ package com.yogurt3d.core.helpers.boundingvolumes {
 				
 				if(!m_minMaxDirtyLocal)
 				{
-					/*m_centerLocal.copyFrom(m_maxLocal);
-					m_centerLocal.incrementBy(m_minLocal);
-					m_centerLocal.scaleBy(0.5);*/
 					m_centerLocal.setTo( (m_maxLocal.x+m_minLocal.x)*0.5, (m_maxLocal.y+m_minLocal.y)*0.5, (m_maxLocal.z+m_minLocal.z)*0.5 );
 					m_sizeLocal.setTo(m_maxLocal.x-m_minLocal.x, m_maxLocal.y-m_minLocal.y, m_maxLocal.z-m_minLocal.z);
 					m_halfSizeLocal.setTo( m_sizeLocal.x*0.5, m_sizeLocal.y*0.5, m_sizeLocal.z*0.5 );
@@ -290,16 +277,14 @@ package com.yogurt3d.core.helpers.boundingvolumes {
 					return;
 				}
 				
-				var tempCe:Vector3D = m_centerLocal;
-				var tempHa:Vector3D = m_halfSizeLocal;
-				var tempSi:Vector3D = m_sizeLocal;
-				var raw:Vector.<Number> = m_sceneObjectTransformation.matrixLocal.rawData;;
-				
 				m_centerHalfDirtyLocal = false;
 			}
 				
-
-			//var raw:Vector.<Number> = m_transformation.rawData;
+			tempCe = m_centerLocal;
+			tempHa = m_halfSizeLocal;
+			tempSi = m_sizeLocal;
+			raw = m_sceneObjectTransformation.matrixLocal.rawData;
+			
 			tempCe.setTo( raw[12], raw[13], raw[14]);
 			tempHa.setTo( 0, 0, 0);
 			
@@ -318,25 +303,12 @@ package com.yogurt3d.core.helpers.boundingvolumes {
 			tempCe.x += xOfAxis * centerX + yOfAxis * centerY + zOfAxis * centerZ;
 			tempHa.x += Math.abs(xOfAxis) * halfSizeX + Math.abs(yOfAxis) * halfSizeY + Math.abs(zOfAxis) * halfSizeZ ;
 
-/*			tempCe.x += yOfAxis * centerY;
-			tempHa.x += Math.abs(yOfAxis) * halfSizeY;
-
-			tempCe.x += zOfAxis * centerZ;
-			tempHa.x += Math.abs(zOfAxis) * halfSizeZ;*/
-
 			xOfAxis  = raw[1];
 			yOfAxis  = raw[5];
 			zOfAxis  = raw[9];
 			
 			tempCe.y += xOfAxis * centerX + yOfAxis * centerY + zOfAxis * centerZ;
-			tempHa.y += Math.abs(xOfAxis) * halfSizeX + Math.abs(yOfAxis) * halfSizeY + Math.abs(zOfAxis) * halfSizeZ;
-			
-/*			tempCe.y += yOfAxis * centerY;
-			tempHa.y += Math.abs(yOfAxis) * halfSizeY;
-			
-			tempCe.y += zOfAxis * centerZ;
-			tempHa.y += Math.abs(zOfAxis) * halfSizeZ;*/
-			
+			tempHa.y += Math.abs(xOfAxis) * halfSizeX + Math.abs(yOfAxis) * halfSizeY + Math.abs(zOfAxis) * halfSizeZ;			
 			
 			xOfAxis  = raw[2];
 			yOfAxis  = raw[6];
@@ -344,11 +316,6 @@ package com.yogurt3d.core.helpers.boundingvolumes {
 			
 			tempCe.z += xOfAxis * centerX + yOfAxis * centerY + zOfAxis * centerZ;
 			tempHa.z += Math.abs(xOfAxis) * halfSizeX + Math.abs(yOfAxis) * halfSizeY + Math.abs(zOfAxis) * halfSizeZ;
-			
-			//tempHa.z += Math.abs(yOfAxis) * halfSizeY;
-			
-			//tempHa.z += Math.abs(zOfAxis) * halfSizeZ;
-			
 			
 			tempSi.setTo(tempHa.x*2, tempHa.y*2, tempHa.z*2);
 		
@@ -809,14 +776,14 @@ package com.yogurt3d.core.helpers.boundingvolumes {
 			return _newAABB;
 		}
 		
+		protected override function trackObject():void
+		{
+			IDManager.trackObject(this, AxisAlignedBoundingBox);
+		}
+		
 		override protected function initInternals():void
 		{
 			super.initInternals();
-		}
-		
-		override public function toString():String {
-			return "[MinGlobal x:"+minGlobal.x.toFixed(3)+"  y:"+minGlobal.y.toFixed(3)+"  z:"+minGlobal.z.toFixed(3)+"][MaxGlobal x:"+maxGlobal.x.toFixed(3)+"  y:"+maxGlobal.y.toFixed(3)+"  z:"+maxGlobal.z.toFixed(3)+"][CenterGlobal x:"+centerGlobal.x.toFixed(3)+"  y:"+centerGlobal.y.toFixed(3)+"  z:"+centerGlobal.z.toFixed(3)+"]" +
-				   "[MinLocal x:"+minLocal.x.toFixed(3)+"  y:"+minLocal.y.toFixed(3)+"  z:"+minLocal.z.toFixed(3)+"][MaxLocal x:"+maxLocal.x.toFixed(3)+"  y:"+maxLocal.y.toFixed(3)+"  z:"+maxLocal.z.toFixed(3)+"][CenterLocal x:"+centerLocal.x.toFixed(3)+"  y:"+centerLocal.y.toFixed(3)+"  z:"+centerLocal.z.toFixed(3)+"]"; 
 		}
 	}
 }

@@ -19,6 +19,7 @@
  
 package com.yogurt3d.core.helpers.boundingvolumes
 {
+	import com.yogurt3d.core.managers.idmanager.IDManager;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.objects.EngineObject;
 	import com.yogurt3d.core.objects.interfaces.IEngineObject;
@@ -139,6 +140,11 @@ package com.yogurt3d.core.helpers.boundingvolumes
 				return 0;//outside
 			else
 				return 2;//intersect or in
+		}
+		
+		protected override function trackObject():void
+		{
+			IDManager.trackObject(this, BoundingSphere);
 		}
 
 

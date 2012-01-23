@@ -53,6 +53,10 @@ package com.yogurt3d.presets.cameras
 			m_target = new SceneObject;
 		}
 		
+		public override function dispose():void{
+			TickManager.unRegisterObject( this );
+		}
+		
 		public function get target():SceneObject{
 			return m_target;
 		}

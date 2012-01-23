@@ -159,6 +159,13 @@ package com.yogurt3d.core.materials.base {
 			
 		}
 		
+		public override function disposeGPU():void{
+			for( var i:int = 0; i < m_shaders.length;i++)
+			{
+				m_shaders[i].disposeShaders();
+			}
+		}
+		
 		override public function dispose():void {
 			for( var i:int = 0; i < m_shaders.length;i++)
 			{
@@ -166,6 +173,11 @@ package com.yogurt3d.core.materials.base {
 			}
 			m_shaders.length = 0;
 			super.dispose();
+		}
+		
+		public override function disposeDeep():void{
+			dispose();
+			super.disposeDeep();
 		}
 
 		public function get shaders():Vector.<Shader>

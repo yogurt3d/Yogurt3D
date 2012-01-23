@@ -357,7 +357,7 @@ package com.yogurt3d.core.lights
 		
 		
 		private function onAddedToSceneEvent( obj:SceneObject, scene:IScene ):void{
-			setProjection();
+			//setProjection();
 		}
 		
 		/**
