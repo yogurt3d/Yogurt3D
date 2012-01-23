@@ -8,7 +8,6 @@
     <classEntry path="com.yogurt3d.core.animation.controllers.IController"/>
     <classEntry path="com.yogurt3d.core.animation.controllers.SkinController"/>
     <classEntry path="com.yogurt3d.core.cameras.Camera"/>
-    <classEntry path="com.yogurt3d.core.cameras.interfaces.ICamera"/>
     <classEntry path="com.yogurt3d.core.enums.EngineDefaults"/>
     <classEntry path="com.yogurt3d.core.events.AnimationEvent"/>
     <classEntry path="com.yogurt3d.core.events.MouseEvent3D"/>
@@ -75,7 +74,6 @@
     <classEntry path="com.yogurt3d.core.materials.MaterialToonTexture"/>
     <classEntry path="com.yogurt3d.core.materials.MaterialTwoColorFresnel"/>
     <classEntry path="com.yogurt3d.core.materials.MaterialTwoTextureFresnel"/>
-    <classEntry path="com.yogurt3d.core.materials.MaterialYogurtistan"/>
     <classEntry path="com.yogurt3d.core.materials.base.Color"/>
     <classEntry path="com.yogurt3d.core.materials.base.Material"/>
     <classEntry path="com.yogurt3d.core.materials.posteffects.FilterGodRays"/>
@@ -141,8 +139,6 @@
     <classEntry path="com.yogurt3d.core.sceneobjects.Sound3D"/>
     <classEntry path="com.yogurt3d.core.sceneobjects.SoundObserver"/>
     <classEntry path="com.yogurt3d.core.sceneobjects.interfaces.IScene"/>
-    <classEntry path="com.yogurt3d.core.sceneobjects.interfaces.ISceneObject"/>
-    <classEntry path="com.yogurt3d.core.sceneobjects.interfaces.ISceneObjectRenderable"/>
     <classEntry path="com.yogurt3d.core.sceneobjects.interfaces.ISelfRenderable"/>
     <classEntry path="com.yogurt3d.core.scenetree.IRenderableManager"/>
     <classEntry path="com.yogurt3d.core.scenetree.SceneTreeManagerDriver"/>
@@ -183,8 +179,7 @@
     <classEntry path="com.yogurt3d.core.utils.TransformationUtils"/>
     <classEntry path="com.yogurt3d.core.utils.Vector3DUtils"/>
     <classEntry path="com.yogurt3d.core.viewports.Viewport"/>
-    <classEntry path="com.yogurt3d.core.viewports.ViewportAntialiasing"/>
-    <classEntry path="com.yogurt3d.core.viewports.ViewportLayer"/>
+    <classEntry path="com.yogurt3d.core.viewports.EViewportAntialiasing"/>
     <classEntry path="com.yogurt3d.io.cache.GlobalCache"/>
     <classEntry path="com.yogurt3d.io.cache.LoadCache"/>
     <classEntry path="com.yogurt3d.io.loaders.CompressedFile"/>
