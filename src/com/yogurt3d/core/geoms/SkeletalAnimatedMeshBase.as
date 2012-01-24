@@ -58,18 +58,22 @@ package com.yogurt3d.core.geoms {
 		}
 		
 		public function setBindPose():void{
-			for( var i:int = 0; i < bones.length; i++)
+			var len:uint = bones.length;
+			var children:Vector.<Bone>;
+			
+			for( var i:int = 0; i < len; i++)
 			{
-				for( var j:int = 0; j < bones.length; j++)
+				for( var j:int = 0; j < len; j++)
 				{
 					if( bones[i].parentName == bones[j].name )
 					{
 						bones[i].parentBone = bones[j];
-						bones[j].children.push( bones[i] );
+						children = bones[j].children;
+						children.push( bones[i] );
 					}
 				}
 			}
-			for( i = 0; i < bones.length; i++)
+			for( i = 0; i < len; i++)
 			{
 				bones[i].setBindingPose();
 			}

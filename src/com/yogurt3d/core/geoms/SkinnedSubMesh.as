@@ -34,11 +34,9 @@ package com.yogurt3d.core.geoms
 	public class SkinnedSubMesh extends SubMesh
 	{
 		YOGURT3D_INTERNAL var m_boneDataBuffersByContext3D 	:Dictionary;
-		
-		private var partition:uint;	
 		// maps the index of an un-partitioned vertex to that same vertex if it has been added to this particular partition. 
 		// speeds up checking for duplicate vertices so we don't add the same vertex more than once.  
-		private var indicesMap:Dictionary;
+		private var m_indicesMap:Dictionary;
 		public var vertexList:Vector.<uint>;
 		public var originalBoneIndex:Vector.<uint>;
 		
@@ -54,17 +52,14 @@ package com.yogurt3d.core.geoms
 			m_boneDataBuffersByContext3D = new Dictionary();
 		}
 		
-		public override function dispose():void{
-			indicesMap = null;
-			vertexList = null;
-			originalBoneIndex = null;
-			bones = null;
-			boneIndies = null;
-			boneWeights = null;
-			
-			super.dispose();
+		public function get indicesMap():Dictionary
+		{
+			return m_indicesMap;
 		}
-		
+		public function set indicesMap(value:Dictionary):void
+		{
+			m_indicesMap = value;
+		}
 		public override function disposeGPU():void{
 			super.disposeGPU();
 			
@@ -90,127 +85,8 @@ package com.yogurt3d.core.geoms
 			indicesMap = new Dictionary();
 			bones = new Vector.<Bone>();
 			vertexList = new Vector.<uint>;
-			originalBoneIndex = new Vector.<uint>;
-			partition = 0;		
+			originalBoneIndex = new Vector.<uint>;	
 		}
-		
-		/**
-		 * adds a vertex to this partition and returns the index of the added vertex, or returns the index of the  <br/>
-		 * existing vertex if it has already been added.   <br/>
-		 **/
-		public function addVertex(_vertice:Vector.<Number>, _vertexIndex:uint):uint{
-			
-			var index:uint;
-			
-			if(indicesMap[_vertexIndex] != null){
-				
-				// return existing partitioned vertex  
-				index = indicesMap[_vertexIndex];
-				this.indices.push(index);
-				
-				
-			}else{
-				
-				index = vertices.length/3;  
-				indices.push( index ); 
-				for(var k:uint = 0; k < _vertice.length; k++)
-					this.vertices.push(_vertice[k]);  
-				
-				indicesMap[_vertexIndex] =  index;  
-			}
-			
-			// holds original vertex index data
-			if(vertexList.indexOf(_vertexIndex) == -1){
-				vertexList.push(_vertexIndex);
-			}
-			m_triangleCount = this.indices.length / 3;
-			return index;
-		}
-		/**
-		 * adds a primitive to the bone partition builder.  <br/>
-		 * returns true if primitive was successfully added.   <br/>
-		 * returns false if primitive uses too many bones, more bones than we have room for. <br/>
-		 **/
-		public function addPrimitive(_verticesCount:uint, _vertices: Vector.<Number>, _indices:Vector.<uint>,_boneMap:Vector.<Vector.<uint>>):Boolean{
-			
-			// build a list of all the bones used by the vertex that aren't currently in this partition  
-			
-			var bonesToAdd:Vector.<uint> = new Vector.<uint>();
-			var bonesToAddCount:uint = 0;
-			var len:uint =  _indices.length;
-			var indice:uint;
-			
-			for ( var iVertex:uint = 0; iVertex < len; iVertex++ )  
-			{ 
-				indice = _indices[iVertex];
-				// get bone indices
-				var bones:Vector.<uint> = _boneMap[indice];
-				var bCount:uint = bones.length;
-				for(var k:uint = 0; k < bCount; k++){
-					
-					var boneIndex:uint = bones[k];
-					var needToAdd:Boolean = true;
-					
-					for ( var iBoneToAdd:uint = 0; iBoneToAdd < bonesToAddCount; iBoneToAdd++ )  
-					{  
-						if ( bonesToAdd[iBoneToAdd] == boneIndex )  
-						{  
-							needToAdd = false;  
-							break;  
-						}  
-					}  
-					
-					if(needToAdd){
-						bonesToAdd[bonesToAddCount] = boneIndex;
-						var boneRemapResult:int = getBoneRemap(boneIndex);
-						
-						bonesToAddCount += (boneRemapResult == -1 ? 1 : 0);
-					}
-					
-				}
-			}
-			
-			// check that we can fit more bones in this partition. 
-			if ( ( originalBoneIndex.length + bonesToAddCount ) > MAX_BONE_COUNT )  
-			{  
-				return false;  
-			}  
-			// add bones 
-			
-			for ( var iBone:uint = 0; iBone < bonesToAddCount; iBone++ )  
-			{  
-				originalBoneIndex.push( bonesToAdd[iBone] );  
-			}
-			
-			// add vertices and indices  
-			for ( iVertex = 0; iVertex < _verticesCount; iVertex++ )  
-			{  
-				var vert:Vector.<Number> = _vertices.slice(iVertex * 3, iVertex * 3 + 3);
-				this.addVertex(vert, _indices[iVertex] );  
-			}  
-			
-			return true;
-		}
-		
-		/**
-		 * given the index of an un-partitioned bone, returns the index of the same bone in this partition.   <br/>
-		 * this is used to remap the bone indices in an un-partitioned vertex to make it into a partitioned vertex.   <br/>
-		 **/
-		public function getBoneRemap(_boneIndex:uint):int{
-			var bCount:uint = originalBoneIndex.length;
-			for ( var iBone:uint = 0; iBone < bCount; iBone++ )  
-			{  
-				if ( originalBoneIndex[iBone] == _boneIndex )  
-				{  
-					if(iBone > MAX_BONE_COUNT)
-						return -1;
-					
-					return iBone;  
-				}  
-			}  
-			
-			return -1;
-		}	
 		
 		public function printBones():void{
 			
@@ -233,22 +109,27 @@ package com.yogurt3d.core.geoms
 			
 			boneWeights = new Vector.<Number>();
 			boneIndies = new Vector.<Number>();
-			var vertexIndex:int;
-			var boneList:Array;
-			var weightList:Array;
-			var index:uint;
-			var boneIndex:int;
-			if( vertexList.length != 0 )
+			
+			var vertexIndex:int, index:uint, boneIndex:int;
+			var boneList:Array, weightList:Array;
+			var boneIndiceIndex:int, bone:Bone;
+			var vLen:uint = vertexList.length;
+			var bLen:uint = bones.length;
+			
+			if( vLen != 0 )
 			{
-				for( vertexIndex = 0; vertexIndex < vertexList.length; vertexIndex++ ){
+				for( vertexIndex = 0; vertexIndex < vLen; vertexIndex++ ){
 					boneList = [-1,-1,-1,-1, -1,-1,-1,-1];
 					weightList = [0,0,0,0, 0,0,0,0];
 					index = 0;
-					for( boneIndex = 0; boneIndex < bones.length; boneIndex++ ){
-						var temp:int = bones[boneIndex].indices.indexOf( vertexList[vertexIndex] );
-						if( temp > -1 ){
+					
+					for( boneIndex = 0; boneIndex < bLen; boneIndex++ ){
+						bone = bones[boneIndex];
+						boneIndiceIndex = bone.indices.indexOf( vertexList[vertexIndex] );
+						
+						if( boneIndiceIndex > -1 ){
 							boneList[index] = boneIndex * 3 ;
-							weightList[index] = bones[boneIndex].weights[ temp ];
+							weightList[index] = bone.weights[ boneIndiceIndex ];
 							index++;
 						}
 						
@@ -260,19 +141,20 @@ package com.yogurt3d.core.geoms
 					
 				}
 			}else{
-				boneIndies = new Vector.<Number>();
+			
 				for( vertexIndex = 0; vertexIndex < vertexCount; vertexIndex++ )
 				{
 					boneList = [-1,-1,-1,-1,-1,-1,-1,-1];
-					weightList = [0,0,0,0,
-						0,0,0,0];
+					weightList = [0,0,0,0,0,0,0,0];
 					index = 0;
-					for( boneIndex = 0; boneIndex < bones.length; boneIndex++ )
+					for( boneIndex = 0; boneIndex < bLen; boneIndex++ )
 					{
-						if( bones[boneIndex].indices.indexOf( vertexIndex ) > -1 )
+						bone = bones[boneIndex];
+						boneIndiceIndex = bone.indices.indexOf( vertexIndex );
+						if( boneIndiceIndex > -1 )
 						{
 							boneList[index] = boneIndex * 3 ;
-							weightList[index] = bones[boneIndex].weights[ bones[boneIndex].indices.indexOf( vertexIndex ) ];
+							weightList[index] = bone.weights[ boneIndiceIndex ];
 							index++;
 						}
 					}
@@ -298,7 +180,7 @@ package com.yogurt3d.core.geoms
 			
 			var _bufferData	:Vector.<Number>			= MeshUtils.createVertexBufferDataAsVector( m_vertexCount, boneIndies, boneWeights );
 			
-			m_boneDataBuffersByContext3D[_context3D] = _context3D.createVertexBuffer( m_vertexCount, 8 + 8);			
+			m_boneDataBuffersByContext3D[_context3D] = _context3D.createVertexBuffer( m_vertexCount, 16);			
 			m_boneDataBuffersByContext3D[_context3D].uploadFromVector( _bufferData, 0, m_vertexCount );
 			
 			return m_boneDataBuffersByContext3D[_context3D];

@@ -158,21 +158,25 @@ package com.yogurt3d.core.geoms
 			m_bones = new Vector.<Bone>();
 			
 			var len:int = m_base.bones.length;
-			
+			var bone1:Bone;
+			var bone2:Bone;
 			// clone bones from mesh
 			for( var i:int = 0; i < len; i++)
 			{
 				m_bones.push( m_base.bones[i].clone() );
 			}
+			var blen:uint = bones.length;
 			// reinit the hierarchy for the bones
-			for( i = 0; i < bones.length; i++)
+			for( i = 0; i < blen; i++)
 			{
-				for( var j:int = 0; j < bones.length; j++)
+				bone1 = bones[i];
+				for( var j:int = 0; j < blen; j++)
 				{
-					if( bones[i].parentName == bones[j].name )
+					bone2 = bones[j];
+					if( bone1.parentName == bone2.name )
 					{
-						bones[i].parentBone = bones[j];
-						bones[j].children.push( bones[i] );
+						bone1.parentBone = bone2;
+						bone2.children.push( bone1 );
 					}
 				}
 			}

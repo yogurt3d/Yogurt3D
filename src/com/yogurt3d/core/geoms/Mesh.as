@@ -1,21 +1,21 @@
 /*
- * Mesh.as
- * This file is part of Yogurt3D Flash Rendering Engine 
- *
- * Copyright (C) 2011 - Yogurt3D Corp.
- *
- * Yogurt3D Flash Rendering Engine is free software; you can redistribute it and/or
- * modify it under the terms of the YOGURT3D CLICK-THROUGH AGREEMENT
- * License.
- * 
- * Yogurt3D Flash Rendering Engine is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- * 
- * You should have received a copy of the YOGURT3D CLICK-THROUGH AGREEMENT
- * License along with this library. If not, see <http://www.yogurt3d.com/yogurt3d/downloads/yogurt3d-click-through-agreement.html>. 
- */
- 
+* Mesh.as
+* This file is part of Yogurt3D Flash Rendering Engine 
+*
+* Copyright (C) 2011 - Yogurt3D Corp.
+*
+* Yogurt3D Flash Rendering Engine is free software; you can redistribute it and/or
+* modify it under the terms of the YOGURT3D CLICK-THROUGH AGREEMENT
+* License.
+* 
+* Yogurt3D Flash Rendering Engine is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+* 
+* You should have received a copy of the YOGURT3D CLICK-THROUGH AGREEMENT
+* License along with this library. If not, see <http://www.yogurt3d.com/yogurt3d/downloads/yogurt3d-click-through-agreement.html>. 
+*/
+
 package com.yogurt3d.core.geoms {
 	import com.yogurt3d.core.geoms.interfaces.IMesh;
 	import com.yogurt3d.core.helpers.boundingvolumes.AxisAlignedBoundingBox;
@@ -30,9 +30,9 @@ package com.yogurt3d.core.geoms {
 	/**
 	 * 
 	 * 
- 	 * @author Yogurt3D Engine Core Team
- 	 * @company Yogurt3D Corp.
- 	 **/
+	 * @author Yogurt3D Engine Core Team
+	 * @company Yogurt3D Corp.
+	 **/
 	public class Mesh extends EngineObject implements IMesh
 	{
 		private var m_subMeshList		:Vector.<SubMesh>;	
@@ -63,7 +63,12 @@ package com.yogurt3d.core.geoms {
 		{
 			return m_subMeshList;
 		}
-
+		
+		public function set subMeshList(_value:Vector.<SubMesh>):void
+		{
+			m_subMeshList = _value;
+		}
+		
 		public function get type():String{
 			return "Mesh";
 		}
@@ -117,40 +122,18 @@ package com.yogurt3d.core.geoms {
 				}
 			}
 			m_aabb = new AxisAlignedBoundingBox(_min, _max);
-
-			//var temp:Vector3D = _max.subtract(_min);
-			//var _radiusSqr :Number = temp.x*temp.x + temp.y*temp.y + temp.z*temp.z;
-			//var _center :Vector3D = _max.add( _min);
-			//_center.scaleBy( .5 );
-			//m_boundingSphere = new BoundingSphere( _radiusSqr, _center );
-		}
-		public override function disposeDeep():void{
-			dispose();
-		}
-		public override function dispose():void{
-			var len:uint = subMeshList.length;
-			for( var i:int = 0; i < len; i++ )
-			{
-				subMeshList.pop().dispose();
-			}
-			if( m_boundingSphere )
-			{
-				m_boundingSphere.dispose();
-				m_boundingSphere = null;
-			}
-			if( m_aabb )
-			{
-				m_aabb.dispose();
-				m_aabb = null;
-					
-			}
-			super.dispose();
+			
+			var temp:Vector3D = _max.subtract(_min);
+			var _radiusSqr :Number = temp.x*temp.x + temp.y*temp.y + temp.z*temp.z;
+			var _center :Vector3D = _max.add( _min);
+			_center.scaleBy( .5 );
+			m_boundingSphere = new BoundingSphere( _radiusSqr, _center );
 		}
 		
-		public override function disposeGPU():void{
+		public override function dispose():void{
 			for( var i:int = 0; i < subMeshList.length; i++ )
 			{
-				subMeshList[i].disposeGPU();
+				subMeshList[i].dispose();
 			}
 		}
 		

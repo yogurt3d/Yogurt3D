@@ -91,11 +91,11 @@ package com.yogurt3d.io.parsers
 			
 			Y3DCONFIG::TRACE
 			{
-				trace("Yogurt3D Animation File");
-				trace("Version:", _version);
-				trace("Exporter:", _exporter);
-				trace("boneCount:", _boneCount);
-				trace("frameCount:", _frameCount);
+				trace("[YOA_Parser] Yogurt3D Animation File");
+				trace("[YOA_Parser] Version:", _version);
+				trace("[YOA_Parser] Exporter:", _exporter);
+				trace("[YOA_Parser] boneCount:", _boneCount);
+				trace("[YOA_Parser] frameCount:", _frameCount);
 			}
 			
 			var _animData:SkeletalAnimationData = new SkeletalAnimationData();
@@ -141,6 +141,15 @@ package com.yogurt3d.io.parsers
 			var _frameCount				:int	= _value.readInt();
 			
 			var _boneList:Array = [];
+			
+			Y3DCONFIG::TRACE
+			{
+				trace("[YOA_Parser] Yogurt3D Animation File");
+				trace("[YOA_Parser] Version:", 1);
+				trace("[YOA_Parser] Exporter:", null);
+				trace("[YOA_Parser] boneCount:", _boneCount);
+				trace("[YOA_Parser] frameCount:", _frameCount);
+			}
 			
 			for(var _boneLoop:int = 0; _boneLoop < _boneCount; _boneLoop++)
 			{

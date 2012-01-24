@@ -158,15 +158,15 @@ package com.yogurt3d.io.parsers {
 				
 				Y3DCONFIG::TRACE
 				{
-					trace("Yogurt3D Mesh File V3");
-					trace("Exporter:", exporter);
-					trace("upVector:", upVector);
-					trace("vertexCount:", vertexCount);
-					trace("triangleCount:", indexCount / 3 );
-					trace("normalsIncluded:", true);
-					trace("tangentsIncluded:", tangentsIncluded);
-					trace("uvCount:", uvCount);
-					trace("ocFactorIncluded:", ocFactorIncluded);
+					trace("[Y3D_Parser] Yogurt3D Mesh File V3");
+					trace("[Y3D_Parser] Exporter:", exporter);
+					trace("[Y3D_Parser] upVector:", upVector);
+					trace("[Y3D_Parser] vertexCount:", vertexCount);
+					trace("[Y3D_Parser] triangleCount:", indexCount / 3 );
+					trace("[Y3D_Parser] normalsIncluded:", true);
+					trace("[Y3D_Parser] tangentsIncluded:", tangentsIncluded);
+					trace("[Y3D_Parser] uvCount:", uvCount);
+					trace("[Y3D_Parser] ocFactorIncluded:", ocFactorIncluded);
 				}
 				
 				var _verticesLoop			:int;
@@ -242,16 +242,16 @@ package com.yogurt3d.io.parsers {
 				
 				Y3DCONFIG::TRACE
 				{
-					trace("Yogurt3D Animated Mesh File");
-					trace("Exporter:", exporter);
-					trace("upVector:", upVector);
-					trace("vertexCount:", vertexCount);
-					trace("triangleCount:", indexCount / 3 );
-					trace("normalsIncluded:", true);
-					trace("tangentsIncluded:", tangentsIncluded);
-					trace("uvCount:", uvCount);
-					trace("ocFactorIncluded:", ocFactorIncluded);
-					trace("boneCount:", boneCount);
+					trace("[Y3D_Parser] Yogurt3D Animated Mesh File");
+					trace("[Y3D_Parser] Exporter:", exporter);
+					trace("[Y3D_Parser] upVector:", upVector);
+					trace("[Y3D_Parser] vertexCount:", vertexCount);
+					trace("[Y3D_Parser] triangleCount:", indexCount / 3 );
+					trace("[Y3D_Parser] normalsIncluded:", true);
+					trace("[Y3D_Parser] tangentsIncluded:", tangentsIncluded);
+					trace("[Y3D_Parser] uvCount:", uvCount);
+					trace("[Y3D_Parser] ocFactorIncluded:", ocFactorIncluded);
+					trace("[Y3D_Parser] boneCount:", boneCount);
 				}
 				
 				var _bone:Bone;
@@ -391,13 +391,13 @@ package com.yogurt3d.io.parsers {
 				
 				Y3DCONFIG::TRACE
 				{
-					trace("Yogurt3D Mesh File V2");
-					trace("Exporter:", exporter);
-					trace("upVector:", upVector);
-					trace("vertexCount:", vertexCount);
-					trace("triangleCount:", indexCount / 3 );
-					trace("normalsIncluded:", true);
-					trace("tangentsIncluded:", tangentsIncluded);
+					trace("[Y3D_Parser] Yogurt3D Mesh File V2");
+					trace("[Y3D_Parser] Exporter:", exporter);
+					trace("[Y3D_Parser] upVector:", upVector);
+					trace("[Y3D_Parser] vertexCount:", vertexCount);
+					trace("[Y3D_Parser] triangleCount:", indexCount / 3 );
+					trace("[Y3D_Parser] normalsIncluded:", true);
+					trace("[Y3D_Parser] tangentsIncluded:", tangentsIncluded);
 				}
 				
 				var _verticesLoop			:int;
@@ -456,14 +456,14 @@ package com.yogurt3d.io.parsers {
 				
 				Y3DCONFIG::TRACE
 				{
-					trace("Yogurt3D Animated Mesh File");
-					trace("Exporter:", exporter);
-					trace("upVector:", upVector);
-					trace("vertexCount:", vertexCount);
-					trace("triangleCount:", indexCount / 3 );
-					trace("normalsIncluded:", true);
-					trace("tangentsIncluded:", tangentsIncluded);
-					trace("boneCount:", boneCount);
+					trace("[Y3D_Parser] Yogurt3D Animated Mesh File");
+					trace("[Y3D_Parser] Exporter:", exporter);
+					trace("[Y3D_Parser] upVector:", upVector);
+					trace("[Y3D_Parser] vertexCount:", vertexCount);
+					trace("[Y3D_Parser] triangleCount:", indexCount / 3 );
+					trace("[Y3D_Parser] normalsIncluded:", true);
+					trace("[Y3D_Parser] tangentsIncluded:", tangentsIncluded);
+					trace("[Y3D_Parser] boneCount:", boneCount);
 				}
 				
 				var _bone:Bone;
@@ -618,15 +618,15 @@ package com.yogurt3d.io.parsers {
 			
 			Y3DCONFIG::TRACE
 			{
-				trace("Yogurt3D Animated Mesh File");
-				trace("Version:", 1);
-				trace("Exporter:", "unknown");
-				trace("upVector:", "unknown");
-				trace("vertexCount:", _vertexCount);
-				trace("triangleCount:", _indicesCount / 3 );
-				trace("normalsIncluded:", false);
-				trace("tangentsIncluded:", false);
-				trace("boneCount:", _boneCount);
+				trace("[Y3D_Parser] Yogurt3D Animated Mesh File");
+				trace("[Y3D_Parser] Version:", 1);
+				trace("[Y3D_Parser] Exporter:", "unknown");
+				trace("[Y3D_Parser] upVector:", "unknown");
+				trace("[Y3D_Parser] vertexCount:", _vertexCount);
+				trace("[Y3D_Parser] triangleCount:", _indicesCount / 3 );
+				trace("[Y3D_Parser] normalsIncluded:", false);
+				trace("[Y3D_Parser] tangentsIncluded:", false);
+				trace("[Y3D_Parser] boneCount:", _boneCount);
 			}
 			var _boneVertexDict:Dictionary = new Dictionary();
 			for(_boneLoop = 0; _boneLoop < _boneCount; _boneLoop++) // for each bone in the file
@@ -794,14 +794,14 @@ package com.yogurt3d.io.parsers {
 			
 			Y3DCONFIG::TRACE
 			{
-				trace("Yogurt3D Mesh File");
-				trace("Version:", 1);
-				trace("Exporter:", "unknown");
-				trace("upVector:", "unknown");
-				trace("vertexCount:", _vertexCount);
-				trace("triangleCount:", _indicesCount / 3);
-				trace("normalsIncluded:", false);
-				trace("tangentsIncluded:", false);
+				trace("[Y3D_Parser] Yogurt3D Mesh File");
+				trace("[Y3D_Parser] Version:", 1);
+				trace("[Y3D_Parser] Exporter:", "unknown");
+				trace("[Y3D_Parser] upVector:", "unknown");
+				trace("[Y3D_Parser] vertexCount:", _vertexCount);
+				trace("[Y3D_Parser] triangleCount:", _indicesCount / 3);
+				trace("[Y3D_Parser] normalsIncluded:", false);
+				trace("[Y3D_Parser] tangentsIncluded:", false);
 			}
 			
 			for(_verticesLoop = 0; _verticesLoop < _vertexCount * 3; _verticesLoop+=3)
