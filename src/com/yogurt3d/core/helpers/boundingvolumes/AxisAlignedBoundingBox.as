@@ -256,7 +256,10 @@ package com.yogurt3d.core.helpers.boundingvolumes {
 					m_centerHalfDirtyGlobal = false;
 					return;
 				}
-
+				tempCe = m_centerGlobal;
+				tempHa = m_halfSizeGlobal;
+				tempSi = m_sizeGlobal;
+				raw = m_sceneObjectTransformation.matrixGlobal.rawData;
 				m_centerHalfDirtyGlobal = false;
 			}else
 			{
@@ -277,13 +280,15 @@ package com.yogurt3d.core.helpers.boundingvolumes {
 					return;
 				}
 				
+				
+				tempCe = m_centerLocal;
+				tempHa = m_halfSizeLocal;
+				tempSi = m_sizeLocal;
+				raw = m_sceneObjectTransformation.matrixLocal.rawData;
 				m_centerHalfDirtyLocal = false;
 			}
 				
-			tempCe = m_centerLocal;
-			tempHa = m_halfSizeLocal;
-			tempSi = m_sizeLocal;
-			raw = m_sceneObjectTransformation.matrixLocal.rawData;
+			
 			
 			tempCe.setTo( raw[12], raw[13], raw[14]);
 			tempHa.setTo( 0, 0, 0);
