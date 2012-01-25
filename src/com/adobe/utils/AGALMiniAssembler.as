@@ -13,8 +13,8 @@ package com.adobe.utils
 	// ===========================================================================
 	//	Imports
 	// ---------------------------------------------------------------------------
-	import flash.utils.*;
 	import flash.display3D.*;
+	import flash.utils.*;
 	
 	// ===========================================================================
 	//	Class
@@ -53,6 +53,7 @@ package com.adobe.utils
 		public function assemble( mode:String, source:String, verbose:Boolean = false ):ByteArray
 		{
 			var start:uint = getTimer();
+			_agalcode = new ByteArray();
 			
 			agalcode.length = 0;
 			_error = "";
