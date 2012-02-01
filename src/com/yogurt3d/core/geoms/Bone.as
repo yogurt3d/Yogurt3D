@@ -40,28 +40,13 @@ package com.yogurt3d.core.geoms {
 	public class Bone
 	{
 		/**
-		 *  
-		 */
-		[Deprecated("Not used since v2.0")]
-		public var id			:int;
-		/**
-		 * 
+		 * Name of The Bone
 		 */		
 		public var name			:String;
 		/**
-		 * 
-		 */
-		[Deprecated("Not used since v2.0")]
-		public var parentId		:int;
-		/**
-		 * 
+		 * Name of the Parent Bone
 		 */
 		public var parentName	:String;
-		/**
-		 * 
-		 */		
-		[Deprecated("Not used since v2.0")]
-		public var rootHeight	:Number;
 		
 		private var m_translation	:Vector3D;
 		private var m_rotation		:Quaternion;
@@ -86,11 +71,6 @@ package com.yogurt3d.core.geoms {
 		 * Indices of the bone 
 		 */
 		public var indices		:Vector.<uint>;
-		/**
-		 * Vertices of the bone
-		 */
-		[Deprecated("Not used since v2.0")]
-		public var vertices		:Vector.<Number>;
 		/**
 		 * Weight values of the indices 
 		 */
