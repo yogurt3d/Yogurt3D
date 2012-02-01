@@ -48,8 +48,6 @@ package com.yogurt3d.io.parsers
 		
 		public function SkinnedMeshSplitter(){}
 		
-		public function reset():void{}
-		
 		public function split( _skeletalAnimatedGPUMesh:SkeletalAnimatedMeshBase ): SkeletalAnimatedMeshBase {
 			var bones:Vector.<Bone> = _skeletalAnimatedGPUMesh.bones;
 			
