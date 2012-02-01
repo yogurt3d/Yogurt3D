@@ -297,7 +297,7 @@ package com.yogurt3d.core.scenetree.quad
 			}
 
 			s_quadTreeByScene[_scene].removeFromNode(_child);
-			delete s_quadTreeByScene[_scene].sceneObjectToOctant[ _child ];
+			delete s_quadTreeByScene[_scene].sceneObjectToQuadrant[ _child ];
 		
 		}
 		
