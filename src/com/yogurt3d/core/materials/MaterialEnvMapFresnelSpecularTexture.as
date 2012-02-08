@@ -25,6 +25,7 @@ package com.yogurt3d.core.materials
 	import com.yogurt3d.core.materials.shaders.ShaderSpecular;
 	import com.yogurt3d.core.materials.shaders.ShaderTexture;
 	import com.yogurt3d.core.materials.shaders.base.Shader;
+	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.texture.CubeTextureMap;
 	import com.yogurt3d.core.texture.TextureMap;
 	
@@ -56,7 +57,6 @@ package com.yogurt3d.core.materials
 		{
 			super(_initInternals);
 			
-			super.opacity = _opacity;
 						
 			m_envShader = new ShaderEnvMapFresnel(_envMap, _normalMap, _reflectivityMap, 
 													_alpha, _fresnelReflectance, _fresnelPower);
@@ -78,6 +78,7 @@ package com.yogurt3d.core.materials
 			normalMap = _normalMap;
 			specularMap = _specularMap;
 			texture = _colorMap;
+			opacity = _opacity;
 		}
 		
 		public function get shininess():Number{
@@ -186,9 +187,14 @@ package com.yogurt3d.core.materials
 			m_envShader.reflectivityMap = value;
 		}
 		
-		public override function set opacity(value:Number):void{
-			super.opacity = value;
-			m_envShader.alpha = value;
+		public function get opacity():Number{
+			return m_envShader.alpha;
+		}
+		
+		public function set opacity(_value:Number):void{
+			m_envShader.alpha = _value;
+			
+			YOGURT3D_INTERNAL::m_transparent = (m_envShader.alpha < 1);
 		}
 		
 	}

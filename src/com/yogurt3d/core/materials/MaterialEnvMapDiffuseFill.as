@@ -25,6 +25,7 @@ package com.yogurt3d.core.materials
 	import com.yogurt3d.core.materials.shaders.ShaderEnvMapping;
 	import com.yogurt3d.core.materials.shaders.ShaderSolidFill;
 	import com.yogurt3d.core.materials.shaders.base.Shader;
+	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.texture.CubeTextureMap;
 	import com.yogurt3d.core.texture.TextureMap;
 	
@@ -60,7 +61,6 @@ package com.yogurt3d.core.materials
 		{
 			super(_initInternals);
 			
-			super.opacity = _opacity;
 			shaders = new Vector.<com.yogurt3d.core.materials.shaders.base.Shader>;
 			
 			m_envShader = new ShaderEnvMapping(_envMap, _normalMap,_reflectivityMap, _alpha);
@@ -78,6 +78,8 @@ package com.yogurt3d.core.materials
 			shaders.push(decal);
 			
 			shaders.push(m_envShader);
+
+			opacity = _opacity;
 		}
 		
 		public function get envMap():CubeTextureMap
@@ -124,10 +126,15 @@ package com.yogurt3d.core.materials
 			decal.color = value;
 		}
 		
-		public override function set opacity(value:Number):void{
-			super.opacity = value;
-			m_ambShader.opacity = value;
-			decal.opacity = value;
-		}	
+		public function get opacity():Number{
+			return m_ambShader.opacity;
+		}
+		
+		public function set opacity(_value:Number):void{
+			m_ambShader.opacity = _value;
+			decal.opacity = _value;
+			
+			YOGURT3D_INTERNAL::m_transparent = (m_ambShader.opacity < 1);
+		}
 	}
 }

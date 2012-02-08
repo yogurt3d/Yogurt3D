@@ -25,6 +25,7 @@ package com.yogurt3d.core.materials
 	import com.yogurt3d.core.materials.shaders.ShaderDiffuseVertex;
 	import com.yogurt3d.core.materials.shaders.ShaderTexture;
 	import com.yogurt3d.core.materials.shaders.base.Shader;
+	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.texture.TextureMap;
 	
 	import flash.display3D.Context3D;
@@ -67,7 +68,7 @@ package com.yogurt3d.core.materials
 				m_ambientShader.texture = _texture;
 			}
 			
-			super.opacity = _opacity;
+			opacity = _opacity;
 		}
 //		public function get alphaTexture():Boolean{
 //			return m_alphaTexture;
@@ -99,10 +100,15 @@ package com.yogurt3d.core.materials
 				m_ambientShader.texture = m_decalShader.texture as TextureMap;
 			}
 		}
+
+		public function get opacity():Number{
+			return m_ambientShader.opacity;
+		}
 		
-		public override function set opacity(value:Number):void{
-			super.opacity = value;
-			m_ambientShader.opacity = value;
+		public function set opacity(_value:Number):void{
+			m_ambientShader.opacity = _value;
+			
+			YOGURT3D_INTERNAL::m_transparent = (m_ambientShader.opacity < 1);
 		}
 	}
 }

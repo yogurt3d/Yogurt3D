@@ -22,6 +22,7 @@ package com.yogurt3d.core.materials
 	
 	import com.yogurt3d.core.materials.base.Material;
 	import com.yogurt3d.core.materials.shaders.ShaderChromatic;
+	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.texture.CubeTextureMap;
 	import com.yogurt3d.core.texture.TextureMap;
 	
@@ -60,7 +61,7 @@ package com.yogurt3d.core.materials
 			Io = _IoValues;
 			fresnel = _fresnelVal;
 		
-			super.opacity = _opacity;
+			opacity = _opacity;
 		}
 		
 
@@ -104,12 +105,13 @@ package com.yogurt3d.core.materials
 			
 			m_chroShader.texture = _value;
 		}
-		
-		
-		public override function set opacity(value:Number):void{
-			super.opacity = value;
+		public function get opacity():Number{
+			return m_chroShader.opacity;
+		}
+		public function set opacity(value:Number):void{
 			m_chroShader.opacity = value;
-			// TODO
+			
+			YOGURT3D_INTERNAL::m_transparent = (m_chroShader.opacity < 1);
 		}
 	}
 }

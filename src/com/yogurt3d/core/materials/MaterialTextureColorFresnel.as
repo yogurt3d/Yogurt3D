@@ -22,6 +22,7 @@ package com.yogurt3d.core.materials
 	import com.yogurt3d.core.materials.base.Material;
 	import com.yogurt3d.core.materials.shaders.ShaderTextureColorFresnel;
 	import com.yogurt3d.core.materials.shaders.base.Shader;
+	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.texture.CubeTextureMap;
 	import com.yogurt3d.core.texture.TextureMap;
 	
@@ -58,18 +59,6 @@ package com.yogurt3d.core.materials
 		{
 			super(_initInternals);
 			
-			super.opacity = _opacity;
-//			
-//			m_colorMap = _colorMap;
-//			m_normalMap = _normalMap;
-//			
-//			m_reflectivityMap = _reflectivityMap;
-//			m_fresnelReflectance = _fresnelReflectance;
-//			m_fresnelPower = _fresnelPower;
-//			
-//			m_color = _color;
-//			m_gain = _gain;
-			
 			m_freShader = new ShaderTextureColorFresnel(
 				_normalMap, 
 				_reflectivityMap, _opacity,
@@ -77,6 +66,8 @@ package com.yogurt3d.core.materials
 				_color, _colorMap, _gain);
 			
 			shaders.push(m_freShader);
+			
+			opacity = _opacity;
 		}
 		
 		public function get texture():TextureMap
@@ -143,9 +134,15 @@ package com.yogurt3d.core.materials
 			m_freShader.gain = _value;
 		}
 		
-		public override function set opacity(_value:Number):void{
-			super.opacity = _value;	
+		
+		public function get opacity():Number{
+			return m_freShader.alpha;
+		}
+		
+		public function set opacity(_value:Number):void{
 			m_freShader.alpha = _value;
+			
+			YOGURT3D_INTERNAL::m_transparent = (_value < 1);
 		}
 	}
 }

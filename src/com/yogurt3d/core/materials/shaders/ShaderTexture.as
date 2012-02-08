@@ -69,6 +69,8 @@ package com.yogurt3d.core.materials.shaders
 		private var m_transparencyConstant:ShaderConstants = null;
 		
 		
+		private var _alphaShaderConsts:ShaderConstants;
+		
 		public function ShaderTexture(_texture:TextureMap)
 		{
 			super();
@@ -96,9 +98,27 @@ package com.yogurt3d.core.materials.shaders
 			_textureShaderConstants.texture = _texture;
 			params.fragmentShaderConstants.push(_textureShaderConstants);
 			
+			m_transparencyConstant = new ShaderConstants(0, EShaderConstantsType.CUSTOM_VECTOR );
+			m_transparencyConstant.vector = Vector.<Number>([0.1, 1.0, 0, 0]);
+			params.fragmentShaderConstants.push(m_transparencyConstant);
+			
 			m_shadowMapShaderConstants = new ShaderConstants(1, EShaderConstantsType.TEXTURE);
 			
 			texture = _texture;
+		}
+		public function get opacity():Number{
+			return m_transparencyConstant.vector[1];
+		}
+		public function set opacity(_alpha:Number):void{
+			m_transparencyConstant.vector[1] = _alpha;
+		}
+		
+		public function get killThreshold():Number{
+			return m_transparencyConstant.vector[0];
+		}
+		
+		public function set killThreshold(value:Number):void{
+			m_transparencyConstant.vector[0] = value;
 		}
 		
 		public function get lightMap():TextureMap
@@ -169,22 +189,6 @@ package com.yogurt3d.core.materials.shaders
 			
 			if( m_transparencyDirty )
 			{
-				if(texture.transparent){
-				
-					if (m_transparencyConstant == null){
-						m_transparencyConstant = new ShaderConstants(0, EShaderConstantsType.CUSTOM_VECTOR );
-						m_transparencyConstant.vector = Vector.<Number>([0.2, 1.0, 0, 0]);
-						params.fragmentShaderConstants.push(m_transparencyConstant);
-					}
-				
-				}else{
-				
-					if(m_transparencyConstant != null){
-						params.fragmentShaderConstants.splice( params.fragmentShaderConstants.indexOf( m_transparencyConstant ), 1 );
-						m_transparencyConstant = null;
-					}
-				
-				}
 				disposeShaders();
 				m_transparencyDirty = false;
 			
@@ -238,13 +242,11 @@ package com.yogurt3d.core.materials.shaders
 			}
 			if(m_lightMap){
 				if(m_lightMap.mipmap)
-					code += "tex ft1, v1.xy, fs1<2d,wrap,linear,miplinear>\nmul ft0, ft1, ft0\n";
+					code += "tex ft1, v1.xy, fs1<2d,wrap,linear,miplinear>\nmul ft0.xyz, ft1.xyz, ft0.xyz\n";
 				else
-					code += "tex ft1, v1.xy, fs1<2d,wrap,linear>\nmul ft0, ft1, ft0\n";
+					code += "tex ft1, v1.xy, fs1<2d,wrap,linear>\nmul ft0.xyz, ft1.xyz, ft0.xyz\n";
 			}
-			
-		//	if()
-		//	code += "mul ft0.w, ft0.w, fc0.y\n";
+			code += "mul ft0 ft0 fc0.y\n";
 			code += "mov oc, ft0";
 			return ShaderUtils.fragmentAssambler.assemble(Context3DProgramType.FRAGMENT,code);
 		}

@@ -173,6 +173,11 @@ package com.yogurt3d.core.materials.shaders
 			key = "Yogurt3DOriginalsShaderHemisphereTexture"+ (value.transparent?"withAlpha":"");
 		}
 		
+		public function get opacity():Number{
+			
+			return _alphaShaderConsts.vector[0];
+		}
+		
 		public function set opacity(_alpha:Number):void{
 			
 			_alphaShaderConsts.vector[0] = _alpha;

@@ -98,7 +98,9 @@ package com.yogurt3d.presets.renderers.molehill
 		}
 		
 		private final function renderLayerSort( _a:SceneObjectRenderable, _b:SceneObjectRenderable ):Number{
-			if(_a.renderLayer > _b.renderLayer ){return 1;}
+			if( _a.material.transparent && !_b.material.transparent ){ return 1; }
+			if( !_a.material.transparent && _b.material.transparent ){ return -1; }
+			else if(_a.renderLayer > _b.renderLayer ){return 1;}
 			else if( _a.renderLayer < _b.renderLayer ){return -1;}
 			else{return 0;}
 		}

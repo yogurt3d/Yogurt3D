@@ -25,6 +25,7 @@ package com.yogurt3d.core.materials
 	import com.yogurt3d.core.materials.shaders.ShaderTexture;
 	import com.yogurt3d.core.materials.shaders.ShaderTwoColorFresnel;
 	import com.yogurt3d.core.materials.shaders.base.Shader;
+	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.texture.CubeTextureMap;
 	import com.yogurt3d.core.texture.TextureMap;
 	
@@ -54,7 +55,6 @@ package com.yogurt3d.core.materials
 		{
 			super(_initInternals);
 			
-			super.opacity = _opacity;
 					
 			m_freShader = new ShaderTwoColorFresnel(_normalMap, 
 													_reflectivityMap, _opacity,
@@ -62,6 +62,7 @@ package com.yogurt3d.core.materials
 													_color1, _color2);
 
 			shaders.push(m_freShader);
+			opacity = _opacity;
 		}
 			
 		public function get normalMap():TextureMap
@@ -124,10 +125,16 @@ package com.yogurt3d.core.materials
 		public function set gain(_value:Number):void{
 			m_freShader.gain = _value;
 		}
-		
-		public override function set opacity(_value:Number):void{
-			super.opacity = _value;
-			m_freShader.alpha = _value;
+
+		public function get opacity():Number{
+			return m_freShader.alpha;
 		}
+		
+		public function set opacity(_value:Number):void{
+			m_freShader.alpha = _value;
+			
+			YOGURT3D_INTERNAL::m_transparent = (_value < 1);
+		}
+		
 	}
 }

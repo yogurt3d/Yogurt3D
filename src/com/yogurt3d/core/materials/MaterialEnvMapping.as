@@ -21,6 +21,7 @@ package com.yogurt3d.core.materials
 	import com.yogurt3d.core.materials.base.Material;
 	import com.yogurt3d.core.materials.shaders.ShaderEnvMapping;
 	import com.yogurt3d.core.materials.shaders.base.Shader;
+	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.texture.CubeTextureMap;
 	import com.yogurt3d.core.texture.TextureMap;
 	
@@ -42,11 +43,11 @@ package com.yogurt3d.core.materials
 		{
 			super(_initInternals);
 			
-			super.opacity = _opacity;
 				
 			shaders = Vector.<com.yogurt3d.core.materials.shaders.base.Shader>([
 				m_envShader = new ShaderEnvMapping(_envMap, _normalMap,_reflectivityMap, _opacity)
 			]);			
+			opacity = _opacity;
 		}
 		
 		public function get envMap():CubeTextureMap
@@ -66,10 +67,15 @@ package com.yogurt3d.core.materials
 		{
 			m_envShader.normalMap = value;
 		}
-	
-		public override function set opacity(_value:Number):void{
+		
+		public function get opacity():Number{
+			return m_envShader.alpha;
+		}
+		
+		public function set opacity(_value:Number):void{
 			m_envShader.alpha = _value;
-			super.opacity = _value;
+			
+			YOGURT3D_INTERNAL::m_transparent = (m_envShader.alpha < 1);
 		}
 		
 		public function get reflectivityMap():TextureMap

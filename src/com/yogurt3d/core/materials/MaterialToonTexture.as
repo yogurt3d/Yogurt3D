@@ -21,6 +21,7 @@ package com.yogurt3d.core.materials
 	import com.yogurt3d.core.materials.base.Material;
 	import com.yogurt3d.core.materials.shaders.ShaderToonTexture;
 	import com.yogurt3d.core.materials.shaders.base.Shader;
+	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.texture.TextureMap;
 	
 	
@@ -36,7 +37,7 @@ package com.yogurt3d.core.materials
 			super(_initInternals);
 			shaders.push( m_shader = new ShaderToonTexture( _texture, _contourColor, _contourThickness, _opacity ) );
 			
-			super.opacity = _opacity;
+			opacity = _opacity;
 		}
 		
 		public function get texture():TextureMap{
@@ -63,9 +64,14 @@ package com.yogurt3d.core.materials
 			m_shader.contourColor = _val;
 		}
 		
-		public override function set opacity( _val:Number ):void{
-			super.opacity = _val;
-			m_shader.opacity = _val;
+		public function get opacity():Number{
+			return m_shader.opacity;
+		}
+		
+		public function set opacity(_value:Number):void{
+			m_shader.opacity = _value;
+			
+			YOGURT3D_INTERNAL::m_transparent = (_value < 1);
 		}
 	}
 }

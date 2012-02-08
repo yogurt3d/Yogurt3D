@@ -94,7 +94,7 @@ package com.yogurt3d.core.materials.shaders
 			params.vertexShaderConstants.push(new ShaderConstants(vcBoneMatrices, EShaderConstantsType.BONE_MATRICES));
 			
 			_alphaShaderConsts 				= new ShaderConstants(fcMaterialOpacity, EShaderConstantsType.CUSTOM_VECTOR);
-			_alphaShaderConsts.vector		= Vector.<Number>([_alpha,0.0001,1,0.5]);
+			_alphaShaderConsts.vector		= Vector.<Number>([_alpha,0.0001,1,0.1]);
 			
 			params.fragmentShaderConstants.push(_alphaShaderConsts);
 		
@@ -103,7 +103,13 @@ package com.yogurt3d.core.materials.shaders
 			
 			params.fragmentShaderConstants.push(new ShaderConstants(fcMaterialAmbient, EShaderConstantsType.MATERIAL_AMBIENT_COLOR));
 		}
+		public function get killThreshold():Number{
+			return _alphaShaderConsts.vector[3];
+		}
 		
+		public function set killThreshold(value:Number):void{
+			_alphaShaderConsts.vector[3] = value;
+		}
 		public function get texture():TextureMap
 		{
 			return m_texture;
@@ -114,11 +120,11 @@ package com.yogurt3d.core.materials.shaders
 			m_texture = value;
 			_alphaDirty = true;
 		}
-		
+		public function get opacity():Number{
+			return _alphaShaderConsts.vector[0];
+		}
 		public function set opacity(_alpha:Number):void{
-			
-			_alphaShaderConsts.vector = Vector.<Number>([_alpha, 0.0000001, 1.0, 1.0 ]);
-			params.fragmentShaderConstants[params.fragmentShaderConstants.indexOf(_alphaShaderConsts)] = _alphaShaderConsts;
+			_alphaShaderConsts.vector[0] = _alpha;
 		}
 		public override function getProgram(_context3D:Context3D, _lightType:ELightType=null, _meshKey:String=""):Program3D{
 			if(_alphaDirty )

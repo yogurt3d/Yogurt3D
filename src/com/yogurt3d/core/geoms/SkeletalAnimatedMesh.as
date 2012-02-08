@@ -155,7 +155,7 @@ package com.yogurt3d.core.geoms
 		}
 		
 		public function reinitBones():void{
-			m_bones = new Vector.<Bone>();
+			m_bones = new Vector.<Bone>(m_base.bones.length,true);
 			
 			var len:int = m_base.bones.length;
 			var bone1:Bone;
@@ -163,14 +163,13 @@ package com.yogurt3d.core.geoms
 			// clone bones from mesh
 			for( var i:int = 0; i < len; i++)
 			{
-				m_bones.push( m_base.bones[i].clone() );
+				m_bones[i] =  m_base.bones[i].clone();
 			}
-			var blen:uint = bones.length;
 			// reinit the hierarchy for the bones
-			for( i = 0; i < blen; i++)
+			for( i = 0; i < len; i++)
 			{
 				bone1 = bones[i];
-				for( var j:int = 0; j < blen; j++)
+				for( var j:int = 0; j < len; j++)
 				{
 					bone2 = bones[j];
 					if( bone1.parentName == bone2.name )

@@ -62,7 +62,6 @@
     <classEntry path="com.yogurt3d.core.materials.MaterialFogDiffuseTexture"/>
     <classEntry path="com.yogurt3d.core.materials.MaterialHalfLambert"/>
     <classEntry path="com.yogurt3d.core.materials.MaterialHemisphereTexture"/>
-    <classEntry path="com.yogurt3d.core.materials.MaterialParticle"/>
     <classEntry path="com.yogurt3d.core.materials.MaterialRefraction"/>
     <classEntry path="com.yogurt3d.core.materials.MaterialSkyBox"/>
     <classEntry path="com.yogurt3d.core.materials.MaterialSpecularFill"/>
@@ -121,9 +120,6 @@
     <classEntry path="com.yogurt3d.core.objects.interfaces.IReconstructibleObject"/>
     <classEntry path="com.yogurt3d.core.objects.interfaces.ISerializableObject"/>
     <classEntry path="com.yogurt3d.core.objects.interfaces.ITickedObject"/>
-    <classEntry path="com.yogurt3d.core.particle.initializers.Y3DDisplayObject"/>
-    <classEntry path="com.yogurt3d.core.particle.initializers.Y3DImageClass"/>
-    <classEntry path="com.yogurt3d.core.particle.initializers.Y3DMeshObject"/>
     <classEntry path="com.yogurt3d.core.particle.initializers.Y3DShapeObject"/>
     <classEntry path="com.yogurt3d.core.particle.renderer.Y3DParticleRenderer"/>
     <classEntry path="com.yogurt3d.core.plugin.Driver"/>

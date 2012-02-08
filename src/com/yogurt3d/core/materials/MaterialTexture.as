@@ -21,6 +21,7 @@ package com.yogurt3d.core.materials
 	import com.yogurt3d.core.managers.idmanager.IDManager;
 	import com.yogurt3d.core.materials.base.Material;
 	import com.yogurt3d.core.materials.shaders.ShaderTexture;
+	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.texture.TextureMap;
 	
 	import flash.events.Event;
@@ -59,6 +60,29 @@ package com.yogurt3d.core.materials
 		}
 		public function set texture(_value:TextureMap):void{
 			decalShader.texture = _value;
+			
+			if( _value )
+				YOGURT3D_INTERNAL::m_transparent = (decalShader.texture.transparent < 1);
+			else
+				YOGURT3D_INTERNAL::m_transparent = false;
+		}
+		
+		public function get killThreshold():Number{
+			return decalShader.killThreshold;
+		}
+		
+		public function set killThreshold(value:Number):void{
+			decalShader.killThreshold = value;
+		}
+		
+		public function get opacity():Number{
+			return decalShader.opacity;
+		}
+		
+		public function set opacity(_value:Number):void{
+			decalShader.opacity = _value;
+			
+			YOGURT3D_INTERNAL::m_transparent = (decalShader.texture && decalShader.texture.transparent ) || (decalShader.opacity < 1);
 		}
 		
 		public function get lightMap():TextureMap{

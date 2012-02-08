@@ -21,6 +21,7 @@ package com.yogurt3d.core.materials
 	import com.yogurt3d.core.materials.base.Material;
 	import com.yogurt3d.core.materials.shaders.ShaderContour;
 	import com.yogurt3d.core.materials.shaders.base.Shader;
+	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	
 	
 	public class MaterialEmptyContour extends Material
@@ -35,7 +36,7 @@ package com.yogurt3d.core.materials
 			super(_initInternals);
 			shaders.push( m_shader = new ShaderContour( _contourColor, _contourThickness, _opacity ) );
 			
-			super.opacity = _opacity;
+			opacity = _opacity;
 		}
 		
 		
@@ -55,9 +56,15 @@ package com.yogurt3d.core.materials
 			m_shader.contourColor = _val;
 		}
 		
-		public override function set opacity( _val:Number ):void{
-			super.opacity = _val;
-			m_shader.opacity = _val;
+		public function get opacity():Number{
+			return m_shader.opacity;
 		}
+		
+		public function set opacity(_value:Number):void{
+			m_shader.opacity = _value;
+			
+			YOGURT3D_INTERNAL::m_transparent = (m_shader.opacity < 1);
+		}
+		
 	}
 }

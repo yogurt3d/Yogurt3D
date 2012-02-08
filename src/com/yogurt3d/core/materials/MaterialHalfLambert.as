@@ -21,6 +21,7 @@ package com.yogurt3d.core.materials
 	import com.yogurt3d.core.materials.base.Material;
 	import com.yogurt3d.core.materials.shaders.ShaderHalfLambert;
 	import com.yogurt3d.core.materials.shaders.base.Shader;
+	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.texture.TextureMap;
 	
 	public class MaterialHalfLambert extends Material
@@ -42,7 +43,7 @@ package com.yogurt3d.core.materials
 				
 			]);
 			
-			super.opacity = _opacity;
+			opacity = _opacity;
 		}
 		
 		public function get alpha():Number{
@@ -66,11 +67,14 @@ package com.yogurt3d.core.materials
 			m_shader.gamma = _value;
 		}
 		
-		public override function get opacity():Number{
+		public function get opacity():Number{
 			return m_shader.opacity;
 		}
-		public override function set opacity(_value:Number):void{
+		
+		public function set opacity(_value:Number):void{
 			m_shader.opacity = _value;
+			
+			YOGURT3D_INTERNAL::m_transparent = (_value < 1);
 		}
 		
 		public function get texture():TextureMap{

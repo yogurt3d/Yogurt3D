@@ -164,21 +164,21 @@ package com.yogurt3d.core.sceneobjects {
 		{
 			if( m_material != _value )
 			{
-				if( m_material )
-				{
-					m_material.onOpacityChanged.remove( opacityChanged );
-					if( "onAlphaTextureChanged" in m_material )
-					{
-						Object(m_material).onAlphaTextureChanged.remove( opacityChanged );
-					}
-				}
+				//if( m_material )
+				//{
+					//m_material.onOpacityChanged.remove( opacityChanged );
+					//if( "onAlphaTextureChanged" in m_material )
+					//{
+					//	Object(m_material).onAlphaTextureChanged.remove( opacityChanged );
+					//}
+				//}
 				m_material = _value;
-				m_material.onOpacityChanged.add( opacityChanged );
-				if( "onAlphaTextureChanged" in m_material )
-				{
-					Object(m_material).onAlphaTextureChanged.add(opacityChanged );
-				}
-				opacityChanged( );
+				//m_material.onOpacityChanged.add( opacityChanged );
+				//if( "onAlphaTextureChanged" in m_material )
+				//{
+				//	Object(m_material).onAlphaTextureChanged.add( opacityChanged );
+				//}
+				//opacityChanged( );
 			}
 		}
 		
@@ -188,33 +188,7 @@ package com.yogurt3d.core.sceneobjects {
 		
 		public function set culling(_value : String) : void {
 			m_culling = _value;
-		}
-		
-		/**
-		 * renderLayers:
-		 * default: 0
-		 * opacity default: 100
-		 * alpha texture default: 50
-		 * @param _e
-		 * 
-		 */		
-		private function opacityChanged( ):void{
-			if( (renderLayer == 100 || renderLayer == 50 || renderLayer == 0) )
-			{
-				if( m_material.opacity < 1 )
-				{
-					renderLayer = 100;
-				}else if( "alphaTexture" in  m_material && m_material["alphaTexture"] == true)
-				{
-					renderLayer = 50;
-				}
-				else
-				{
-					renderLayer = 0;
-				}
-			}
-		}
-		
+		}		
 	
 		
 		override protected function trackObject():void

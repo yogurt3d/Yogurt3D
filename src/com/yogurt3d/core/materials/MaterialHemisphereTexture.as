@@ -20,6 +20,7 @@ package com.yogurt3d.core.materials
 {
 	import com.yogurt3d.core.materials.base.Material;
 	import com.yogurt3d.core.materials.shaders.ShaderHemisphereTexture;
+	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.texture.TextureMap;
 	
 	public class MaterialHemisphereTexture extends Material
@@ -33,9 +34,15 @@ package com.yogurt3d.core.materials
 			ambientColor.a = 1;
 		}
 		
-		public override function set opacity(value:Number):void{
-			super.opacity = value;
-			m_hemiShader.opacity = value;
+		
+		public function get opacity():Number{
+			return m_hemiShader.opacity;
+		}
+		
+		public function set opacity(_value:Number):void{
+			m_hemiShader.opacity = _value;
+			
+			YOGURT3D_INTERNAL::m_transparent = (_value < 1);
 		}
 	
 		public function get texture():TextureMap

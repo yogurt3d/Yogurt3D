@@ -51,6 +51,8 @@ package com.yogurt3d.core.materials.shaders
 		private var m_normalMapDirty:Boolean = false;
 		private var m_normalMapConst:ShaderConstants;
 		
+		private var m_alphaMapConst:ShaderConstants;
+		
 		
 		private var vaPos:uint = 0;
 		private var vaUV:uint = 1;
@@ -106,7 +108,7 @@ package com.yogurt3d.core.materials.shaders
 			params.blendDestination		= Context3DBlendFactor.ONE;
 			params.writeDepth			= false;
 			params.depthFunction		= Context3DCompareMode.EQUAL;
-			params.colorMaskEnabled		= false;
+			params.colorMaskEnabled		= true;
 			params.colorMaskR			= true;
 			params.colorMaskG			= true;
 			params.colorMaskB			= true;
@@ -147,12 +149,20 @@ package com.yogurt3d.core.materials.shaders
 			
 			params.fragmentShaderConstants.push(new ShaderConstants(fcAttenuation, EShaderConstantsType.LIGHT_ATTENUATION));
 			
-			_fragmentShaderConsts = new ShaderConstants(fcMaterialOpacity, EShaderConstantsType.CUSTOM_VECTOR);
-			_fragmentShaderConsts.vector			= Vector.<Number>([_alpha,0,0,0]);
-			params.fragmentShaderConstants.push(_fragmentShaderConsts);
+			m_alphaMapConst = new ShaderConstants(fcMaterialOpacity, EShaderConstantsType.CUSTOM_VECTOR);
+			m_alphaMapConst.vector			= Vector.<Number>([_alpha,0,0,0]);
+			params.fragmentShaderConstants.push(m_alphaMapConst);
 					
 			params.fragmentShaderConstants.push(new ShaderConstants(fcLightCone, EShaderConstantsType.LIGHT_CONE));
 			
+		}
+		
+		public function get opacity():Number{
+			return m_alphaMapConst.vector[0];
+		}
+		
+		public function set opacity(value:Number):void{
+			m_alphaMapConst.vector[0] = value;
 		}
 				
 		public function get normalMap():TextureMap

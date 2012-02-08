@@ -24,6 +24,7 @@ package com.yogurt3d.core.materials
 	import com.yogurt3d.core.materials.shaders.ShaderDiffuse;
 	import com.yogurt3d.core.materials.shaders.ShaderTexture;
 	import com.yogurt3d.core.materials.shaders.base.Shader;
+	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.texture.TextureMap;
 	
 	import flash.display3D.Context3D;
@@ -52,13 +53,21 @@ package com.yogurt3d.core.materials
 			
 			m_decalShader = new ShaderTexture(_texture);
 			m_decalShader.params.blendEnabled = true;
-			m_decalShader.params.blendSource = Context3DBlendFactor.DESTINATION_COLOR;
-			m_decalShader.params.blendDestination = Context3DBlendFactor.ZERO;
+			if( _texture && !_texture.transparent )
+			{
+				m_decalShader.params.blendSource = Context3DBlendFactor.DESTINATION_COLOR;
+				m_decalShader.params.blendDestination = Context3DBlendFactor.ZERO;
+			}else{
+				m_decalShader.params.blendSource = Context3DBlendFactor.ONE;
+				m_decalShader.params.blendDestination = Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA;
+			}
 			m_decalShader.params.depthFunction = Context3DCompareMode.EQUAL;
+			
+			m_lightShader = new ShaderDiffuse(_opacity);
 			
 			shaders = Vector.<com.yogurt3d.core.materials.shaders.base.Shader>([
 				m_ambientShader = new ShaderAmbient( _opacity),
-				m_lightShader = new ShaderDiffuse(),  
+				m_lightShader,  
 				m_decalShader
 			]);
 			
@@ -66,7 +75,16 @@ package com.yogurt3d.core.materials
 				m_ambientShader.texture = _texture;
 			}
 			
-			super.opacity = _opacity;
+			opacity = _opacity;
+		}
+		
+		public function get killThreshold():Number{
+			return m_decalShader.killThreshold;
+		}
+		
+		public function set killThreshold(value:Number):void{
+			m_decalShader.killThreshold = value;
+			m_ambientShader.killThreshold = value;
 		}
 		
 		public function get texture():TextureMap{
@@ -74,9 +92,21 @@ package com.yogurt3d.core.materials
 		}
 		public function set texture(_value:TextureMap):void{
 			m_decalShader.texture = _value;
+			
+			if( _value && !_value.transparent )
+			{
+				m_decalShader.params.blendSource = Context3DBlendFactor.DESTINATION_COLOR;
+				m_decalShader.params.blendDestination = Context3DBlendFactor.ZERO;
+			}else{
+				m_decalShader.params.blendSource = Context3DBlendFactor.ONE;
+				m_decalShader.params.blendDestination = Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA;
+			}
+			
 			if( _value )
 			{
 				m_ambientShader.texture = m_decalShader.texture as TextureMap;
+				
+				YOGURT3D_INTERNAL::m_transparent = m_ambientShader.texture.transparent || (m_ambientShader.opacity < 1);
 			}
 		}
 		
@@ -91,9 +121,16 @@ package com.yogurt3d.core.materials
 			m_lightShader.normalMap = m_normalMap;
 		}
 		
-		public override function set opacity(value:Number):void{
-			super.opacity = value;
-			m_ambientShader.opacity = value;
+		public function get opacity():Number{
+			return m_ambientShader.opacity;
+		}
+		
+		public function set opacity(_value:Number):void{
+			m_ambientShader.opacity = _value;
+			m_decalShader.opacity = _value;
+			m_lightShader.opacity = _value;
+			
+			YOGURT3D_INTERNAL::m_transparent = (m_ambientShader.texture && m_ambientShader.texture.transparent ) || (m_ambientShader.opacity < 1);
 		}
 		
 		public override function dispose():void{
