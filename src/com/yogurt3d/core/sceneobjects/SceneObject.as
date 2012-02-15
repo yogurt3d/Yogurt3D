@@ -49,6 +49,8 @@ package com.yogurt3d.core.sceneobjects {
  	 **/
 	public class SceneObject extends EngineObject
 	{
+		use namespace YOGURT3D_INTERNAL;
+
 		YOGURT3D_INTERNAL var m_transformation					: Transformation;
 		
 		YOGURT3D_INTERNAL var m_renderLayer						: int = 0;
@@ -97,12 +99,76 @@ package com.yogurt3d.core.sceneobjects {
 		YOGURT3D_INTERNAL var m_onRemovedFromScene   			: Signal;
 		//SIGNALS END
 		
+		private			  var m_pickEnabled						:Boolean 	= true;
 		
-		use namespace YOGURT3D_INTERNAL;
+		private			  var m_interactive						:Boolean	= false;
+		
 
 		public function SceneObject(_initInternals:Boolean = true)
 		{
 			super(_initInternals);
+		}
+
+		public function get interactive():Boolean
+		{
+			return m_interactive;
+		}
+
+		public function set interactive(value:Boolean):void
+		{
+			m_interactive = value;
+			
+			if( children && children.length>0 )
+			{
+				for( var childIndex:uint = 0; childIndex < children.length; childIndex++ )
+				{
+					var scnObj:SceneObject = children[childIndex];
+					scnObj.interactive = m_interactive;
+					if( m_interactive )
+					{
+						scnObj.onMouseClick.add( $eventJump );
+						scnObj.onMouseDoubleClick.add( $eventJump );
+						scnObj.onMouseDown.add( $eventJump );
+						scnObj.onMouseMove.add( $eventJump );
+						scnObj.onMouseOut.add( $eventJump );
+						scnObj.onMouseOver.add( $eventJump );
+						scnObj.onMouseUp.add( $eventJump );
+					}else{
+						scnObj.onMouseClick.remove( $eventJump );
+						scnObj.onMouseDoubleClick.remove( $eventJump );
+						scnObj.onMouseDown.remove( $eventJump );
+						scnObj.onMouseMove.remove( $eventJump );
+						scnObj.onMouseOut.remove( $eventJump );
+						scnObj.onMouseOver.remove( $eventJump );
+						scnObj.onMouseUp.remove( $eventJump );
+					}
+				}
+			}
+		}
+		
+		private function $eventJump( _e:MouseEvent3D ):void{
+			var event:MouseEvent3D = _e.clone() as MouseEvent3D;
+			event.currentTarget3d = this;
+			onMouseClick.dispatch( event );
+		}
+		
+		public function get pickEnabled():Boolean
+		{
+			return m_pickEnabled;
+		}
+
+		public function set pickEnabled(value:Boolean):void
+		{
+			m_pickEnabled = value;
+			
+			if( children && children.length>0 )
+			{
+				for( var childIndex:uint = 0; childIndex < children.length; childIndex++ )
+				{
+					var scnObj:SceneObject = children[childIndex];
+					scnObj.pickEnabled = m_pickEnabled;
+				}
+			}
 		}
 
 		public function get boundingSphere():BoundingSphere
@@ -216,11 +282,7 @@ package com.yogurt3d.core.sceneobjects {
 			if(_children != null){
 				var _numChildren : int = _children.length;
 				for ( var i : int = 0; i < _numChildren; i++) {
-					if ( _children[i] is SceneObjectRenderable ) {
-						SceneObjectRenderable( _children[i] ).visible = _value;
-					} else if (  _children[i] is SceneObjectContainer ) {
-						SceneObjectContainer( _children[i] ).visible = _value;
-					}
+					_children[i].visible = _value;
 				}
 			}
 			m_visible = _value;
@@ -348,7 +410,18 @@ package com.yogurt3d.core.sceneobjects {
 				_curParent = _curParent.parent;
 			}
 			
-			//_value.viewportLayer = m_viewportLayer;
+			if( interactive )
+			{
+				_value.onMouseClick.add( $eventJump );
+				_value.onMouseDoubleClick.add( $eventJump );
+				_value.onMouseDown.add( $eventJump );
+				_value.onMouseMove.add( $eventJump );
+				_value.onMouseOut.add( $eventJump );
+				_value.onMouseOver.add( $eventJump );
+				_value.onMouseUp.add( $eventJump );
+			}
+			
+			_value.pickEnabled = pickEnabled;
 		}
 		/**
 		 * Called when some childrens' tramsformation has changed 
