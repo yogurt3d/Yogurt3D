@@ -33,6 +33,7 @@ package com.yogurt3d.presets.cameras
 		
 		private var m_limitRotYMax:Number = NaN;
 		
+		private var m_limitdistMin:Number = NaN;
 		private var m_limitdistMax:Number = NaN;
 		
 		private var m_matrix3d:Matrix3D;
@@ -66,7 +67,7 @@ package com.yogurt3d.presets.cameras
 		}
 		
 		private function onMouseWheelEvent( event:MouseEvent ):void{
-			dist += event.delta;
+			dist -= event.delta;
 		}
 		
 		
@@ -147,6 +148,10 @@ package com.yogurt3d.presets.cameras
 			if( !isNaN(m_limitdistMax) && value > m_limitdistMax )
 			{
 				m_targetDist = m_limitdistMax;
+			}
+			if( !isNaN(m_limitdistMin) && value < m_limitdistMin )
+			{
+				m_targetDist = m_limitdistMin;
 			}
 		}
 		
