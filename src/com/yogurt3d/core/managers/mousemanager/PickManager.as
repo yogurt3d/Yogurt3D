@@ -157,7 +157,7 @@ package com.yogurt3d.core.managers.mousemanager
 					
 					if( m_lastObject != m_currentObject )
 					{
-						if( m_lastObject )
+						if( m_lastObject && m_lastObject.onMouseOut )
 						{
 							event = new MouseEvent3D( MouseEvent3D.MOUSE_OUT );
 							event.target3d = m_lastObject; event.currentTarget3d = m_lastObject;
