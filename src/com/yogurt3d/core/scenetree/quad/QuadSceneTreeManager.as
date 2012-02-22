@@ -282,7 +282,7 @@ package com.yogurt3d.core.scenetree.quad
 				_renderableObjectsByScene	= s_dynamicChildrenByScene[_scene];
 				_index	= _renderableObjectsByScene.indexOf(_child);
 				_dictionary = s_dynamicChildrenByScene;
-				
+				s_transformedDynamicChildren.splice(s_transformedDynamicChildren.indexOf(_child), 1);
 			}
             
 			if(_index != -1)
