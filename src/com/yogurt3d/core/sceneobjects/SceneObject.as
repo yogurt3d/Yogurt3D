@@ -149,7 +149,30 @@ package com.yogurt3d.core.sceneobjects {
 		private function $eventJump( _e:MouseEvent3D ):void{
 			var event:MouseEvent3D = _e.clone() as MouseEvent3D;
 			event.currentTarget3d = this;
-			onMouseClick.dispatch( event );
+			switch( _e.type)
+			{
+				case( MouseEvent3D.CLICK ):
+					onMouseClick.dispatch( event );
+					break;
+				case( MouseEvent3D.DOUBLE_CLICK ):
+					onMouseDoubleClick.dispatch( event );
+					break;
+				case( MouseEvent3D.MOUSE_DOWN ):
+					onMouseDown.dispatch( event );
+					break;
+				case( MouseEvent3D.MOUSE_MOVE ):
+					onMouseMove.dispatch( event );
+					break;
+				case( MouseEvent3D.MOUSE_OUT ):
+					onMouseOut.dispatch( event );
+					break;
+				case( MouseEvent3D.MOUSE_OVER ):
+					onMouseOver.dispatch( event );
+					break;
+				case( MouseEvent3D.MOUSE_UP ):
+					onMouseUp.dispatch( event );
+					break;
+			}
 		}
 		
 		public function get pickEnabled():Boolean
