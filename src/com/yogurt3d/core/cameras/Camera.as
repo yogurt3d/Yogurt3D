@@ -18,6 +18,7 @@
 
 package com.yogurt3d.core.cameras {
 	import com.yogurt3d.core.cameras.Camera;
+	import com.yogurt3d.core.frustum.Frustum;
 	import com.yogurt3d.core.helpers.ProjectionUtils;
 	import com.yogurt3d.core.helpers.boundingvolumes.BoundingSphere;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
@@ -25,10 +26,10 @@ package com.yogurt3d.core.cameras {
 	import com.yogurt3d.core.sceneobjects.SceneObjectContainer;
 	import com.yogurt3d.core.transformations.Transformation;
 	import com.yogurt3d.core.utils.MatrixUtils;
+	import com.yogurt3d.presets.renderers.molehill.Ray;
 	
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
-	import com.yogurt3d.core.frustum.Frustum;
 	
 	/**
 	 * 
@@ -52,6 +53,21 @@ package com.yogurt3d.core.cameras {
 			return m_frustum;
 		}
 
+		public function getRayFromMousePosition(_canvasHeight:Number ,_canvasWidth:Number , _mouseX:Number, _mouseY:Number ):Ray {
+			var _ray:Ray = new Ray() ;
+			
+			var _endPoint:Vector3D = new Vector3D() ;
+			_endPoint.x = this.frustum.m_vCornerPoints[0].x - (this.frustum.m_vCornerPoints[0].x - this.frustum.m_vCornerPoints[1].x) * (_canvasWidth-_mouseX) / _canvasWidth ;
+			_endPoint.y = this.frustum.m_vCornerPoints[0].y - (this.frustum.m_vCornerPoints[0].y - this.frustum.m_vCornerPoints[3].y) * _mouseY / _canvasHeight ;
+			_endPoint.z = this.frustum.m_vCornerPoints[0].z ;
+			
+			_endPoint = this.transformation.matrixGlobal.transformVector(_endPoint) ;
+			
+			_ray.startPoint = transformation.globalPosition.clone() ;
+			_ray.endPoint = _endPoint ;
+			
+			return _ray ;
+		}
 		
 		/**
 		 * @inheritDoc

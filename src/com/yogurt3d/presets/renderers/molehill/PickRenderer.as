@@ -396,6 +396,7 @@ package com.yogurt3d.presets.renderers.molehill
 			_context3d.present();			
 		}
 		
+
 		protected override function initInternals():void{
 			shader = new ShaderHitObject();
 			shaderTriangle = new ShaderHitTriangle();

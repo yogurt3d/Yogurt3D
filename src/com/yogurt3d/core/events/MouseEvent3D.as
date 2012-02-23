@@ -17,10 +17,16 @@
  */
 package com.yogurt3d.core.events {
 	
+	import com.yogurt3d.core.cameras.Camera;
+	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.sceneobjects.SceneObject;
 	import com.yogurt3d.core.sceneobjects.SceneObjectRenderable;
+	import com.yogurt3d.core.utils.MatrixUtils;
+	import com.yogurt3d.core.viewports.Viewport;
+	import com.yogurt3d.presets.renderers.molehill.Ray;
 	
 	import flash.events.Event;
+	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
 
 	/**
@@ -31,6 +37,8 @@ package com.yogurt3d.core.events {
  	  **/
 	public class MouseEvent3D extends Event 
 	{
+		use namespace YOGURT3D_INTERNAL;
+		
 		public static var MOUSE_UP		: String = "mouseUp";
 		public static var MOUSE_DOWN	: String = "mouseDown";
 		public static var MOUSE_MOVE	: String = "mouseMove";
@@ -54,9 +62,22 @@ package com.yogurt3d.core.events {
 		 */
 		public var v					: Number;		
 		
+		/**
+		 * Viewport Mouse interaction X
+		 */
+		public var x					: Number;
+		/**
+		 * Viewport Mouse interaction Y
+		 */
+		public var y					: Number;		
+		
 		public var target3d				: SceneObjectRenderable;
 		
 		public var currentTarget3d		: SceneObject;
+		
+		YOGURT3D_INTERNAL var camera	:Camera;
+		
+		YOGURT3D_INTERNAL var viewport	:Viewport;
 		
 		/**
 		 * 
@@ -86,6 +107,8 @@ package com.yogurt3d.core.events {
 			_event.v				= v;
 			_event.target3d 		= target3d;
 			_event.currentTarget3d 	= currentTarget3d;
+			_event.camera 			= camera;
+			_event.viewport 		= viewport;
 			
 			return _event;
 		} 
@@ -118,6 +141,18 @@ package com.yogurt3d.core.events {
 		}
 		public function get intersectionGlobal():Vector3D{
 			return target3d.transformation.matrixGlobal.transformVector( m_intersection );	
+		}
+		public function calculatePrecise():void{
+			var ray:Ray = camera.getRayFromMousePosition( viewport.height, viewport.width, x, y );
+			var vec:Vector3D = ray.intersectSceneObject( target3d );
+			if( vec )
+			{
+				var matrix:Matrix3D = MatrixUtils.TEMP_MATRIX;
+				matrix.copyFrom( target3d.transformation.matrixGlobal );
+				matrix.invert();
+				vec = matrix.transformVector( vec );
+				m_intersection = vec;
+			}
 		}
 		/**
 		 * 3D coordinate of the mouse

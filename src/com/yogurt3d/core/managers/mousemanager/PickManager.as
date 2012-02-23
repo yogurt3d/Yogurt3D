@@ -58,6 +58,8 @@ package com.yogurt3d.core.managers.mousemanager
 		
 		private var m_viewport:Viewport;
 		
+		private var m_lastCamera:Camera;
+		
 		public function PickManager( _viewport:Viewport )
 		{
 			if( !_viewport ){
@@ -91,6 +93,10 @@ package com.yogurt3d.core.managers.mousemanager
 				var event:MouseEvent3D = new MouseEvent3D( MouseEvent3D.MOUSE_DOWN );
 				event.target3d = m_currentObject; event.currentTarget3d = m_currentObject;
 				event.intersection = m_currentIntersection;
+				event.x = m_pickRenderer.mouseCoordX;
+				event.y = m_pickRenderer.mouseCoordY;
+				event.camera = m_lastCamera;
+				event.viewport = m_viewport;
 				m_currentObject.onMouseDown.dispatch( event );
 				m_downObject = m_currentObject;
 			}
@@ -102,12 +108,20 @@ package com.yogurt3d.core.managers.mousemanager
 				var event:MouseEvent3D = new MouseEvent3D( MouseEvent3D.MOUSE_UP );
 				event.intersection = m_currentIntersection;
 				event.target3d = m_currentObject; event.currentTarget3d = m_currentObject;
+				event.x = m_pickRenderer.mouseCoordX;
+				event.y = m_pickRenderer.mouseCoordY;
+				event.camera = m_lastCamera;
+				event.viewport = m_viewport;
 				m_currentObject.onMouseUp.dispatch( event );
 				if( m_currentObject == m_downObject )
 				{
 					event = new MouseEvent3D( MouseEvent3D.CLICK );
 					event.target3d = m_currentObject; event.currentTarget3d = m_currentObject;
 					event.intersection = m_currentIntersection;
+					event.x = m_pickRenderer.mouseCoordX;
+					event.y = m_pickRenderer.mouseCoordY;
+					event.camera = m_lastCamera;
+					event.viewport = m_viewport;
 					m_currentObject.onMouseClick.dispatch( event );
 					
 					m_downObject = null;
@@ -121,6 +135,10 @@ package com.yogurt3d.core.managers.mousemanager
 				var event:MouseEvent3D = new MouseEvent3D( MouseEvent3D.MOUSE_MOVE );
 				event.intersection = m_currentIntersection;
 				event.target3d = m_currentObject; event.currentTarget3d = m_currentObject;
+				event.x = m_pickRenderer.mouseCoordX;
+				event.y = m_pickRenderer.mouseCoordY;
+				event.camera = m_lastCamera;
+				event.viewport = m_viewport;
 				m_currentObject.onMouseMove.dispatch( event );
 			}
 		}
@@ -131,6 +149,10 @@ package com.yogurt3d.core.managers.mousemanager
 				var event:MouseEvent3D = new MouseEvent3D( MouseEvent3D.DOUBLE_CLICK );
 				event.target3d = m_currentObject; event.currentTarget3d = m_currentObject;
 				event.intersection = m_currentIntersection;
+				event.x = m_pickRenderer.mouseCoordX;
+				event.y = m_pickRenderer.mouseCoordY;
+				event.camera = m_lastCamera;
+				event.viewport = m_viewport;
 				m_currentObject.onMouseDoubleClick.dispatch( event );
 			}
 		}
@@ -139,6 +161,8 @@ package com.yogurt3d.core.managers.mousemanager
 		{
 			if( TickManager.LATEST_SYSTEM_TIME - m_lastUpdateTime >= updateTime )
 			{
+				m_lastCamera = _camera;
+				
 				m_lastUpdateTime = TickManager.LATEST_SYSTEM_TIME;
 				
 				if( m_viewport.width >= m_viewport.mouseX && m_viewport.height >= m_viewport.mouseY )
@@ -162,6 +186,10 @@ package com.yogurt3d.core.managers.mousemanager
 							event = new MouseEvent3D( MouseEvent3D.MOUSE_OUT );
 							event.target3d = m_lastObject; event.currentTarget3d = m_lastObject;
 							event.intersection = m_currentIntersection;
+							event.x = m_pickRenderer.mouseCoordX;
+							event.y = m_pickRenderer.mouseCoordY;
+							event.camera = m_lastCamera;
+							event.viewport = m_viewport;
 							if( m_lastObject.useHandCursor )
 							{
 								Mouse.cursor = MouseCursor.AUTO;
@@ -174,6 +202,10 @@ package com.yogurt3d.core.managers.mousemanager
 							event = new MouseEvent3D( MouseEvent3D.MOUSE_OVER );
 							event.target3d = m_currentObject; event.currentTarget3d = m_currentObject;
 							event.intersection = m_currentIntersection;
+							event.x = m_pickRenderer.mouseCoordX;
+							event.y = m_pickRenderer.mouseCoordY;
+							event.camera = m_lastCamera;
+							event.viewport = m_viewport;
 							if( m_currentObject.useHandCursor )
 							{
 								Mouse.cursor = MouseCursor.BUTTON;
