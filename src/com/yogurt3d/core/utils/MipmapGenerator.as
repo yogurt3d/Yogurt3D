@@ -17,7 +17,7 @@ package com.yogurt3d.core.utils
 		{
 			var w : uint = source.width,
 				h : uint = source.height;
-			var i : uint;
+			var i : uint = 0;
 			var regen : Boolean = mipmap != null;
 			mipmap ||= new BitmapData(w, h, alpha);
 			
@@ -27,16 +27,24 @@ package com.yogurt3d.core.utils
 			_rect.width = w;
 			_rect.height = h;
 			
-			while (w >= 1 && h >= 1) {
+			while (w >= 1 || h >= 1) {
 				if (alpha) mipmap.fillRect(_rect, 0x00000000);
 				mipmap.draw(source, _matrix, null, null, null, true);
 				target.uploadFromBitmapData(mipmap, i++);
-				w >>= 1;
-				h >>= 1;
-				_matrix.a *= .5;
-				_matrix.d *= .5;
-				_rect.width = w;
-				_rect.height = h;
+				if( w == 1 && h == 1 )
+				{
+					break;
+				}else{
+					if( w > 1 )
+						w >>= 1;
+					if( h > 1 )
+						h >>= 1;
+					_matrix.a *= .5;
+					_matrix.d *= .5;
+					_rect.width = w;
+					_rect.height = h;
+				}
+				
 			}
 			
 			if (!regen)
