@@ -254,7 +254,7 @@ package com.yogurt3d.core.scenetree.quad
 				scn.transformation.m_isAddedToSceneRefreshList = false;
 				quadrant = sceneObjectToQuadrant[scn];
 				
-				if(!quadrant.isInParent())
+				if(quadrant && !quadrant.isInParent())
 				{
 					removeFromNode( scn );
 					_insert(quadrant, m_root);
