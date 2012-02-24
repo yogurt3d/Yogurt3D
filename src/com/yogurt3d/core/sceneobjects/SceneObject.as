@@ -698,7 +698,13 @@ package com.yogurt3d.core.sceneobjects {
 		}
 		
 		override public function dispose():void {
-			
+			if( children )
+			{
+				for( var i:int = 0; i < children.length; i++ )
+				{
+					removeChild( children[0] );
+				}
+			}
 			if( parent )
 			{
 				parent.removeChild( this );
