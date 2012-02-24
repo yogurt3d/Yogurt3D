@@ -84,7 +84,7 @@ package com.yogurt3d.presets.renderers.molehill
 		
 		private var m_localHitPosition:Vector3D;
 
-		private var _context3d:Context3D = Yogurt3D.CONTEXT3D[3];
+		private var _context3d:Context3D;
 		
 		private var m_lastVertexBufferLength:uint = 0;
 		
@@ -135,6 +135,7 @@ package com.yogurt3d.presets.renderers.molehill
 
 		private function initHandler( _e:Event ):void{
 			_context3d = Yogurt3D.CONTEXT3D[3] = _e.target.context3D;
+			m_initialized = false;
 		}
 		
 		public function render(_scene:IScene, _camera:Camera, _viewport:Viewport):void
@@ -152,6 +153,7 @@ package com.yogurt3d.presets.renderers.molehill
 					return;
 				}else{
 					_context3d = Yogurt3D.CONTEXT3D[3];
+					_viewport.stage.stage3Ds[3].addEventListener( Event.CONTEXT3D_CREATE, initHandler );
 					_viewport.stage.stage3Ds[3].x = -50;
 					_viewport.stage.stage3Ds[3].y = -50;
 				}

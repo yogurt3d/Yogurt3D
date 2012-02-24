@@ -345,10 +345,9 @@ package com.yogurt3d.core.viewports {
 			}
 			removeEventListener( Event.ADDED_TO_STAGE, onAddedToStage );
 			
+			new NativeSignal( stage.stage3Ds[m_viewportID], Event.CONTEXT3D_CREATE, Event).add(initHandler);
 			if( Yogurt3D.CONTEXT3D[m_viewportID] == null )
 			{
-				new NativeSignal( stage.stage3Ds[m_viewportID], Event.CONTEXT3D_CREATE, Event).addOnce(initHandler);
-				
 				stage.stage3Ds[m_viewportID].requestContext3D();		
 			}else{
 				m_context = Yogurt3D.CONTEXT3D[m_viewportID];
