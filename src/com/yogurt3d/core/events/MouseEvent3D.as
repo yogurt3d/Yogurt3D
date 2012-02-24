@@ -147,10 +147,10 @@ package com.yogurt3d.core.events {
 			var vec:Vector3D = ray.intersectSceneObject( target3d );
 			if( vec )
 			{
-				var matrix:Matrix3D = MatrixUtils.TEMP_MATRIX;
+				/*var matrix:Matrix3D = MatrixUtils.TEMP_MATRIX;
 				matrix.copyFrom( target3d.transformation.matrixGlobal );
 				matrix.invert();
-				vec = matrix.transformVector( vec );
+				vec = matrix.transformVector( vec );*/
 				m_intersection = vec;
 			}
 		}

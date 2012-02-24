@@ -73,7 +73,7 @@ package com.yogurt3d.presets.renderers.molehill
 						vec.x = _submesh.vertices[_submesh.indices[j*3+k]*3  ] ;
 						vec.y = _submesh.vertices[_submesh.indices[j*3+k]*3+1] ;
 						vec.z = _submesh.vertices[_submesh.indices[j*3+k]*3+2] ;	
-						
+				
 						//vec = _sorgb.transformVector(vec) ;
 					}
 					
