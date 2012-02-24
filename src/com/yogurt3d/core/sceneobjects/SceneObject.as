@@ -473,7 +473,8 @@ package com.yogurt3d.core.sceneobjects {
 		 * */
 		public function removeChild(_value:SceneObject):void
 		{
-			_value.transformation.onChange.remove( seekChildTransformationChange );
+			if( _value.transformation )
+				_value.transformation.onChange.remove( seekChildTransformationChange );
 
 			SceneTreeManager.removeChild(_value, this);
 			
@@ -697,6 +698,11 @@ package com.yogurt3d.core.sceneobjects {
 		}
 		
 		override public function dispose():void {
+			
+			if( parent )
+			{
+				parent.removeChild( this );
+			}
 			
 			if( m_aabb )
 			{
