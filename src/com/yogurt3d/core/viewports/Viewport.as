@@ -35,6 +35,7 @@ package com.yogurt3d.core.viewports {
 	import flash.geom.Point;
 	import flash.utils.Dictionary;
 	
+	import org.osflash.signals.ISlot;
 	import org.osflash.signals.natives.NativeSignal;
 	
 	/**
@@ -65,6 +66,8 @@ package com.yogurt3d.core.viewports {
 		YOGURT3D_INTERNAL var m_pickManager				:PickManager;
 		
 		private var m_antiAliasing				:EViewportAntialiasing = EViewportAntialiasing.HIGH_ALIASING;
+		
+		private var m_contextDisposeSlot:ISlot;
 		
 		private var m_context:Context3D;
 		/**
@@ -140,6 +143,11 @@ package com.yogurt3d.core.viewports {
 		public function dispose() : void {
 			removeEventListener( Event.ADDED_TO_STAGE, onAddedToStage );
 			removeEventListener( Event.REMOVED_FROM_STAGE, onRemovedFromStage );
+			
+			if( m_contextDisposeSlot )
+			{
+				m_contextDisposeSlot.remove();
+			}
 			
 			IDManager.removeObject(this);
 			
@@ -345,7 +353,7 @@ package com.yogurt3d.core.viewports {
 			}
 			removeEventListener( Event.ADDED_TO_STAGE, onAddedToStage );
 			
-			new NativeSignal( stage.stage3Ds[m_viewportID], Event.CONTEXT3D_CREATE, Event).add(initHandler);
+			m_contextDisposeSlot = new NativeSignal( stage.stage3Ds[m_viewportID], Event.CONTEXT3D_CREATE, Event).add(initHandler);
 			if( Yogurt3D.CONTEXT3D[m_viewportID] == null )
 			{
 				stage.stage3Ds[m_viewportID].requestContext3D();		
