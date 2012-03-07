@@ -135,6 +135,16 @@ package com.yogurt3d.core.geoms {
 			{
 				subMeshList[i].dispose();
 			}
+			subMeshList.length = 0;
+			super.dispose();
+		}
+		
+		public override function disposeDeep():void{
+			for( var i:int = 0; i < subMeshList.length; i++ )
+			{
+				subMeshList[i].disposeDeep();
+			}
+			dispose();
 		}
 		
 		public override function disposeGPU():void{
