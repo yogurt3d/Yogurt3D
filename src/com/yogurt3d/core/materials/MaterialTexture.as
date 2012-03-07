@@ -122,7 +122,7 @@ package com.yogurt3d.core.materials
 			{
 				lightMap.dispose();
 			}
-			super.dispose();
+			dispose();
 		}
 		
 		public override function disposeGPU():void{

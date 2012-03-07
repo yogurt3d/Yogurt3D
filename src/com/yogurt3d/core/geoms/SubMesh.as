@@ -454,8 +454,16 @@ package com.yogurt3d.core.geoms
 		override public function dispose():void{
 			super.dispose();
 			
-			if( m_aabb ) 			m_aabb.dispose();
-			if( m_boundingSphere )	m_boundingSphere.dispose();
+			if( m_aabb ) 
+			{
+				m_aabb.dispose();
+				m_aabb = null;
+			}
+			if( m_boundingSphere )
+			{ 
+				m_boundingSphere.dispose();
+				m_boundingSphere = null;
+			}
 			
 			disposeGPU();
 			
@@ -465,6 +473,9 @@ package com.yogurt3d.core.geoms
 			m_uvt				= null;
 			m_uvt_2				= null;
 			m_tangents			= null;
+		}
+		public override function disposeDeep():void{
+			dispose();
 		}
 		
 		public override function disposeGPU():void{
@@ -520,7 +531,7 @@ package com.yogurt3d.core.geoms
 			}
 		}
 		
-		override protected function trackObject():void
+		protected override function trackObject():void
 		{
 			IDManager.trackObject(this, SubMesh);
 		}

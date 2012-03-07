@@ -130,21 +130,21 @@ package com.yogurt3d.core.geoms
 		
 		public override function dispose():void
 		{
-			super.dispose();
 			m_base = null;
 			controller.dispose();
 			controller = null;
+			super.dispose();
 		}
 		public override function disposeGPU():void{
 			m_base.disposeGPU();
 		}
 		public override function disposeDeep():void
 		{
-			super.dispose();
 			m_base.disposeDeep();
 			m_base = null;
 			controller.dispose();
 			controller = null;
+			dispose();
 		}
 		
 		protected override function initInternals():void

@@ -263,7 +263,7 @@ package com.yogurt3d.core.sceneobjects
 			}
 			m_postEffects = null;
 			
-			super.dispose();
+			dispose();
 		}
 		
 		override protected function initInternals():void

@@ -164,7 +164,6 @@ package com.yogurt3d.core.materials.base {
 		
 		public override function disposeDeep():void{
 			dispose();
-			super.disposeDeep();
 		}
 
 		public function get shaders():Vector.<Shader>

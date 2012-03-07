@@ -83,7 +83,7 @@ package com.yogurt3d.core.geoms {
 			bones = null;
 		}
 		public override function disposeDeep():void{
-			super.disposeDeep();
+			
 			if( bones )
 			{
 				for( var i:int = 0; i < bones.length; i++ )
@@ -92,6 +92,7 @@ package com.yogurt3d.core.geoms {
 				}
 				bones = null;
 			}
+			super.disposeDeep();
 		}
 		
 		
