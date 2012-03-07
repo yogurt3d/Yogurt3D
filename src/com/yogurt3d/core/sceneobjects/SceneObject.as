@@ -51,6 +51,8 @@ package com.yogurt3d.core.sceneobjects {
 	{
 		use namespace YOGURT3D_INTERNAL;
 
+		YOGURT3D_INTERNAL var m_useHandCursor					: Boolean = false;
+		
 		YOGURT3D_INTERNAL var m_transformation					: Transformation;
 		
 		YOGURT3D_INTERNAL var m_renderLayer						: int = 0;
@@ -107,6 +109,24 @@ package com.yogurt3d.core.sceneobjects {
 		public function SceneObject(_initInternals:Boolean = true)
 		{
 			super(_initInternals);
+		}
+
+		public function get useHandCursor():Boolean
+		{
+			return m_useHandCursor;
+		}
+
+		public function set useHandCursor(value:Boolean):void
+		{
+			m_useHandCursor = value;
+			if( children && children.length>0 )
+			{
+				for( var childIndex:uint = 0; childIndex < children.length; childIndex++ )
+				{
+					var scnObj:SceneObject = children[childIndex];
+					scnObj.m_useHandCursor = value;
+				}
+			}
 		}
 
 		public function get interactive():Boolean
@@ -442,6 +462,11 @@ package com.yogurt3d.core.sceneobjects {
 				_value.onMouseOut.add( $eventJump );
 				_value.onMouseOver.add( $eventJump );
 				_value.onMouseUp.add( $eventJump );
+			}
+			
+			if( m_useHandCursor )
+			{
+				_value.useHandCursor = m_useHandCursor;
 			}
 			
 			_value.pickEnabled = pickEnabled;

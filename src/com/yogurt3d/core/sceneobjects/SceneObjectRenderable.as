@@ -52,7 +52,7 @@ package com.yogurt3d.core.sceneobjects {
 		use namespace YOGURT3D_INTERNAL;
 		
 		public			  var castShadows			:Boolean 	= false;
-		public			  var useHandCursor			:Boolean 	= false;
+		
 		public			  var receiveShadows		:Boolean 	= false;
 
 		YOGURT3D_INTERNAL var m_geometry			:IMesh;
