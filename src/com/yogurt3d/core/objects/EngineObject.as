@@ -112,7 +112,7 @@ package com.yogurt3d.core.objects {
 		
 		public function disposeDeep():void
 		{
-			IDManager.removeObject(this);
+			dispose();
 			
 			Y3DCONFIG::DEBUG
 			{
