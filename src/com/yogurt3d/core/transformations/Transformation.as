@@ -202,7 +202,11 @@ package com.yogurt3d.core.transformations {
 			
 			m_scale = new Vector3D(1,1,1);
 			
-			m_onChange 				= new Signal( Transformation );
+			if( !m_onChange )
+			{
+				m_onChange 				= new Signal( Transformation );
+			}
+			m_onChange.dispatch(this);
 		}
 
 		/**
