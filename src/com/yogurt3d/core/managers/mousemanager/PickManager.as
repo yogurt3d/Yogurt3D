@@ -112,7 +112,8 @@ package com.yogurt3d.core.managers.mousemanager
 				event.y = m_pickRenderer.mouseCoordY;
 				event.camera = m_lastCamera;
 				event.viewport = m_viewport;
-				m_currentObject.onMouseUp.dispatch( event );
+				if( m_currentObject.onMouseUp )
+					m_currentObject.onMouseUp.dispatch( event );
 				if( m_currentObject == m_downObject )
 				{
 					event = new MouseEvent3D( MouseEvent3D.CLICK );
@@ -130,7 +131,7 @@ package com.yogurt3d.core.managers.mousemanager
 		}
 		
 		private function onMove( _e:MouseEvent ):void{
-			if( m_currentObject != null )
+			if( m_currentObject != null  && m_currentObject.onMouseMove)
 			{
 				var event:MouseEvent3D = new MouseEvent3D( MouseEvent3D.MOUSE_MOVE );
 				event.intersection = m_currentIntersection;
@@ -144,7 +145,7 @@ package com.yogurt3d.core.managers.mousemanager
 		}
 		
 		private function onDoubleClick( _e:MouseEvent ):void{
-			if( m_currentObject != null )
+			if( m_currentObject != null  && m_currentObject.onMouseDoubleClick )
 			{
 				var event:MouseEvent3D = new MouseEvent3D( MouseEvent3D.DOUBLE_CLICK );
 				event.target3d = m_currentObject; event.currentTarget3d = m_currentObject;
@@ -197,7 +198,7 @@ package com.yogurt3d.core.managers.mousemanager
 							m_lastObject.onMouseOut.dispatch( event );
 						}
 						
-						if( m_currentObject )
+						if( m_currentObject && m_currentObject.onMouseOver )
 						{
 							event = new MouseEvent3D( MouseEvent3D.MOUSE_OVER );
 							event.target3d = m_currentObject; event.currentTarget3d = m_currentObject;
