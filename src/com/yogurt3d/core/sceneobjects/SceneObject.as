@@ -746,6 +746,18 @@ package com.yogurt3d.core.sceneobjects {
 				m_boundingSphere.dispose();
 				m_boundingSphere = null;
 			}
+
+			if( m_aabbCumulative )
+			{
+				m_aabbCumulative.dispose();
+				m_aabbCumulative = null;
+			}
+			
+			if( m_boundingSphereCumulative )
+			{
+				m_boundingSphereCumulative.dispose();
+				m_boundingSphereCumulative = null;
+			}
 			
 			if( m_onStaticChanged )
 				m_onStaticChanged.removeAll();
