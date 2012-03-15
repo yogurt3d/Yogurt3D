@@ -24,8 +24,8 @@ package com.yogurt3d.core.utils
 			_matrix.a = 1;
 			_matrix.d = 1;
 			
-			_rect.width = w;
-			_rect.height = h;
+			_rect.width = MathUtils.getClosestPowerOfTwo(w);
+			_rect.height = MathUtils.getClosestPowerOfTwo(h);
 			
 			while (w >= 1 || h >= 1) {
 				if (alpha) mipmap.fillRect(_rect, 0x00000000);
