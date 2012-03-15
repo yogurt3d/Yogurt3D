@@ -22,6 +22,7 @@ package com.yogurt3d.core.geoms {
 	import com.yogurt3d.Yogurt3D;
 	import com.yogurt3d.core.animation.SkeletalAnimationData;
 	import com.yogurt3d.core.geoms.interfaces.IMesh;
+	import com.yogurt3d.core.managers.idmanager.IDManager;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.sceneobjects.SceneObject;
 	import com.yogurt3d.core.sceneobjects.SceneObjectRenderable;
@@ -95,6 +96,9 @@ package com.yogurt3d.core.geoms {
 			super.disposeDeep();
 		}
 		
-		
+		override protected function trackObject():void
+		{
+			IDManager.trackObject(this, SkeletalAnimatedMeshBase);
+		}
 	}
 }

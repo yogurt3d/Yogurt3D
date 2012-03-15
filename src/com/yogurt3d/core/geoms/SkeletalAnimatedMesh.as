@@ -26,6 +26,7 @@ package com.yogurt3d.core.geoms
 	import com.yogurt3d.core.geoms.interfaces.IMesh;
 	import com.yogurt3d.core.helpers.boundingvolumes.AxisAlignedBoundingBox;
 	import com.yogurt3d.core.helpers.boundingvolumes.BoundingSphere;
+	import com.yogurt3d.core.managers.idmanager.IDManager;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.objects.EngineObject;
 	import com.yogurt3d.core.objects.interfaces.IEngineObject;
@@ -127,7 +128,10 @@ package com.yogurt3d.core.geoms
 		{
 			return null;
 		}
-		
+		override protected function trackObject():void
+		{
+			IDManager.trackObject(this, SkeletalAnimatedMesh);
+		}
 		public override function dispose():void
 		{
 			m_base = null;
@@ -180,5 +184,6 @@ package com.yogurt3d.core.geoms
 				}
 			}
 		}
+		
 	}
 }
