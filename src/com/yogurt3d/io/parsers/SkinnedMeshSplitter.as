@@ -165,6 +165,8 @@ package com.yogurt3d.io.parsers
 					isAdded = addPrimitive( partition, 3, vertices, indices, vertexBoneMap );  
 					if(isAdded){
 						partitionList.push(partition);
+					}else{
+						partition.dispose();
 					}
 				}  
 			} 
@@ -256,6 +258,10 @@ package com.yogurt3d.io.parsers
 			}
 			mesh.bones = bones;
 			mesh.setBindPose();
+			
+			_skeletalAnimatedGPUMesh.bones = null;
+			_skeletalAnimatedGPUMesh.disposeDeep();
+			
 			return mesh;
 			
 		}
