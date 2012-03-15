@@ -18,19 +18,7 @@
  
  
 package com.yogurt3d.core.sceneobjects {
-	import com.yogurt3d.core.events.MouseEvent3D;
-	import com.yogurt3d.core.helpers.boundingvolumes.AxisAlignedBoundingBox;
-	import com.yogurt3d.core.helpers.boundingvolumes.BoundingSphere;
-	import com.yogurt3d.core.managers.idmanager.IDManager;
-	import com.yogurt3d.core.managers.scenetreemanager.SceneTreeManager;
-	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
-	import com.yogurt3d.core.objects.interfaces.IEngineObject;
 	
-	
-	import com.yogurt3d.core.transformations.Transformation;
-	
-	import flash.geom.Matrix3D;
-	import flash.geom.Vector3D;
 
 	/**
 	 * <strong>SceneObjectContainer</strong> interface abstract type.

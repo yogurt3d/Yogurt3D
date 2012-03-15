@@ -21,24 +21,17 @@ package com.yogurt3d.core.sceneobjects {
 	
 	import com.yogurt3d.core.geoms.interfaces.IMesh;
 	import com.yogurt3d.core.helpers.boundingvolumes.AxisAlignedBoundingBox;
-	import com.yogurt3d.core.helpers.boundingvolumes.BoundingSphere;
 	import com.yogurt3d.core.managers.idmanager.IDManager;
-	import com.yogurt3d.core.materials.MaterialFill;
 	import com.yogurt3d.core.materials.base.Material;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.objects.interfaces.IEngineObject;
-	import com.yogurt3d.core.sceneobjects.interfaces.IScene;
-	
 	import com.yogurt3d.core.transformations.Transformation;
 	import com.yogurt3d.core.utils.MatrixUtils;
 	import com.yogurt3d.core.viewports.Viewport;
-	import com.yogurt3d.presets.primitives.meshs.WireMesh;
 	
 	import flash.display3D.Context3DTriangleFace;
-	import flash.events.Event;
 	import flash.geom.Matrix3D;
 	import flash.geom.Utils3D;
-	import flash.geom.Vector3D;
 
 	/**
 	 * <strong>SceneObjectRenderable</strong> interface abstract type.
