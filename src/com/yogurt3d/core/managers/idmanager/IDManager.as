@@ -71,6 +71,7 @@ package com.yogurt3d.core.managers.idmanager
 				{
 					list.push( s_objectBySystemID[id] );
 				}
+			list.sortOn("systemID");
 			return list;
 		}
 		
@@ -175,6 +176,8 @@ package com.yogurt3d.core.managers.idmanager
 		 */
 		public static function removeObject(_value:IIdentifiableObject):void
 		{
+			if( s_systemIDByObject[_value] == null ) return;
+			
 			var _systemID		:String		= s_systemIDByObject[_value];
 			var _userID			:String		= s_userIDBySystemID[_systemID];
 			
