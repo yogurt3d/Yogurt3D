@@ -61,6 +61,13 @@ package com.yogurt3d.core.geoms
 		{
 			m_indicesMap = value;
 		}
+		override public function dispose():void{
+			super.dispose();
+			boneIndies = null;
+			boneWeights = null;
+			m_boneDataBuffersByContext3D = null;
+		}
+		
 		public override function disposeGPU():void{
 			super.disposeGPU();
 			
