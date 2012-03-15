@@ -31,6 +31,7 @@ package com.yogurt3d.presets.renderers.helper
 	import com.yogurt3d.core.materials.shaders.renderstate.ShaderParameters;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.sceneobjects.SceneObjectRenderable;
+	import com.yogurt3d.core.utils.MathUtils;
 	import com.yogurt3d.core.utils.MatrixUtils;
 	
 	import flash.display3D.Context3D;
@@ -287,27 +288,35 @@ package com.yogurt3d.presets.renderers.helper
 						// for 3d sprites that faces the camera
 						m_spriteMatrix = new Matrix3D();
 						
-						m_spriteMatrix.copyFrom(m_modelMatrix);
+						//m_spriteMatrix.copyFrom(m_modelMatrix);
 						//				var pos:Vector3D = _object.transformation.position.clone();
 						//				var scale:Vector3D = new Vector3D(_object.transformation.scaleX, 
 						//					_object.transformation.scaleY,_object.transformation.scaleZ);
-						
+						m_spriteMatrix.copyFrom( m_viewMatrix );
+						m_spriteMatrix.invert();
+						m_spriteMatrix.position = m_modelMatrix.position;
 						// kill x and y rotations
-						var decomposedMatrix:Vector.<Vector3D> = m_spriteMatrix.decompose();
+						/*var decomposedMatrix:Vector.<Vector3D> = m_spriteMatrix.decompose();
+						var decomposedMatrix2:Vector.<Vector3D> = m_viewMatrix.decompose();
 						var objRotation:Vector3D = decomposedMatrix[1];
-						objRotation.x = objRotation.y = 0;
-						m_spriteMatrix.recompose(decomposedMatrix);
+						var objRotation2:Vector3D = decomposedMatrix2[1];
+						objRotation.x = -objRotation2.x;
+						objRotation.y =  -objRotation2.y;
+						//objRotation.z =  -objRotation2.z;
+						m_spriteMatrix.recompose(decomposedMatrix);*/
 						
-						var viewMatrix:Matrix3D = m_viewMatrix.clone();
+						
+						/*var viewMatrix:Matrix3D = m_viewMatrix.clone();
+						viewMatrix.invert();
 						decomposedMatrix = viewMatrix.decompose();
 						var camRotation:Vector3D = decomposedMatrix[1];
 						camRotation.x = camRotation.y = camRotation.z = 0;
 						viewMatrix.recompose(decomposedMatrix);
-						
+						viewMatrix.invert();*/
 						//m_spriteMatrix.appendTranslation(pos.x, pos.y, pos.z);
 						//m_spriteMatrix.appendScale(scale.x, scale.y, scale.z);
 						
-						m_spriteMatrix.append(viewMatrix);
+						m_spriteMatrix.append(m_viewMatrix);
 						m_spriteMatrix.append(m_projectionMatrix);
 						
 						setProgramConstantsFromMatrix( 	Context3DProgramType.VERTEX, _shaderConstants.firstRegister, m_spriteMatrix, true);
