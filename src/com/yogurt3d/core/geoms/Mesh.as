@@ -121,12 +121,20 @@ package com.yogurt3d.core.geoms {
 					if(resolatedMin.z < _min.z) _min.z = resolatedMin.z;
 				}
 			}
+			if( m_aabb )
+			{
+				m_aabb.disposeDeep();
+			}
 			m_aabb = new AxisAlignedBoundingBox(_min, _max);
 			
 			var temp:Vector3D = _max.subtract(_min);
 			var _radiusSqr :Number = temp.x*temp.x + temp.y*temp.y + temp.z*temp.z;
 			var _center :Vector3D = _max.add( _min);
 			_center.scaleBy( .5 );
+			if( m_boundingSphere )
+			{
+				m_boundingSphere.dispose();
+			}
 			m_boundingSphere = new BoundingSphere( _radiusSqr, _center );
 		}
 		
@@ -136,6 +144,18 @@ package com.yogurt3d.core.geoms {
 				subMeshList[i].dispose();
 			}
 			subMeshList.length = 0;
+			
+			if( m_aabb )
+			{
+				m_aabb.disposeDeep();
+				m_aabb = null;
+			}
+			if( m_boundingSphere )
+			{
+				m_boundingSphere.dispose();
+				m_boundingSphere = null;
+			}
+			
 			super.dispose();
 		}
 		

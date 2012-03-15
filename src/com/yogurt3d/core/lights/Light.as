@@ -316,6 +316,10 @@ package com.yogurt3d.core.lights
 			}else if( m_type == ELightType.POINT )
 			{
 				frustum.m_bSCenterOrginal = new Vector3D();
+				if( frustum.boundingSphere )
+				{
+					frustum.boundingSphere.dispose();
+				}
 				frustum.boundingSphere = new BoundingSphere(m_range*m_range, frustum.m_bSCenterOrginal);
 			}
 		}

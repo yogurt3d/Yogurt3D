@@ -163,6 +163,10 @@ package com.yogurt3d.core.frustum{
 			var farthestPoint :Vector3D =  new Vector3D(farHalfWidth, farHalfHeight, -_far);
 			var differVector :Vector3D =  farthestPoint.subtract(m_bSCenterOrginal);
 			
+			if( boundingSphere )
+			{
+				boundingSphere.disposeDeep();
+			}
 			boundingSphere = new BoundingSphere(differVector.lengthSquared, m_bSCenterOrginal);
 		}
 		
@@ -172,7 +176,10 @@ package com.yogurt3d.core.frustum{
 			m_bSCenterOrginal = new Vector3D(_left + ((_right-_left)*0.5), _bottom + ((_top-_bottom)*0.5), -_far + ((_far-_near)*0.5));
 			
 			var cornerPoint:Vector3D = new Vector3D(_right, _top, -_far);
-			
+			if( boundingSphere )
+			{
+				boundingSphere.disposeDeep();
+			}
 			boundingSphere = new BoundingSphere(cornerPoint.subtract(m_bSCenterOrginal).lengthSquared, m_bSCenterOrginal);
 		}
 		
@@ -184,7 +191,10 @@ package com.yogurt3d.core.frustum{
 			m_bSCenterOrginal = new Vector3D(0, 0, -_far + viewDistance*0.5);
 			
 			var cornerPoint:Vector3D = new Vector3D(_width*0.5, _height*0.5, -_far);
-			
+			if( boundingSphere )
+			{
+				boundingSphere.disposeDeep();
+			}
 			boundingSphere = new BoundingSphere(cornerPoint.subtract(m_bSCenterOrginal).lengthSquared, m_bSCenterOrginal);
 		}
 		
