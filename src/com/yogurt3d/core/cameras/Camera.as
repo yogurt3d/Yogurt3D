@@ -17,18 +17,11 @@
 */
 
 package com.yogurt3d.core.cameras {
-	import com.yogurt3d.core.cameras.Camera;
 	import com.yogurt3d.core.frustum.Frustum;
-	import com.yogurt3d.core.helpers.ProjectionUtils;
-	import com.yogurt3d.core.helpers.boundingvolumes.BoundingSphere;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
 	import com.yogurt3d.core.sceneobjects.SceneObject;
-	import com.yogurt3d.core.sceneobjects.SceneObjectContainer;
-	import com.yogurt3d.core.transformations.Transformation;
-	import com.yogurt3d.core.utils.MatrixUtils;
 	import com.yogurt3d.presets.renderers.molehill.Ray;
 	
-	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
 	
 	/**
