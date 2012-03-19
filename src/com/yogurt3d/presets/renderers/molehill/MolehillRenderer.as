@@ -130,6 +130,13 @@ package com.yogurt3d.presets.renderers.molehill
 			var _renderableSet		:Vector.<SceneObjectRenderable> 	= _scene.getRenderableSet(_camera);
 			var _lights				:Vector.<Light>						= _scene.lightSet;
 
+			if( _scene.skyBox ){
+				if( _renderableSet.indexOf( _scene.skyBox ) == -1 )
+				{
+					_renderableSet.push( _scene.skyBox );
+				}
+			}
+			
 			_context3d.clear(_scene.sceneColor.r,_scene.sceneColor.g,_scene.sceneColor.b,_scene.sceneColor.a);
 			
 			rtManager.setRenderTo(_context3d, BACKBUFFER, false );
@@ -546,7 +553,7 @@ package com.yogurt3d.presets.renderers.molehill
 						
 						for ( k = 0; k < lenIndexes; k++) {
 							_light = _lights[lightIndexes[k]];	
-							var start2:uint = getTimer() ;						
+							if( _scene.getRenderableSetLight(_light,lightIndexes[k]).indexOf( _renderableObject ) == -1 ) continue;					
 							// draw triangles
 							len = _mesh.subMeshList.length;
 							for( subMeshIndex = 0; subMeshIndex < len; subMeshIndex++)
