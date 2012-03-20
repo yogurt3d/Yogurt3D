@@ -39,6 +39,7 @@ package com.yogurt3d.core.geoms {
  	 **/
 	public class Bone
 	{
+		private static var tempQua:Quaternion = new Quaternion();
 		/**
 		 * Name of The Bone
 		 */		
@@ -91,7 +92,7 @@ package com.yogurt3d.core.geoms {
 		public var parentBone:Bone;
 		
 		private var m_derivedScale:Vector3D;
-		private var m_derivedRotation:Quaternion;
+		private var m_derivedRotation:Quaternion = new Quaternion();
 		private var m_derivedTranslation:Vector3D;
 		
 		private var m_observers:Vector.<Transformation>;
@@ -221,7 +222,7 @@ package com.yogurt3d.core.geoms {
 			}
 			if( m_dirty )
 			{
-				return m_derivedRotation = parentBone.getDerivedOrientation().multiply( rotation );
+				return m_derivedRotation = parentBone.getDerivedOrientation().multiply( rotation, m_derivedRotation );
 			}
 			return m_derivedRotation;
 		}
@@ -319,7 +320,7 @@ package com.yogurt3d.core.geoms {
 					);
 					
 					// find the current rotation change by removing the bind pose rotation from the currrent rotation
-					var _locRotate:Quaternion = getDerivedOrientation().multiply( invRotation );
+					var _locRotate:Quaternion = getDerivedOrientation().multiply( invRotation, tempQua );
 					
 					// Combine position with binding pose inverse position,
 					// Note that translation is relative to scale & rotation,

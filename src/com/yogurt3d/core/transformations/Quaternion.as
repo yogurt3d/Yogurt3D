@@ -95,7 +95,7 @@ package com.yogurt3d.core.transformations
 			return w*rkQ.w+x*rkQ.x+y*rkQ.y+z*rkQ.z;
 		}
 
-		public function multiply ( _quaternion:Quaternion):Quaternion
+		public function multiply ( _quaternion:Quaternion, copyTo:Quaternion = null):Quaternion
 		{
 			// NOTE:  Multiplication is not generally commutative, so in most
 			// cases p*q != q*p.
@@ -105,6 +105,14 @@ package com.yogurt3d.core.transformations
 			var _Z:Number = _quaternion.z;
 			var _W:Number = _quaternion.w;
 			
+			if( copyTo != null )
+			{
+				copyTo.w = w * _W - x * _X - y * _Y - z * _Z;
+				copyTo.x = w * _X + x * _W + y * _Z - z * _Y;
+				copyTo.y = w * _Y + y * _W + z * _X - x * _Z;
+				copyTo.z = w * _Z + z * _W + x * _Y - y * _X;
+				return copyTo;
+			}
 			return new Quaternion
 			(
 				w * _W - x * _X - y * _Y - z * _Z,
