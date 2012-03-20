@@ -214,6 +214,10 @@ package com.yogurt3d.core.managers.mousemanager
 							m_currentObject.onMouseOver.dispatch( event );
 						}
 					}
+					if( m_lastObject == null )
+					{
+						Mouse.cursor = MouseCursor.AUTO;
+					}
 				}
 				
 			}
