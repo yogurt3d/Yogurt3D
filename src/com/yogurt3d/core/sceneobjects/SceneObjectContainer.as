@@ -26,6 +26,7 @@ package com.yogurt3d.core.sceneobjects {
  	 * @author Yogurt3D Engine Core Team
  	 * @company Yogurt3D Corp.
  	 **/
+	[Deprecated(message="All SceneObjects are containers now.", replacement="com.yogurt3d.core.sceneobjects.SceneObject", since="2.7")]
 	public class SceneObjectContainer extends SceneObject
 	{
 		
