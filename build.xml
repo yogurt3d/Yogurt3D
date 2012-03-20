@@ -2,9 +2,9 @@
 <project name="y3d" default="main" basedir=".">
 	
 
-	<property name="FLEX_HOME" value="C:/Program Files (x86)/Adobe/Adobe Flash Builder 4/sdks/4.5.1" />
+	<property name="FLEX_HOME" value="C:\Program Files (x86)\Adobe\Adobe Flash Builder 4.6\sdks\4.6.0" />
 	<property name="flex_frameworks_libs_dir" value="${FLEX_HOME}/frameworks/libs"/> 
-	<property name="YOGURT3D_VERSION" value="v2.1_008" />
+	<property name="YOGURT3D_VERSION" value="v2.1_009" />
 	
 	<echo message="SDK in ${FLEX_HOME}"/>
 	
@@ -55,7 +55,7 @@
 			<doc-sources path-element="${basedir}/src"/>
 			<arg line="-load-config+=${basedir}/y3d_config_release.xml"  /> 
 			<external-library-path file="${flex_frameworks_libs_dir}/*.swc"/>  <!-- Needed to include Flex classes -->
-			<external-library-path file="${flex_frameworks_libs_dir}/player/11.0/*.swc"/> 
+			<external-library-path file="${flex_frameworks_libs_dir}/player/11.1/*.swc"/> 
 			<external-library-path file="${basedir}/libs/*.swc"/> 
 		</asdoc>
 		
@@ -63,28 +63,12 @@
 		
 		<zip destfile="${basedir}/bin/${ant.project.name}_${YOGURT3D_VERSION}_debug.swc" update="true">
 		    <zipfileset dir="${basedir}/asdoc-output/tempdita" prefix="docs">
-		    	<include name="*.xml"/>
-		    	<include name="*.dite"/>
-				<exclude name="ASDoc_Config.xml"/>
-				<exclude name="overviews.xml"/>
-		    </zipfileset>
-		</zip>
-		<zip destfile="${basedir}/bin/${ant.project.name}_${YOGURT3D_VERSION}_release.swc" update="true">
-		    <zipfileset dir="${basedir}/asdoc-output/tempdita" prefix="docs">
-		    	<include name="*.xml"/>
-		    	<include name="*.dite"/>
+		    	<include name="*.*"/>
 				<exclude name="ASDoc_Config.xml"/>
 				<exclude name="overviews.xml"/>
 		    </zipfileset>
 		</zip>
 		<echo message="Backing up SWC file into rar"/>
-		<zip destfile="${basedir}/bin/${ant.project.name}_${YOGURT3D_VERSION}_src.zip"  update="true">
-			<zipfileset dir="${basedir}/bin" prefix="bin">
-				<include name="*.swc"/>
-			</zipfileset>
-			<zipfileset dir="${basedir}/src" prefix="src">
-			</zipfileset>
-		</zip>
 		<zip destfile="${basedir}/bin/${ant.project.name}_${YOGURT3D_VERSION}_bin.zip"  update="true">
 			<zipfileset dir="${basedir}/bin">
 				<include name="*.swc"/>
