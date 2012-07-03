@@ -247,6 +247,7 @@ package com.yogurt3d.io.parsers
 						"Vertex Count:", base.vertexCount);
 				}
 			}
+import com.yogurt3d.core.geoms.SkinnedSubMesh;
 			
 			
 			var mesh:SkeletalAnimatedMeshBase = new SkeletalAnimatedMeshBase();
@@ -254,6 +255,8 @@ package com.yogurt3d.io.parsers
 			var plen:uint = partitionList.length;
 			for( i= 0; i < plen; i++)
 			{
+				SkinnedSubMesh(partitionList[i]).indicesMap = null;
+				SkinnedSubMesh(partitionList[i]).vertexList = null;
 				list.push( partitionList[i]);
 			}
 			mesh.bones = bones;

@@ -266,8 +266,7 @@ package com.yogurt3d.core.texture
 				if( m_width != value.width )
 				{
 					m_sizedirty = true;
-				}
-				if( m_height != value.height )
+				}else if( m_height != value.height )
 				{
 					m_sizedirty = true;
 				}
@@ -345,7 +344,7 @@ package com.yogurt3d.core.texture
 			{
 				m_tempBitmap.fillRect( m_tempBitmap.rect, 0x00FFFFFF );
 			}
-			m_tempBitmap.draw( m_displayObject, null,null,null,m_tempBitmap.rect, false );	
+			m_tempBitmap.draw( m_displayObject, m_displayObject.transform.matrix, null,null,m_tempBitmap.rect, false );	
 			
 			if( !m_mipmap )
 			{

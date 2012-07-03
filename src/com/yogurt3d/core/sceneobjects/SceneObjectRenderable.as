@@ -262,7 +262,7 @@ package com.yogurt3d.core.sceneobjects {
 			if(!m_aabb)
 			{
 				//AxisAlignedBoundingBox(geomBox.m_minInitial, geomBox.m_maxInitial, transformation); geometry.axisAlignedBoundingBox.clone() as AxisAlignedBoundingBox
-				m_aabb = new AxisAlignedBoundingBox(geometry.axisAlignedBoundingBox.m_minInitial.clone(), geometry.axisAlignedBoundingBox.m_maxInitial.clone(), transformation);;
+				m_aabb = new AxisAlignedBoundingBox(geometry.axisAlignedBoundingBox.m_minInitial.clone(), geometry.axisAlignedBoundingBox.m_maxInitial.clone(), transformation);
 			}
 			return m_aabb;
 		}

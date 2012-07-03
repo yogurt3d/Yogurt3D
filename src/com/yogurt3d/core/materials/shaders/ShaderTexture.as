@@ -33,6 +33,7 @@ package com.yogurt3d.core.materials.shaders
 	import flash.display3D.Context3DProgramType;
 	import flash.display3D.Context3DTriangleFace;
 	import flash.display3D.Program3D;
+	import flash.geom.Point;
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
 
@@ -53,6 +54,21 @@ package com.yogurt3d.core.materials.shaders
 		private var vaBoneIndices:uint = 2;
 		private var vaBoneWeight:uint = 4;
 		private var vaUV2:uint = 1;
+		private var m_uVOffset:Point;
+		private var m_uVOffsetDirty:Boolean;
+		private var m_uVOffsetConst:ShaderConstants;
+
+		public function get uVOffset():Point
+		{
+			return m_uVOffset;
+		}
+
+		public function set uVOffset(value:Point):void
+		{
+			m_uVOffset = value;
+			m_uVOffsetDirty = true;
+		}
+
 		
 		private var m_lightMapChannel:uint = 0;
 		private var m_textureChannel:uint = 0;
@@ -198,8 +214,35 @@ package com.yogurt3d.core.materials.shaders
 				return null;
 			}
 			
+			if( m_uVOffsetDirty )
+			{
+				if(m_uVOffset != null ){
+					if( m_uVOffsetConst == null )
+					{
+						m_uVOffsetConst 						= new ShaderConstants();
+						m_uVOffsetConst.type					= EShaderConstantsType.CUSTOM_VECTOR;
+						m_uVOffsetConst.firstRegister			= 4;// FS
+						m_uVOffsetConst.vector = new Vector.<Number>(4);
+						params.vertexShaderConstants.push(m_uVOffsetConst);	
+					}
+				}else{
+					if(m_uVOffsetConst != null){
+						params.fragmentShaderConstants.splice( params.fragmentShaderConstants.indexOf( m_uVOffsetConst ), 1 );
+					}
+				}
+				disposeShaders();
+				m_uVOffsetDirty = false;
+				
+			}
+			
+			if(m_uVOffset)
+			{
+				m_uVOffsetConst.vector[0] = m_uVOffset.x;
+				m_uVOffsetConst.vector[1] = m_uVOffset.y;
+			}
+			
 			key = "Yogurt3DOriginalsShaderBitmapData" + ((m_lightMap)?"WithShadowMap"+m_lightMapChannel:"") 
-				+ ((texture.transparent)?"WithAlphaTexture":"") + ((texture.mipmap)?"WithMipmap":"");
+				+ ((texture.transparent)?"WithAlphaTexture":"") + ((texture.mipmap)?"WithMipmap":"") + ((m_uVOffset)?"WithUVOffset":"");
 			
 			return super.getProgram( _context3D, _lightType, _meshKey );
 		}
@@ -220,8 +263,9 @@ package com.yogurt3d.core.materials.shaders
 				// Vertex Program
 				return ShaderUtils.vertexAssambler.assemble(Context3DProgramType.VERTEX, 	code );
 			}
-			return ShaderUtils.vertexAssambler.assemble(Context3DProgramType.VERTEX, 	
-				"m44 op, va0, vc5\nmov v0, va1.xyzw\n" + ((m_lightMap )?"mov v1 va"+vaUV2+"\n":"")
+			return ShaderUtils.vertexAssambler.assemble(Context3DProgramType.VERTEX,
+				((m_uVOffset)?"add v0 va1 vc4":"mov v0 va1.xyzw")+"\n"+
+				"m44 op, va0, vc5\n" + ((m_lightMap )?"mov v1 va"+vaUV2+"\n":"")
 			);
 		}
 		/**
@@ -280,8 +324,16 @@ package com.yogurt3d.core.materials.shaders
 		 * 
 		 * 
 		 */
-		public function dispose():void{
-			super.disposeShaders();
+		
+		public override function disposeDeep():void{
+			dispose();
+			if( texture ){
+				texture.disposeDeep();
+			}
+			if( lightMap )
+			{
+				lightMap.disposeDeep();
+			}
 		}
 	}
 }

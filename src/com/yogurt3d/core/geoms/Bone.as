@@ -185,7 +185,7 @@ package com.yogurt3d.core.geoms {
 			var _derivedScale:Vector3D = getDerivedScale();
 			invScale = new Vector3D(1/_derivedScale.x,1/_derivedScale.y,1/_derivedScale.z );
 			var qua:Quaternion = getDerivedOrientation();
-			invRotation = getDerivedOrientation().inverse();
+			invRotation = qua.inverse();
 			//m_invMatrix = new Matrix3D();
 			//m_invMatrix.recompose( Vector.<Vector3D>([invTranslation, invRotation.toVector3D(), invScale]), Orientation3D.QUATERNION );
 		}

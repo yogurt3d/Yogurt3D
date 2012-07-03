@@ -31,6 +31,7 @@ package com.yogurt3d.core.materials
 	import flash.display3D.Context3DBlendFactor;
 	import flash.display3D.Context3DCompareMode;
 	import flash.events.Event;
+	import flash.geom.Point;
 	
 	import org.osflash.signals.Signal;
 	
@@ -109,7 +110,12 @@ package com.yogurt3d.core.materials
 				YOGURT3D_INTERNAL::m_transparent = m_ambientShader.texture.transparent || (m_ambientShader.opacity < 1);
 			}
 		}
-		
+		public function get uvOffset():Point{
+			return m_decalShader.uVOffset;
+		}
+		public function set uvOffset(_value:Point):void{
+			m_decalShader.uVOffset = _value;
+		}
 		public function get normalMap():TextureMap
 		{
 			return m_normalMap;

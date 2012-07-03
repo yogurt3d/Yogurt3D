@@ -160,6 +160,13 @@ package com.yogurt3d.core.materials.shaders.base
 			m_params = value;
 		}
 		
+		public function dispose():void{
+			disposeShaders();
+		}
+		public function disposeDeep():void{
+			dispose();
+		}
+		
 		/**
 		 * 
 		 * 

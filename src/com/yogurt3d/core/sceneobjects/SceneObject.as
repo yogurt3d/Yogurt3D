@@ -143,7 +143,7 @@ package com.yogurt3d.core.sceneobjects {
 				for( var childIndex:uint = 0; childIndex < children.length; childIndex++ )
 				{
 					var scnObj:SceneObject = children[childIndex];
-					scnObj.interactive = m_interactive;
+					
 					if( m_interactive )
 					{
 						scnObj.onMouseClick.add( $eventJump );
@@ -162,6 +162,18 @@ package com.yogurt3d.core.sceneobjects {
 						scnObj.onMouseOver.remove( $eventJump );
 						scnObj.onMouseUp.remove( $eventJump );
 					}
+				}
+			}
+		}
+		public function set interactiveChildren(value:Boolean):void
+		{
+			if( children && children.length>0 )
+			{
+				for( var childIndex:uint = 0; childIndex < children.length; childIndex++ )
+				{
+					var scnObj:SceneObject = children[childIndex];
+					scnObj.interactive = value;
+					scnObj.interactiveChildren = value;
 				}
 			}
 		}
@@ -203,13 +215,17 @@ package com.yogurt3d.core.sceneobjects {
 		public function set pickEnabled(value:Boolean):void
 		{
 			m_pickEnabled = value;
-			
+		}
+		
+		public function set pickEnabledChildren(value:Boolean):void
+		{
 			if( children && children.length>0 )
 			{
 				for( var childIndex:uint = 0; childIndex < children.length; childIndex++ )
 				{
 					var scnObj:SceneObject = children[childIndex];
-					scnObj.pickEnabled = m_pickEnabled;
+					scnObj.pickEnabled = value;
+					scnObj.pickEnabledChildren = value;
 				}
 			}
 		}
@@ -383,6 +399,18 @@ package com.yogurt3d.core.sceneobjects {
 			}
 		}
 		
+		public function set renderLayerChildren(value:int):void
+		{
+			if( children )
+			{
+				for( var i:int = 0; i < children.length ; i++ )
+				{
+					children[i].renderLayer = value;
+					children[i].renderLayerChildren = value;
+				}
+			}
+		}
+		
 		
 		/**
 		 * @inheritDoc
@@ -468,8 +496,6 @@ package com.yogurt3d.core.sceneobjects {
 			{
 				_value.useHandCursor = m_useHandCursor;
 			}
-			
-			_value.pickEnabled = pickEnabled;
 		}
 		/**
 		 * Called when some childrens' tramsformation has changed 
@@ -579,7 +605,13 @@ package com.yogurt3d.core.sceneobjects {
 					{
 						var child:SceneObject = children[i];
 						if( child is Camera || child is Light ) continue;
-						m_aabbCumulative.merge( child.cumulativeAxisAlignedBoundingBox );	
+						if( i == 0 )
+						{
+							m_aabbCumulative.setInitialMinMax( child.cumulativeAxisAlignedBoundingBox.initialMin, child.cumulativeAxisAlignedBoundingBox.initialMax, transformation);
+						}else{
+							m_aabbCumulative.merge( child.cumulativeAxisAlignedBoundingBox );	
+						}
+						
 					}
 					
 					m_reinitboundingVolumes = false;

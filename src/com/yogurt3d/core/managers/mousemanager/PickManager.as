@@ -90,14 +90,17 @@ package com.yogurt3d.core.managers.mousemanager
 		private function onDown( _e:MouseEvent ):void{
 			if( m_currentObject != null )
 			{
-				var event:MouseEvent3D = new MouseEvent3D( MouseEvent3D.MOUSE_DOWN );
-				event.target3d = m_currentObject; event.currentTarget3d = m_currentObject;
-				event.intersection = m_currentIntersection;
-				event.x = m_pickRenderer.mouseCoordX;
-				event.y = m_pickRenderer.mouseCoordY;
-				event.camera = m_lastCamera;
-				event.viewport = m_viewport;
-				m_currentObject.onMouseDown.dispatch( event );
+				if( m_currentObject.onMouseDown && m_currentObject.onMouseDown.numListeners > 0 )
+				{
+					var event:MouseEvent3D = new MouseEvent3D( MouseEvent3D.MOUSE_DOWN );
+					event.target3d = m_currentObject; event.currentTarget3d = m_currentObject;
+					event.intersection = m_currentIntersection;
+					event.x = m_pickRenderer.mouseCoordX;
+					event.y = m_pickRenderer.mouseCoordY;
+					event.camera = m_lastCamera;
+					event.viewport = m_viewport;
+					m_currentObject.onMouseDown.dispatch( event );
+				}
 				m_downObject = m_currentObject;
 			}
 		}
@@ -105,25 +108,30 @@ package com.yogurt3d.core.managers.mousemanager
 		private function onUp( _e:MouseEvent ):void{
 			if( m_currentObject != null )
 			{
-				var event:MouseEvent3D = new MouseEvent3D( MouseEvent3D.MOUSE_UP );
-				event.intersection = m_currentIntersection;
-				event.target3d = m_currentObject; event.currentTarget3d = m_currentObject;
-				event.x = m_pickRenderer.mouseCoordX;
-				event.y = m_pickRenderer.mouseCoordY;
-				event.camera = m_lastCamera;
-				event.viewport = m_viewport;
-				if( m_currentObject.onMouseUp )
-					m_currentObject.onMouseUp.dispatch( event );
-				if( m_currentObject == m_downObject )
+				if( m_currentObject.onMouseUp && m_currentObject.onMouseUp.numListeners > 0 )
 				{
-					event = new MouseEvent3D( MouseEvent3D.CLICK );
-					event.target3d = m_currentObject; event.currentTarget3d = m_currentObject;
+					var event:MouseEvent3D = new MouseEvent3D( MouseEvent3D.MOUSE_UP );
 					event.intersection = m_currentIntersection;
+					event.target3d = m_currentObject; event.currentTarget3d = m_currentObject;
 					event.x = m_pickRenderer.mouseCoordX;
 					event.y = m_pickRenderer.mouseCoordY;
 					event.camera = m_lastCamera;
 					event.viewport = m_viewport;
-					m_currentObject.onMouseClick.dispatch( event );
+					m_currentObject.onMouseUp.dispatch( event );
+				}
+				if( m_currentObject == m_downObject )
+				{
+					if( m_currentObject.onMouseClick && m_currentObject.onMouseClick.numListeners > 0 )
+					{
+						event = new MouseEvent3D( MouseEvent3D.CLICK );
+						event.target3d = m_currentObject; event.currentTarget3d = m_currentObject;
+						event.intersection = m_currentIntersection;
+						event.x = m_pickRenderer.mouseCoordX;
+						event.y = m_pickRenderer.mouseCoordY;
+						event.camera = m_lastCamera;
+						event.viewport = m_viewport;
+						m_currentObject.onMouseClick.dispatch( event );
+					}
 					
 					m_downObject = null;
 				}
@@ -131,7 +139,7 @@ package com.yogurt3d.core.managers.mousemanager
 		}
 		
 		private function onMove( _e:MouseEvent ):void{
-			if( m_currentObject != null  && m_currentObject.onMouseMove)
+			if( m_currentObject != null  && m_currentObject.onMouseMove && m_currentObject.onMouseMove.numListeners > 0)
 			{
 				var event:MouseEvent3D = new MouseEvent3D( MouseEvent3D.MOUSE_MOVE );
 				event.intersection = m_currentIntersection;
@@ -145,7 +153,7 @@ package com.yogurt3d.core.managers.mousemanager
 		}
 		
 		private function onDoubleClick( _e:MouseEvent ):void{
-			if( m_currentObject != null  && m_currentObject.onMouseDoubleClick )
+			if( m_currentObject != null  && m_currentObject.onMouseDoubleClick && m_currentObject.onMouseDoubleClick.numListeners > 0 )
 			{
 				var event:MouseEvent3D = new MouseEvent3D( MouseEvent3D.DOUBLE_CLICK );
 				event.target3d = m_currentObject; event.currentTarget3d = m_currentObject;
@@ -182,36 +190,43 @@ package com.yogurt3d.core.managers.mousemanager
 					
 					if( m_lastObject != m_currentObject )
 					{
-						if( m_lastObject && m_lastObject.onMouseOut )
+						if( m_lastObject )
 						{
-							event = new MouseEvent3D( MouseEvent3D.MOUSE_OUT );
-							event.target3d = m_lastObject; event.currentTarget3d = m_lastObject;
-							event.intersection = m_currentIntersection;
-							event.x = m_pickRenderer.mouseCoordX;
-							event.y = m_pickRenderer.mouseCoordY;
-							event.camera = m_lastCamera;
-							event.viewport = m_viewport;
 							if( m_lastObject.useHandCursor )
 							{
 								Mouse.cursor = MouseCursor.AUTO;
 							}
-							m_lastObject.onMouseOut.dispatch( event );
+							if( m_lastObject.onMouseOut &&  m_lastObject.onMouseOut.numListeners > 0 )
+							{
+								event = new MouseEvent3D( MouseEvent3D.MOUSE_OUT );
+								event.target3d = m_lastObject; event.currentTarget3d = m_lastObject;
+								event.intersection = m_currentIntersection;
+								event.x = m_pickRenderer.mouseCoordX;
+								event.y = m_pickRenderer.mouseCoordY;
+								event.camera = m_lastCamera;
+								event.viewport = m_viewport;
+								m_lastObject.onMouseOut.dispatch( event );
+							}
 						}
 						
-						if( m_currentObject && m_currentObject.onMouseOver )
+						if( m_currentObject )
 						{
-							event = new MouseEvent3D( MouseEvent3D.MOUSE_OVER );
-							event.target3d = m_currentObject; event.currentTarget3d = m_currentObject;
-							event.intersection = m_currentIntersection;
-							event.x = m_pickRenderer.mouseCoordX;
-							event.y = m_pickRenderer.mouseCoordY;
-							event.camera = m_lastCamera;
-							event.viewport = m_viewport;
 							if( m_currentObject.useHandCursor )
 							{
+								Mouse.cursor = MouseCursor.AUTO;
 								Mouse.cursor = MouseCursor.BUTTON;
 							}
-							m_currentObject.onMouseOver.dispatch( event );
+							if( m_currentObject.onMouseOver && m_currentObject.onMouseOver.numListeners > 0 )
+							{
+								event = new MouseEvent3D( MouseEvent3D.MOUSE_OVER );
+								event.target3d = m_currentObject; event.currentTarget3d = m_currentObject;
+								event.intersection = m_currentIntersection;
+								event.x = m_pickRenderer.mouseCoordX;
+								event.y = m_pickRenderer.mouseCoordY;
+								event.camera = m_lastCamera;
+								event.viewport = m_viewport;
+								m_currentObject.onMouseOver.dispatch( event );
+							}
 						}
 					}
 					if( m_lastObject == null )

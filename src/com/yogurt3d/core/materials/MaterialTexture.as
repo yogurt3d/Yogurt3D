@@ -25,6 +25,7 @@ package com.yogurt3d.core.materials
 	import com.yogurt3d.core.texture.TextureMap;
 	
 	import flash.events.Event;
+	import flash.geom.Point;
 	
 	import org.osflash.signals.Signal;
 
@@ -62,9 +63,9 @@ package com.yogurt3d.core.materials
 			decalShader.texture = _value;
 			
 			if( _value )
-				YOGURT3D_INTERNAL::m_transparent = (decalShader.texture.transparent < 1);
+				YOGURT3D_INTERNAL::m_transparent = (decalShader.texture.transparent || decalShader.opacity < 1);
 			else
-				YOGURT3D_INTERNAL::m_transparent = false;
+				YOGURT3D_INTERNAL::m_transparent = decalShader.opacity < 1;
 		}
 		
 		public function get killThreshold():Number{
@@ -98,6 +99,13 @@ package com.yogurt3d.core.materials
 		}
 		public function set textureChannel(_value:uint):void{
 			decalShader.textureChannel = _value;
+		}
+		
+		public function get uvOffset():Point{
+			return decalShader.uVOffset;
+		}
+		public function set uvOffset(_value:Point):void{
+			decalShader.uVOffset = _value;
 		}
 		
 		public function get shadowAndLightMapChannel():uint{

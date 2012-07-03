@@ -15,8 +15,8 @@ package com.yogurt3d.core.utils
 
 		public static function generateMipMaps(source : BitmapData, target : Texture, mipmap : BitmapData = null, alpha : Boolean = false) : void
 		{
-			var w : uint = source.width,
-				h : uint = source.height;
+			var w : uint = MathUtils.getClosestPowerOfTwo(source.width),
+				h : uint = MathUtils.getClosestPowerOfTwo(source.height);
 			var i : uint = 0;
 			var regen : Boolean = mipmap != null;
 			mipmap ||= new BitmapData(w, h, alpha);
@@ -24,8 +24,8 @@ package com.yogurt3d.core.utils
 			_matrix.a = 1;
 			_matrix.d = 1;
 			
-			_rect.width = MathUtils.getClosestPowerOfTwo(w);
-			_rect.height = MathUtils.getClosestPowerOfTwo(h);
+			_rect.width = w;
+			_rect.height = h;
 			
 			while (w >= 1 || h >= 1) {
 				if (alpha) mipmap.fillRect(_rect, 0x00000000);

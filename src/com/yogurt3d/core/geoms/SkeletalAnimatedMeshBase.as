@@ -62,15 +62,18 @@ package com.yogurt3d.core.geoms {
 			var len:uint = bones.length;
 			var children:Vector.<Bone>;
 			
+			// setup hierarchy
 			for( var i:int = 0; i < len; i++)
 			{
-				for( var j:int = 0; j < len; j++)
+				if( bones[i].parentName != "" )
 				{
-					if( bones[i].parentName == bones[j].name )
+					for( var j:int = 0; j < len; j++)
 					{
-						bones[i].parentBone = bones[j];
-						children = bones[j].children;
-						children.push( bones[i] );
+						if( bones[i].parentName == bones[j].name )
+						{
+							bones[i].parentBone = bones[j];
+							bones[j].children.push( bones[i] );
+						}
 					}
 				}
 			}

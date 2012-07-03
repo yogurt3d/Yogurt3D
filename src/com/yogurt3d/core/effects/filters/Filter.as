@@ -42,7 +42,9 @@ package com.yogurt3d.core.effects.filters
 		}
 
 
-		public function dispose():void{
+		public override function dispose():void{
+			super.dispose();
+			
 			if( m_renderTarget )
 			{
 				m_renderTarget.dispose();

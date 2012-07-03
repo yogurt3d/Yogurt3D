@@ -211,7 +211,7 @@ package com.yogurt3d.core.transformations {
 
 		/**
 		 * Returns a new Vector3D object containing local position. <br/>
-		 * If value in the Vector3D object is changed it does nor effect the transformation.
+		 * If value in the Vector3D object is changed it does not effect the transformation.
 		 * @return 
 		 * 
 		 */
@@ -557,6 +557,11 @@ package com.yogurt3d.core.transformations {
 		protected override function trackObject():void
 		{
 			IDManager.trackObject(this, Transformation);
+		}
+		
+		public override function dispose():void{
+			m_onChange.removeAll();
+			m_onChange = null;
 		}
 	}
 }
