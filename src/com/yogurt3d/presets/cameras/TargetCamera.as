@@ -43,6 +43,8 @@ package com.yogurt3d.presets.cameras
 		
 		private var m_target:SceneObject;
 		
+		public var mouseControlEnabled:Boolean = true;
+		
 		public function TargetCamera(_viewport:DisplayObject, _initInternals:Boolean=true)
 		{
 			super(_initInternals);
@@ -81,7 +83,22 @@ package com.yogurt3d.presets.cameras
 			m_limitdistMax = value;
 		}
 		
+		public function get limitDistMin():Number
+		{
+			return m_limitdistMin;
+		}
+		
+		public function set limitDistMin(value:Number):void
+		{
+			m_limitdistMin = value;
+		}
+		
 		private function onMouseMoveEvent( event:MouseEvent ):void{
+			if(!mouseControlEnabled)
+			{
+				return;
+			}
+			
 			var _offsetX:Number 	= m_mouseLastX - event.localX;
 			var _offsetY:Number 	= m_mouseLastY - event.localY;
 			
