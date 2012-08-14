@@ -38,5 +38,15 @@ package com.yogurt3d.core.utils
 				_vec1.w + _t * (_vec2.w - _vec1.w)
 			);
 		}
+		
+		public static function clamp( value:Number, min:Number, max:Number ):Number{
+			var temp:Number = max;
+			if( value  < max ) temp = value;
+			if( min > value ) temp = min;
+			return temp;
+		}
+		public static function angleClamp( value:Number ):Number{
+			return value - Math.floor(value/360) * 360;
+		}
 	}
 }
