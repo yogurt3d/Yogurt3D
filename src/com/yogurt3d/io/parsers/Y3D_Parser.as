@@ -172,6 +172,7 @@ package com.yogurt3d.io.parsers {
 				var _verticesLoop			:int;
 				var _indicesLoop			:int;
 				var _uvtLoop				:int;
+				var len						:int;
 				
 				// read vertices
 				_verticesData						= new Vector.<Number>(vertexCount * 3, true);
@@ -180,44 +181,43 @@ package com.yogurt3d.io.parsers {
 				_uvtData3							= new Vector.<Number>(vertexCount * 2);
 				_normalData							= new Vector.<Number>(vertexCount * 3);
 				// read vertex positions
-				for(_verticesLoop = 0; _verticesLoop < vertexCount; _verticesLoop++)
+				len = vertexCount * 3;
+				for(_verticesLoop = 0; _verticesLoop < len; _verticesLoop++)
 				{
-					_verticesData[(_verticesLoop * 3)]			= _value.readFloat();
-					_verticesData[(_verticesLoop * 3) + 1]		= _value.readFloat();
-					_verticesData[(_verticesLoop * 3) + 2]		= _value.readFloat();
+					_verticesData[_verticesLoop]			= _value.readFloat();
 				}
 				// read uv data
 				for( uvC = 0;uvC < uvCount; uvC++)
 				{
-					for(_uvtLoop = 0; _uvtLoop < vertexCount; _uvtLoop++){
 						if( uvC == 0 )
 						{
-							_uvtData[(_uvtLoop * 2)]		= _value.readFloat();
-							_uvtData[(_uvtLoop * 2) + 1]	= 1 - _value.readFloat();
+							
+							for(_uvtLoop = 0; _uvtLoop < vertexCount; _uvtLoop++){
+								_uvtData[int(_uvtLoop * 2)]		= _value.readFloat();
+								_uvtData[int(_uvtLoop * 2 + 1)]	= 1 - _value.readFloat();
+							}
 						}else if ( uvC == 1 ){
-							_uvtData2[(_uvtLoop * 2)] 	  = _value.readFloat();
-							_uvtData2[(_uvtLoop * 2) + 1] = 1 - _value.readFloat();
+							for(_uvtLoop = 0; _uvtLoop < vertexCount; _uvtLoop++){
+								_uvtData2[int(_uvtLoop * 2)] 	  = _value.readFloat();
+								_uvtData2[int(_uvtLoop * 2 + 1)] = 1 - _value.readFloat();
+							}
 						}
 						else{
-							_uvtData3[(_uvtLoop * 2)] 	  = _value.readFloat();
-							_uvtData3[(_uvtLoop * 2) + 1] = 1 - _value.readFloat();
+							for(_uvtLoop = 0; _uvtLoop < vertexCount; _uvtLoop++){
+								_uvtData3[int(_uvtLoop * 2)] 	  = _value.readFloat();
+								_uvtData3[int(_uvtLoop * 2 + 1)] = 1 - _value.readFloat();
+							}
 						}
-						//_uvtData[(_uvtLoop * 3) + 2]	= 0;
-					}
 				}
 				// read normal data
-				for(_verticesLoop = 0; _verticesLoop < vertexCount; _verticesLoop++){
-					_normalData[(_verticesLoop * 3)]			= _value.readFloat();
-					_normalData[(_verticesLoop * 3) + 1]		= _value.readFloat();
-					_normalData[(_verticesLoop * 3) + 2]		= _value.readFloat();
+				for(_verticesLoop = 0; _verticesLoop < len; _verticesLoop++){
+					_normalData[_verticesLoop]			= _value.readFloat();
 				}
 				if( tangentsIncluded ){
 					_tangentData							= new Vector.<Number>(vertexCount * 3);
-					for(_verticesLoop = 0; _verticesLoop < vertexCount; _verticesLoop++)
+					for(_verticesLoop = 0; _verticesLoop < len; _verticesLoop++)
 					{
-						_tangentData[(_verticesLoop * 3)]			= _value.readFloat();
-						_tangentData[(_verticesLoop * 3) + 1]		= _value.readFloat();
-						_tangentData[(_verticesLoop * 3) + 2]		= _value.readFloat();
+						_tangentData[_verticesLoop]			= _value.readFloat();
 					}
 				}
 				_indicesData						= new Vector.<uint>(indexCount);
@@ -286,11 +286,10 @@ package com.yogurt3d.io.parsers {
 				_uvtData2							= new Vector.<Number>(vertexCount * 2);
 				_normalData							= new Vector.<Number>(vertexCount * 3);
 				// read vertex positions
-				for(_verticesLoop = 0; _verticesLoop < vertexCount; _verticesLoop++)
+				len = vertexCount * 3;
+				for(_verticesLoop = 0; _verticesLoop < len; _verticesLoop++)
 				{
-					_verticesData[(_verticesLoop * 3)]			= _value.readFloat();
-					_verticesData[(_verticesLoop * 3) + 1]		= _value.readFloat();
-					_verticesData[(_verticesLoop * 3) + 2]		= _value.readFloat();
+					_verticesData[_verticesLoop]			= _value.readFloat();
 				}
 				// read uv data
 				for( uvC = 0;uvC < uvCount; uvC++)
@@ -308,18 +307,14 @@ package com.yogurt3d.io.parsers {
 					}
 				}
 				// read normal data
-				for(_verticesLoop = 0; _verticesLoop < vertexCount; _verticesLoop++){
-					_normalData[(_verticesLoop * 3)]			= _value.readFloat();
-					_normalData[(_verticesLoop * 3) + 1]		= _value.readFloat();
-					_normalData[(_verticesLoop * 3) + 2]		= _value.readFloat();
+				for(_verticesLoop = 0; _verticesLoop < len; _verticesLoop++){
+					_normalData[_verticesLoop]			= _value.readFloat();
 				}
 				if( tangentsIncluded ){
 					_tangentData							= new Vector.<Number>(vertexCount * 3);
-					for(_verticesLoop = 0; _verticesLoop < vertexCount; _verticesLoop++)
+					for(_verticesLoop = 0; _verticesLoop < len; _verticesLoop++)
 					{
-						_tangentData[(_verticesLoop * 3)]			= _value.readFloat();
-						_tangentData[(_verticesLoop * 3) + 1]		= _value.readFloat();
-						_tangentData[(_verticesLoop * 3) + 2]		= _value.readFloat();
+						_tangentData[_verticesLoop]			= _value.readFloat();
 					}
 				}
 				_indicesData						= new Vector.<uint>(indexCount);
