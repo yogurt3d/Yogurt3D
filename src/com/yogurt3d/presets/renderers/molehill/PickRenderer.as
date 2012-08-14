@@ -40,6 +40,7 @@ package com.yogurt3d.presets.renderers.molehill
 	import flash.display3D.Context3DClearMask;
 	import flash.display3D.Context3DCompareMode;
 	import flash.display3D.Context3DProgramType;
+	import flash.display3D.Context3DTriangleFace;
 	import flash.display3D.Program3D;
 	import flash.display3D.VertexBuffer3D;
 	import flash.events.Event;
@@ -180,6 +181,7 @@ package com.yogurt3d.presets.renderers.molehill
 			// clean buffer
 			_context3d.clear(0,0,0,0);
 			_context3d.setScissorRectangle( new Rectangle( 0,0,1,1 ) );
+			_context3d.setCulling( Context3DTriangleFace.FRONT );
 			// disable blending
 			_context3d.setBlendFactors( "one", "zero");
 			_context3d.setColorMask( true, true, true, true);
