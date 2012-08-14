@@ -228,9 +228,7 @@ package com.yogurt3d.core.texture
 					m_readyToUpload = true;
 				}else{
 					var loader:Loader = new Loader();
-					new NativeSignal( loader.contentLoaderInfo, Event.INIT, Event).addOnce( function( _e:Event ):void{
-						displayObject = LoaderInfo(_e.target).content;
-					});
+					new NativeSignal( loader.contentLoaderInfo, Event.INIT, Event).addOnce( onDisplayObjectLoaded );
 					loader.loadBytes( byte );
 				}
 				
@@ -241,6 +239,9 @@ package com.yogurt3d.core.texture
 				m_transparent = false;
 				type = ATF;
 			}
+		}
+		private final function onDisplayObjectLoaded( _e:Event ):void{
+			displayObject = LoaderInfo(_e.target).content;
 		}
 
 		/**
