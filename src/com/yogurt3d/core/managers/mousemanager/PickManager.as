@@ -211,11 +211,6 @@ package com.yogurt3d.core.managers.mousemanager
 						
 						if( m_currentObject )
 						{
-							if( m_currentObject.useHandCursor )
-							{
-								Mouse.cursor = MouseCursor.AUTO;
-								Mouse.cursor = MouseCursor.BUTTON;
-							}
 							if( m_currentObject.onMouseOver && m_currentObject.onMouseOver.numListeners > 0 )
 							{
 								event = new MouseEvent3D( MouseEvent3D.MOUSE_OVER );
@@ -227,6 +222,14 @@ package com.yogurt3d.core.managers.mousemanager
 								event.viewport = m_viewport;
 								m_currentObject.onMouseOver.dispatch( event );
 							}
+						}
+					}
+					if( m_currentObject )
+					{
+						if( m_currentObject.useHandCursor )
+						{
+							Mouse.cursor = MouseCursor.AUTO;
+							Mouse.cursor = MouseCursor.BUTTON;
 						}
 					}
 					if( m_lastObject == null )
