@@ -119,26 +119,26 @@ package com.yogurt3d.io.parsers
 				
 				tIndex = _triangleIndex * 3;
 				
-				_triangleIndice1 = _meshIndices[ tIndex + 0 ];
-				_triangleIndice2 = _meshIndices[ tIndex + 1 ];
-				_triangleIndice3 = _meshIndices[ tIndex + 2 ];
+				_triangleIndice1 = _meshIndices[ uint(tIndex) ];
+				_triangleIndice2 = _meshIndices[ uint(tIndex + 1) ];
+				_triangleIndice3 = _meshIndices[ uint(tIndex + 2) ];
 				indices.push(_triangleIndice1, _triangleIndice2, _triangleIndice3);
 				
 				_triangleIndice1 = _triangleIndice1 * 3;
 				_triangleIndice2 = _triangleIndice2 * 3;
 				_triangleIndice3 = _triangleIndice3 * 3;
 				
-				x1 = gpuVertices[_triangleIndice1 + 0];
-				y1 = gpuVertices[_triangleIndice1 + 1];
-				z1 = gpuVertices[_triangleIndice1 + 2];
+				x1 = gpuVertices[uint(_triangleIndice1)];
+				y1 = gpuVertices[uint(_triangleIndice1 + 1)];
+				z1 = gpuVertices[uint(_triangleIndice1 + 2)];
 				
-				x2 = gpuVertices[_triangleIndice2 + 0];
-				y2 = gpuVertices[_triangleIndice2 + 1];
-				z2 = gpuVertices[_triangleIndice2 + 2];
+				x2 = gpuVertices[uint(_triangleIndice2)];
+				y2 = gpuVertices[uint(_triangleIndice2 + 1)];
+				z2 = gpuVertices[uint(_triangleIndice2 + 2)];
 				
-				x3 = gpuVertices[_triangleIndice3 + 0];
-				y3 = gpuVertices[_triangleIndice3 + 1];
-				z3 = gpuVertices[_triangleIndice3 + 2];
+				x3 = gpuVertices[uint(_triangleIndice3)];
+				y3 = gpuVertices[uint(_triangleIndice3 + 1)];
+				z3 = gpuVertices[uint(_triangleIndice3 + 2)];
 				
 				vertices.push(x1,y1,z1,x2,y2,z2,x3,y3,z3);
 				
