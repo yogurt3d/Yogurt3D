@@ -476,13 +476,13 @@ package com.yogurt3d.core.transformations {
 		 * 
 		 */
 		public function lookAtLocal(_target : Vector3D, _at : Vector3D = null, _up : Vector3D = null): void {
-			if(  matrixGlobal.position.z == _target.z ) {
+			if(  matrixLocal.position.z == _target.z ) {
 				_target.z += 0.00001;
 			}
-			if(  matrixGlobal.position.y == _target.y ) {
+			if(  matrixLocal.position.y == _target.y ) {
 				_target.y += 0.00001;
 			}
-			if(  matrixGlobal.position.x == _target.x ) {
+			if(  matrixLocal.position.x == _target.x ) {
 				_target.x += 0.00001;
 			}
 			var _tempMatrix:Matrix3D = MatrixUtils.TEMP_MATRIX;
