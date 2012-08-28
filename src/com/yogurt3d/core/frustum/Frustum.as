@@ -133,6 +133,7 @@ package com.yogurt3d.core.frustum{
 			ProjectionUtils.setProjectionPerspective(m_projectionMatrix, _fovy, _aspect, _near, _far);
 			
 			CalcFrustumBSPers(_fovy, _aspect, _near, _far);
+			CalcFrustumPointsPers(_fovy, _aspect, _near, _far);
 		}
 		/**
 		 * @inheritDoc   

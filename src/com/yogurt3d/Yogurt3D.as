@@ -18,7 +18,6 @@
 
 package com.yogurt3d {
 	import com.yogurt3d.core.cameras.Camera;
-	import com.yogurt3d.core.cameras.Camera;
 	import com.yogurt3d.core.enums.EngineDefaults;
 	import com.yogurt3d.core.events.Yogurt3DEvent;
 	import com.yogurt3d.core.managers.contextmanager.Context;
@@ -43,6 +42,8 @@ package com.yogurt3d {
 	import flash.utils.Dictionary;
 	import flash.utils.Timer;
 	import flash.utils.getTimer;
+	
+	import org.osflash.signals.PrioritySignal;
 	
 	[Event(name="ready", type="com.yogurt3d.core.events.Yogurt3DEvent")]
 	/**
@@ -91,6 +92,10 @@ package com.yogurt3d {
 	{
 		public static var DEBUG_TEXT			:String 			= "";
 		private static const THOUSAND_MS		:int				= 1000;
+		
+		public const onFrameStart:PrioritySignal 			= new PrioritySignal();
+		public const onUpdate:PrioritySignal 				= new PrioritySignal();
+		public const onFrameEnd:PrioritySignal 				= new PrioritySignal();
 		
 		
 		private var m_fps						:int;
@@ -177,8 +182,13 @@ package com.yogurt3d {
 			//var start:uint = getTimer();
 			if( enginePreUpdateCallback != null ) enginePreUpdateCallback();
 			
+			onFrameStart.dispatch();
+			
+			
 			TickManager.update();
 			
+			onUpdate.dispatch();
+
 			var _contextLength	:int = m_contextManager.contexts.length;
 			
 			for(var i:int = 0; i < _contextLength; i++)
@@ -187,6 +197,8 @@ package com.yogurt3d {
 				
 				context.update();
 			}
+			
+			onFrameEnd.dispatch();
 			
 			if( enginePostUpdateCallback != null ) enginePostUpdateCallback();
 			//trace("[YOGURT3D][update]", getTimer() - start);

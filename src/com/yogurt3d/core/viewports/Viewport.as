@@ -20,6 +20,7 @@
 package com.yogurt3d.core.viewports {
 	import com.yogurt3d.Yogurt3D;
 	import com.yogurt3d.core.cameras.Camera;
+	import com.yogurt3d.core.managers.InputManager;
 	import com.yogurt3d.core.managers.idmanager.IDManager;
 	import com.yogurt3d.core.managers.mousemanager.PickManager;
 	import com.yogurt3d.core.namespaces.YOGURT3D_INTERNAL;
@@ -341,6 +342,7 @@ package com.yogurt3d.core.viewports {
 		
 		private function onAddedToStage( _e:Event ):void
 		{
+			InputManager.setStage(this.stage);
 			if( isNaN(m_viewportID) )
 			{
 				if( viewports.length > 0 )

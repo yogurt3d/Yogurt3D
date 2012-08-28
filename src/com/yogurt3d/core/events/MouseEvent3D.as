@@ -144,7 +144,7 @@ package com.yogurt3d.core.events {
 		}
 		public function calculatePrecise():void{
 			var ray:Ray = camera.getRayFromMousePosition( viewport.height, viewport.width, x, y );
-			var vec:Vector3D = ray.intersectSceneObject( target3d );
+			var vec:Vector3D = ray.getIntersectPoint( target3d );
 			if( vec )
 			{
 				m_intersection = vec;

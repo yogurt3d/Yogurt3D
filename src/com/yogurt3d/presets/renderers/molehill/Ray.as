@@ -1,141 +1,104 @@
 package com.yogurt3d.presets.renderers.molehill
 {
+	import com.yogurt3d.core.cameras.Camera;
 	import com.yogurt3d.core.geoms.SubMesh;
+	import com.yogurt3d.core.helpers.boundingvolumes.BoundingSphere;
 	import com.yogurt3d.core.sceneobjects.SceneObjectRenderable;
+	import com.yogurt3d.core.viewports.Viewport;
 	
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
-
+	
 	public class Ray
 	{
 		private var m_startPoint			:Vector3D ;
 		
 		private var m_endPoint				:Vector3D ;
 		
+		private var m_direction				:Vector3D = new Vector3D() ;
+		
+		
 		public function Ray(_startPoint:Vector3D = null,_endPoint:Vector3D = null)
-		{
-			if (_startPoint == null) m_startPoint = new Vector3D() ;
-			if (_endPoint == null) m_endPoint = new Vector3D() ;
+		{			
+			m_startPoint = _startPoint || new Vector3D();
+			m_endPoint =  _endPoint || new Vector3D();
 			
-			m_startPoint = _startPoint ;
-			m_endPoint = _endPoint ;
-			
+			m_direction = m_endPoint.subtract(m_startPoint);
 		}
-
+		
 		public function get endPoint():Vector3D
 		{
 			return m_endPoint;
 		}
-
+		
 		public function set endPoint(value:Vector3D):void
 		{
 			m_endPoint = value;
+			m_direction = m_endPoint.subtract(m_startPoint);
 		}
-
+		
 		public function get startPoint():Vector3D
 		{
 			return m_startPoint;
 		}
-
+		
 		public function set startPoint(value:Vector3D):void
 		{
 			m_startPoint = value;
+			m_direction = m_endPoint.subtract(m_startPoint);
 		}
 		
-		public function intersectSceneObject( _sceneObject:SceneObjectRenderable ):Vector3D{
-			var i:uint, j:uint, k:uint ;
+		public function intersectBoundingSphere (_s:BoundingSphere):Boolean {		
+			var MyRayToCenter:Vector3D = _s.center.subtract( m_startPoint);
 			
-			// mesh check
-			var _result:Vector3D = new Vector3D() ;
-			var testDistance:Number = -1 ;
+			//	var a:Number = m_direction.dotProduct(m_direction) ;
+			var b:Number = 2 * m_direction.dotProduct(MyRayToCenter) ;
+			var c:Number = MyRayToCenter.dotProduct(MyRayToCenter) - _s.radiusSqr ;
 			
+			var discriminant:Number = b * b - 4 * m_direction.dotProduct(m_direction) * c ;
 			
-			var _sorgb:Matrix3D = new Matrix3D() ;
-			_sorgb.copyFrom(_sceneObject.transformation.matrixGlobal) ;
-			_sorgb.invert();
-			endPoint = _sorgb.transformVector( endPoint );
-			startPoint = _sorgb.transformVector( startPoint );
+			if (discriminant < 0 ) return false ;
+			return true ;
 			
-			var _rayResultVector:Vector3D ;
-			
-			var triangle:Vector.<Vector3D> = new Vector.<Vector3D>(3, true );
-			triangle[0] = new Vector3D();
-			triangle[1] = new Vector3D();
-			triangle[2] = new Vector3D();
-			
-			for (i = 0; i < _sceneObject.geometry.subMeshList.length ; i++) {
-				var _submesh:SubMesh = _sceneObject.geometry.subMeshList[i] ;
-				
-				for (j = 0 ; j < _submesh.triangleCount ; j++) {					
-					for (k = 0 ; k < 3 ; k++) {
-						
-						var vec:Vector3D = triangle[k];
-						vec.x = _submesh.vertices[_submesh.indices[j*3+k]*3  ] ;
-						vec.y = _submesh.vertices[_submesh.indices[j*3+k]*3+1] ;
-						vec.z = _submesh.vertices[_submesh.indices[j*3+k]*3+2] ;	
-				
-						//vec = _sorgb.transformVector(vec) ;
-					}
-					
-					_rayResultVector = intersectTriangle(triangle) ;
-					
-					if (_rayResultVector != null ) {
-						var tempDist:Number = Vector3D.distance(startPoint,_rayResultVector) ;
-						if (testDistance == -1) {
-							testDistance = tempDist ;
-							_result = _rayResultVector ;
-							
-						} else if (testDistance > tempDist) {
-							testDistance = tempDist ;
-							_result = _rayResultVector ;
-						}
-					} // end if _rayResultVector
-				} // _submesh.triangleCount
-			} // subMeshList.length
-			
-			
-			if (testDistance > -1) {
-				return _result ; 
-			} else return null ;
 		}
-		
 		public function intersectTriangle(T:Vector.<Vector3D>, isLocal:Boolean = false):Vector3D
 		{
-			var _result:Vector3D = new Vector3D() ;
+			//var _MyRay:MyRay = this ;
+			var _result:Vector3D // = new Vector3D() ;
 			
 			var  u:Vector3D, v:Vector3D, n:Vector3D ;             // triangle vectors
-			var  dir:Vector3D , w0:Vector3D , w:Vector3D;          // ray vectors
-			var  r: Number, a: Number, b : Number;             // params to calc ray-plane intersect
+			var  w0:Vector3D , w:Vector3D;          // MyRay vectors
+			var  r: Number, a: Number, b : Number;             // params to calc MyRay-plane intersect
 			
 			// get triangle edge vectors and plane normal
 			u = T[1].subtract(T[0]);
 			v = T[2].subtract(T[0]);
 			
-			n = new Vector3D() ;        // cross product
-			n = u.crossProduct(v) ;
+			n = u.crossProduct(v) ;        // cross product
+			
 			if ((n.x == 0) && (n.y == 0) && (n.z == 0))            // triangle is degenerate
 				return null;                 // do not deal with this case
 			
-			dir = endPoint.subtract(startPoint);             // ray direction vector
 			w0 = startPoint.subtract(T[0]);
 			
 			a = -n.dotProduct(w0) ;
-			b = n.dotProduct(dir) ;
+			b = n.dotProduct(m_direction) ;
 			
-			if (Math.abs(b) < 0.00000001) {     // ray is parallel to triangle plane
-				if (a == 0)                // ray lies in triangle plane
+			if (Math.abs(b) < 0.00000001) {     // MyRay is parallel to triangle plane
+				if (a == 0)                // MyRay lies in triangle plane
 					return null;
-				else return null;             // ray disjoint from plane
+				else return null;             // MyRay disjoint from plane
 			}
 			
-			// get intersect point of ray with triangle plane
+			// get intersect point of MyRay with triangle plane
 			r = a / b;
 			
-			if (r < 0.0)                   // ray goes away from triangle
+			if (r < 0.0)                   // MyRay goes away from triangle
 				return null;                  // => no intersect
 			// for a segment, also test if (r > 1.0) => no intersect
+			var  dir:Vector3D = m_direction.clone() ;
 			dir.scaleBy(r) ;
-			_result = startPoint.clone().add(dir) ;           // intersect point of ray and plane
+			_result = startPoint.add(dir) ;           // intersect point of MyRay and plane
 			
 			// is I inside T?
 			var uu: Number, uv: Number, vv: Number, wu: Number, wv: Number, D : Number ;
@@ -158,12 +121,99 @@ package com.yogurt3d.presets.renderers.molehill
 			
 			return _result ;               // I is in T
 		}
+		public function getIntersectPoint(_so:SceneObjectRenderable ):Vector3D {
+			var i:uint, j:uint, k:uint ;
+			
+			// mesh check
+			var _result:Vector3D = new Vector3D() ;
+			var testDistance:Number = -1 ;
+			
+			var _sorgb:Matrix3D = new Matrix3D() ;
+			_sorgb.copyFrom(_so.transformation.matrixGlobal.clone()) ;
+			
+			_sorgb.invert() ;
+			
+			var tempRay:Ray = clone() ;
+			tempRay.startPoint = _sorgb.transformVector(this.startPoint) ; 
+			tempRay.endPoint   = _sorgb.transformVector(this.endPoint) ; 
+			
+			//boundingSphere check
+			if (tempRay.intersectBoundingSphere(_so.geometry.boundingSphere) == false) return null ; 
+			
+			var _rayResultVector:Vector3D ;
+			var tempDist:Number ;
+			
+			var _trianglesCache:Vector.<Vector.<Vector3D>> = new Vector.<Vector.<Vector3D>>() ;
+			for (i = 0; i < _so.geometry.subMeshList.length ; i++)
+			{
+				var _submesh:SubMesh = _so.geometry.subMeshList[i] ;
+				for (j = 0 ; j < _submesh.triangleCount ; j++)
+				{
+					_trianglesCache[j] = new Vector.<Vector3D>() ;
+					
+					var j3:uint = j*3;
+					
+					_trianglesCache[j].push( new Vector3D(
+						_submesh.vertices[uint(_submesh.indices[j3]*3) ], 
+						_submesh.vertices[uint(_submesh.indices[j3]*3+1)], 
+						_submesh.vertices[uint(_submesh.indices[j3]*3+2)] 
+					) ) ;
+					
+					_trianglesCache[j].push(  new Vector3D(
+						_submesh.vertices[uint(_submesh.indices[j3+1]*3) ], 
+						_submesh.vertices[uint(_submesh.indices[j3+1]*3+1)], 
+						_submesh.vertices[uint(_submesh.indices[j3+1]*3+2)] 
+					) ) ;
+					
+					_trianglesCache[j].push(  new Vector3D(
+						_submesh.vertices[uint(_submesh.indices[j3+2]*3) ], 
+						_submesh.vertices[uint(_submesh.indices[j3+2]*3+1)], 
+						_submesh.vertices[uint(_submesh.indices[j3+2]*3+2)] 
+					) ) ;
+					
+					_rayResultVector = tempRay.intersectTriangle(_trianglesCache[j]) ;
+					if (_rayResultVector != null ) {
+						tempDist = Vector3D.distance(tempRay.startPoint,_rayResultVector) ;
+						if (testDistance == -1) {
+							testDistance = tempDist ;
+							_result = _rayResultVector ;
+							
+						} else if (testDistance > tempDist) {
+							testDistance = tempDist ;
+							_result = _rayResultVector ;
+						}
+					}
+				}
+			}
+			
+			if (testDistance > -1) {
+				_result = _so.transformation.matrixGlobal.transformVector(_result) ; 
+				return _result ; 
+			} else return null ;
+			
+		}		
 		
-		public function clone():Ray {
-			var _ray:Ray = new Ray(m_startPoint,m_endPoint) ;
+		public static function getRayFromMousePosition(_camera:Camera, viewport:Viewport,_mouseX:Number, _mouseY:Number ):Ray {
+			var _ray:Ray = new Ray() ;
+			
+			var _endPoint:Vector3D = new Vector3D() ;
+			_endPoint.x = _camera.frustum.m_vCornerPoints[0].x - (_camera.frustum.m_vCornerPoints[0].x - _camera.frustum.m_vCornerPoints[1].x) * (viewport.width-_mouseX) / viewport.width ;
+			_endPoint.y = _camera.frustum.m_vCornerPoints[0].y - (_camera.frustum.m_vCornerPoints[0].y - _camera.frustum.m_vCornerPoints[3].y) * _mouseY / viewport.height ;
+			_endPoint.z = _camera.frustum.m_vCornerPoints[0].z ;
+			
+			_endPoint = _camera.transformation.matrixGlobal.transformVector(_endPoint) ;
+			
+			_ray.startPoint = _camera.transformation.globalPosition.clone() ;
+			_ray.endPoint = _endPoint ;
 			
 			return _ray ;
+		}	
+		
+		public function clone():Ray {
+			var _MyRay:Ray = new Ray(m_startPoint,m_endPoint) ;
+			
+			return _MyRay ;
 		}
-
+		
 	}
 }
